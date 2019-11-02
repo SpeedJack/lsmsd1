@@ -5,6 +5,7 @@ import java.io.Serializable;
 public enum ActionRequest implements Serializable
 {
 	LOGIN,
+	LOGOUT,
 	REGISTER,
 	RESERVE
 }

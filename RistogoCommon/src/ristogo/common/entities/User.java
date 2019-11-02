@@ -2,14 +2,21 @@ package ristogo.common.entities;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.Column;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 
 
@@ -29,6 +36,9 @@ public class User extends Entity
 	
 	@Column(name="password")
 	private String password;
+	
+	@OneToMany(mappedBy="owner", fetch=FetchType.EAGER)
+	private List<Restaurant> restaurants = new ArrayList<>();
 	
 	public User()
 	{
@@ -115,5 +125,10 @@ public class User extends Entity
 	public boolean hasValidPassword()
 	{
 		return password.matches("^[a-fA-F0-9]{64}$");
+	}
+	
+	public boolean hasRestaurants()
+	{
+		return restaurants.size() > 0;
 	}
 }

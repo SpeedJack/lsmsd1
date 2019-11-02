@@ -1,8 +1,6 @@
 package ristogo.ui;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class Console

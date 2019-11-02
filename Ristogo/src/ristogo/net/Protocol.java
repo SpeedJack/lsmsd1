@@ -11,7 +11,7 @@ import ristogo.common.net.Message;
 import ristogo.common.net.RequestMessage;
 import ristogo.common.net.ResponseMessage;
 
-public class Protocol
+public class Protocol implements AutoCloseable
 {
 	private Socket socket = null;
 	private DataInputStream inputStream = null;
@@ -30,6 +30,16 @@ public class Protocol
 		RequestMessage reqMsg = new RequestMessage(ActionRequest.LOGIN);
 		reqMsg.addEntity(user);
 		reqMsg.send(outputStream);
+		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
+		if (resMsg.isSuccess() && (resMsg.getEntitiesCount() != 1 || !(resMsg.getEntity() instanceof User)))
+			return new ResponseMessage("Invalid response from server.");
+		return resMsg;
+	}
+	
+	public ResponseMessage performLogout()
+	{
+		RequestMessage reqMsg = new RequestMessage(ActionRequest.LOGIN);
+		reqMsg.send(outputStream);
 		return (ResponseMessage)Message.receive(inputStream);
 	}
 	
@@ -39,7 +49,10 @@ public class Protocol
 		RequestMessage reqMsg = new RequestMessage(ActionRequest.REGISTER);
 		reqMsg.addEntity(user);
 		reqMsg.send(outputStream);
-		return (ResponseMessage)Message.receive(inputStream);
+		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
+		if (resMsg.isSuccess() && (resMsg.getEntitiesCount() != 1 || !(resMsg.getEntity() instanceof User)))
+			return new ResponseMessage("Invalid response from server.");
+		return resMsg;
 	}
 	
 	public void close() throws IOException

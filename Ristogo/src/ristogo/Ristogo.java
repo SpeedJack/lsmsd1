@@ -83,6 +83,7 @@ public class Ristogo
 			break;
 		case 0:
 			currentMenu = Menu.EXIT;
+			return;
 		}
 		currentMenu = (loggedUser != null) ? Menu.USER : Menu.LOGIN;
 	}
@@ -92,7 +93,25 @@ public class Ristogo
 		LinkedHashMap<Integer, String> userMenu = new LinkedHashMap<>();
 		userMenu.put(1, "View your currently active reservations");
 		userMenu.put(2, "Reserve a table");
+		if (loggedUser.hasRestaurants())
+			userMenu.put(3, "Manage your restaurants");
 		userMenu.put(0, "Log-Out");
+		
+		Console.newLine();
+		int selection = Console.printMenu("Select an action", userMenu);
+		switch (selection) {
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		case 0:
+			protocol.performLogout();
+			loggedUser = null;
+			Console.println("Sucessfully logged out!");
+			currentMenu = Menu.LOGIN;
+		}
 	}
 	
 	public static void showLoginForm()
@@ -105,7 +124,8 @@ public class Ristogo
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
-		Console.println("SUCCESSFULLY LOGGED IN AS " + ((User)resMsg.getEntity()).getUsername() + "!");
+		loggedUser = (User)resMsg.getEntity();
+		Console.println("SUCCESSFULLY LOGGED IN AS " + loggedUser.getUsername() + "!");
 	}
 	
 	public static void showRegisterForm()
@@ -120,11 +140,10 @@ public class Ristogo
 			return;
 		}
 		ResponseMessage resMsg = protocol.registerUser(username, password);
-		if (!resMsg.isSuccess()) {
+		if (!resMsg.isSuccess())
 			Console.println(resMsg.getErrorMsg());
-			return;
-		}
-		Console.println("USER " + ((User)resMsg.getEntity()).getUsername() + " SUCCESSFULLY CREATED!");
+		else
+			Console.println("USER " + ((User)resMsg.getEntity()).getUsername() + " SUCCESSFULLY CREATED!");
 	}
 	
 	public static boolean hasArgument(String[] args, String longArg, String shortArg)

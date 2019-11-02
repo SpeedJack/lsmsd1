@@ -14,7 +14,7 @@ CREATE TABLE users (
 
 CREATE TABLE restaurants (
 	id INT NOT NULL AUTO_INCREMENT,
-	userId INT,
+	ownerId INT,
 	name VARCHAR(32) NOT NULL,
 	genre VARCHAR(32),
 	price ENUM('ECONOMIC', 'LOW', 'MIDDLE', 'HIGH', 'LUXURY'),
@@ -24,8 +24,8 @@ CREATE TABLE restaurants (
 	seats INT UNSIGNED NOT NULL,
 	openingHours ENUM('LUNCH', 'DINNER', 'BOTH') NOT NULL DEFAULT 'BOTH',
 	PRIMARY KEY (id),
-	UNIQUE (id, userId),
-	FOREIGN KEY (userId)
+	UNIQUE (id, ownerId),
+	FOREIGN KEY (ownerId)
 		REFERENCES users(id)
 		ON UPDATE CASCADE
 		ON DELETE SET NULL

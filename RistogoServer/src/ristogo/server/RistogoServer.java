@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ristogo.server.storage.EntityManager;
+
 public class RistogoServer
 {
 
@@ -20,6 +22,7 @@ public class RistogoServer
 			Logger.getLogger(RistogoServer.class.getName()).log(Level.SEVERE, null, ex);
 		} finally {
 			System.out.println("TERMINATING...");
+			EntityManager.closeFactory();
 			if (pool != null)
 				pool.shutdown();
 		}

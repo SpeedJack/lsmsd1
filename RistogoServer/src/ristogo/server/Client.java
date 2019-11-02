@@ -7,11 +7,15 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.PersistenceException;
+
 import ristogo.common.entities.User;
 import ristogo.common.net.Message;
 import ristogo.common.net.RequestMessage;
 import ristogo.common.net.ResponseMessage;
-import ristogo.server.storage.DBManager;
+import ristogo.server.storage.EntityManager;
+import ristogo.server.storage.UserManager;
 
 public class Client extends Thread
 {
@@ -19,12 +23,12 @@ public class Client extends Thread
 	private DataInputStream inputStream;
 	private DataOutputStream outputStream;
 	private User loggedUser;
-	private DBManager db;
+	private UserManager userManager;
 	
 	public Client(Socket clientSocket)
 	{
 		socket = clientSocket;
-		db = new DBManager();
+		userManager = new UserManager();
 		try {
 			inputStream = new DataInputStream(clientSocket.getInputStream());
 			outputStream = new DataOutputStream(clientSocket.getOutputStream());
@@ -38,7 +42,7 @@ public class Client extends Thread
 	{
 		while (!Thread.currentThread().isInterrupted())
 			process();
-		db.close();
+		userManager.close();
 		try {
 			inputStream.close();
 			outputStream.close();
@@ -60,6 +64,9 @@ public class Client extends Thread
 		case LOGIN:
 			handleLoginRequest(reqMsg);
 			break;
+		case LOGOUT:
+			handleLogoutRequest(reqMsg);
+			break;
 		case REGISTER:
 			handleRegisterRequest(reqMsg);
 			break;
@@ -76,13 +83,19 @@ public class Client extends Thread
 			return;
 		}
 
-		User savedUser = db.getUserByUsername(user.getUsername());
+		User savedUser = userManager.getUserByUsername(user.getUsername());
 		if (savedUser != null && savedUser.checkPasswordHash(user.getPasswordHash())) {
 			loggedUser = savedUser;
 			new ResponseMessage(savedUser).send(outputStream);
 			return;
 		}
 		new ResponseMessage("Invalid username or password.").send(outputStream);
+	}
+	
+	private void handleLogoutRequest(RequestMessage reqMsg)
+	{
+		loggedUser = null;
+		new ResponseMessage().send(outputStream);
 	}
 	
 	private void handleRegisterRequest(RequestMessage reqMsg)
@@ -101,7 +114,12 @@ public class Client extends Thread
 			return;
 		}
 		
-		db.insert(user);
+		try {
+			userManager.insert(user);
+		} catch (PersistenceException ex) {
+			new ResponseMessage("Username already in use.").send(outputStream);
+			return;
+		}
 		new ResponseMessage(user).send(outputStream);
 	}
 }
