@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.application.Application;
 import ristogo.config.Configuration;
 import ristogo.net.Protocol;
 import ristogo.ui.Console;
@@ -17,8 +18,10 @@ public class Ristogo
 	{
 		Configuration config = Configuration.getConfig();
 		
-		if (!config.isForceCli() && (hasArgument(args, "gui", "g") || !Console.exists()))
+		if (!config.isForceCli() && (hasArgument(args, "gui", "g") || !Console.exists())) {
+			ristogo.ui.graphics.RistogoGUI.launch(args);
 			return;
+		}
 		
 		Console.println("WELCOME TO RISTOGO!");
 		

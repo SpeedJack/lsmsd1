@@ -12,7 +12,7 @@ public class Configuration
 	{
 		serverIp = "127.0.0.1";
 		serverPort = 8888;
-		forceCli = true;
+		forceCli = false;
 	}
 	
 	public static Configuration getConfig()
