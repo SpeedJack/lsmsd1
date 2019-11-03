@@ -7,14 +7,12 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityExistsException;
 import javax.persistence.PersistenceException;
 
 import ristogo.common.entities.User;
 import ristogo.common.net.Message;
 import ristogo.common.net.RequestMessage;
 import ristogo.common.net.ResponseMessage;
-import ristogo.server.storage.EntityManager;
 import ristogo.server.storage.UserManager;
 
 public class Client extends Thread

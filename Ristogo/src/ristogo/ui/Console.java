@@ -1,7 +1,9 @@
 package ristogo.ui;
 
-import java.util.LinkedHashMap;
 import java.util.Scanner;
+import java.util.SortedSet;
+
+import ristogo.ui.menus.MenuEntry;
 
 public class Console
 {
@@ -60,34 +62,29 @@ public class Console
 			newLine();
 	}
 	
-	public static void printMenuEntry(int key, String entry)
+	public static void printMenuEntry(MenuEntry entry)
 	{
-		println(key + ")\t" + entry);
+		println(entry.getKey() + ")\t" + entry.getText());
 	}
 	
-	public static int printMenu(String prompt, LinkedHashMap<Integer, String> entries)
+	public static MenuEntry printMenu(String prompt, SortedSet<MenuEntry> entries)
 	{
 		printPrompt(prompt);
 		newLine();
-		entries.forEach((key, value) -> {
-			if (key < 0)
-				println("\t" + value);
-			else
-				printMenuEntry(key, value);
-		});
+		for (MenuEntry entry: entries)
+			printMenuEntry(entry);
 		newLine();
 		int selection;
 		while (true) {
 			selection = askInteger("Enter number");
-			if (selection < 0 || !entries.containsKey(selection)) {
-				println("Invalid value. Try again.");
-				newLine();
-				continue;
-			}
-			break;
+			for (MenuEntry entry: entries)
+				if (entry.getKey() == selection) {
+					newLine();
+					return entry;
+				}
+			println("Invalid value. Try again.");
+			newLine();
 		}
-		newLine();
-		return selection;
 	}
 	
 	public static void pause()

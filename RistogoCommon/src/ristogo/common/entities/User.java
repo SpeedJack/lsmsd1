@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -37,8 +38,12 @@ public class User extends Entity
 	@Column(name="password")
 	private String password;
 	
-	@OneToMany(mappedBy="owner", fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="owner", fetch=FetchType.LAZY)
+	@LazyCollection(LazyCollectionOption.EXTRA)
 	private List<Restaurant> restaurants = new ArrayList<>();
+	
+	@Formula(value="(SELECT COUNT(*) FROM restaurants r WHERE r.ownerId = id)")
+	private int restaurantCount;
 	
 	public User()
 	{
@@ -79,12 +84,12 @@ public class User extends Entity
 		return password.length() > 7;
 	}
 	
-	public final void setUsername(String username)
+	public void setUsername(String username)
 	{
 		this.username = username;
 	}
 	
-	public final boolean setPassword(String password)
+	public boolean setPassword(String password)
 	{
 		if (!validatePassword(password))
 			return false;
@@ -92,7 +97,7 @@ public class User extends Entity
 		return true;
 	}
 	
-	public final void setId(int id)
+	public void setId(int id)
 	{
 		this.id = id;
 	}
@@ -127,8 +132,18 @@ public class User extends Entity
 		return password.matches("^[a-fA-F0-9]{64}$");
 	}
 	
+	public List<Restaurant> getRestaurants()
+	{
+		return restaurants;
+	}
+	
 	public boolean hasRestaurants()
 	{
-		return restaurants.size() > 0;
+		return getRestaurantCount() > 0;
+	}
+	
+	public int getRestaurantCount()
+	{
+		return restaurantCount;
 	}
 }

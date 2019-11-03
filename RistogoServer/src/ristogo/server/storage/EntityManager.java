@@ -2,16 +2,9 @@ package ristogo.server.storage;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
-import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Root;
 
 import ristogo.common.entities.Entity;
-import ristogo.common.entities.User;
 
 public class EntityManager implements AutoCloseable
 {
