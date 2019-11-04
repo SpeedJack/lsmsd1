@@ -55,8 +55,8 @@ public class RegisterDialog extends Dialog {
 			PasswordField password = new PasswordField();
 			password.setPromptText("Password");
 			Label l3 = new Label("Type of User: ");
-			ChoiceBox<String> cb = new ChoiceBox();
-	        cb.getItems().addAll("Customer", "Restaurant Owner");
+			ChoiceBox<String> cb = new ChoiceBox<String>();
+			cb.getItems().addAll("Customer", "Restaurant Owner");
 			
 			l1.setFont(Font.font(Configuration.getConfig().getFont(), FontWeight.NORMAL, Configuration.getConfig().getDimCharacter()+3));
 			l1.setTextFill(Color.web(Configuration.getConfig().getBackgroundColor()));

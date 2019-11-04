@@ -1,14 +1,11 @@
 package ristogo.ui.graphics;
 
 
-import java.util.List;
-
-import javafx.collections.*;
-import javafx.event.*;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.*;
-import javafx.scene.input.*;
-import javafx.util.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import ristogo.config.Configuration;
 
 
@@ -29,7 +26,7 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
 		    setMinWidth(600);
 		    setMaxWidth(600);
 			String font = Configuration.getConfig().getFont();
-			int dimC = Configuration.getConfig().getDimCharacter();
+			double dimC = Configuration.getConfig().getDimCharacter();
 			String textColor = Configuration.getConfig().getTextColor();
 		    
 		    

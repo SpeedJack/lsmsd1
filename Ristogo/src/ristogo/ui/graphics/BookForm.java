@@ -24,7 +24,7 @@ public class BookForm extends VBox {
 			super(20);
 			
 			String font = Configuration.getConfig().getFont();
-			int dimC = Configuration.getConfig().getDimCharacter();
+			double dimC = Configuration.getConfig().getDimCharacter();
 			String textColor = Configuration.getConfig().getTextColor();
 			String backgroundColor = Configuration.getConfig().getBackgroundColor();
 		
@@ -68,7 +68,7 @@ public class BookForm extends VBox {
 			Label hour = new Label("Booking Time: ");
 			hour.setFont(Font.font(font, FontWeight.BOLD, dimC));
 			hour.setTextFill(Color.web(textColor));
-			hourField = new ChoiceBox();
+			hourField = new ChoiceBox<String>();
 			hourField.setMinSize(70, 25);
 			hourField.setMaxSize(70, 25);
 			
@@ -86,7 +86,7 @@ public class BookForm extends VBox {
 			Label seats = new Label("Seats: ");
 			seats.setFont(Font.font(font, FontWeight.BOLD, dimC));
 			seats.setTextFill(Color.web(textColor));
-			seatsField = new ChoiceBox();
+			seatsField = new ChoiceBox<Integer>();
 			seatsField.setDisable(true);
 			
 			HBox seatsBox = new HBox(20);

@@ -1,19 +1,24 @@
 package ristogo.ui.graphics;
 
-import java.util.*;
-
-import javafx.application.*;
-import javafx.geometry.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.control.ButtonBar.*;
-import javafx.scene.image.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.text.*;
-import javafx.stage.*;
-import javafx.util.*;
-
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+import javafx.util.Pair;
 import ristogo.config.Configuration;
 
 public class LoginDialog extends Dialog<Pair<String, String>>  {

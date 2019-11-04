@@ -1,10 +1,10 @@
 package ristogo.ui.graphics;
 
-import java.time.*;
-import java.util.*;
-import javafx.collections.*;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import ristogo.config.Configuration;
 
 public class TableViewReservation extends TableView<ReservationBean> {
@@ -19,7 +19,7 @@ public class TableViewReservation extends TableView<ReservationBean> {
 	  public TableViewReservation (boolean isCustomer) {
 		  
 		  	String font = Configuration.getConfig().getFont();
-			int dimC = Configuration.getConfig().getDimCharacter();
+			double dimC = Configuration.getConfig().getDimCharacter();
 			String textColor = Configuration.getConfig().getTextColor();
 		  
 		    setEditable(false);

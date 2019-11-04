@@ -6,7 +6,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import ristogo.common.entities.Restaurant;
-import ristogo.ui.Console;
 
 public class RestaurantListMenu extends Menu
 {

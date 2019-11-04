@@ -1,19 +1,19 @@
 package ristogo.ui.graphics;
 
-import java.util.*;
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.image.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.stage.*;
-import javafx.util.*;
-
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import ristogo.config.Configuration;
 
 
@@ -40,10 +40,10 @@ public class RistogoGUI extends Application
 		    }
 		    else {
 		    	//effettuaLogin
-		    	//controlla se è un ristoratore o un cliente
-		    	//se è un cliente
+		    	//controlla se ï¿½ un ristoratore o un cliente
+		    	//se ï¿½ un cliente
 		    	buildCostumerInterface();
-		    	//se è un ristoratore
+		    	//se ï¿½ un ristoratore
 		    	buildRestaurantOwnerInterface();
 		    	
 		    }
@@ -81,7 +81,7 @@ public class RistogoGUI extends Application
 	private GridPane generateTitle() {
 		
 		String font = Configuration.getConfig().getFont();
-		int dimC = Configuration.getConfig().getDimCharacter();
+		double dimC = Configuration.getConfig().getDimCharacter();
 		String textColor = Configuration.getConfig().getTextColor();
 		
 		Label title = new Label("RistoGo");

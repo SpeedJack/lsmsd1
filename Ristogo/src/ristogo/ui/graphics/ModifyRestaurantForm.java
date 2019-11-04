@@ -27,7 +27,7 @@ public class ModifyRestaurantForm extends VBox {
 		super(20);
 		
 		String font = Configuration.getConfig().getFont();
-		int dimC = Configuration.getConfig().getDimCharacter();
+		double dimC = Configuration.getConfig().getDimCharacter();
 		String textColor = Configuration.getConfig().getTextColor();
 		String backgroundColor = Configuration.getConfig().getBackgroundColor();
 		
@@ -48,7 +48,7 @@ public class ModifyRestaurantForm extends VBox {
 		Label type = new Label("Type: ");
 		type.setFont(Font.font(font, FontWeight.BOLD, dimC));
 		type.setTextFill(Color.web(textColor));
-		typeField = new ChoiceBox();
+		typeField = new ChoiceBox<String>();
 		typeField.getItems().addAll("Pizza", "Chinese", "Mexican", "Italian", "SteakHouse");
 
 		HBox typeBox = new HBox(20);
@@ -59,7 +59,7 @@ public class ModifyRestaurantForm extends VBox {
 		cost.setFont(Font.font(font, FontWeight.BOLD, dimC));
 		cost.setTextFill(Color.web(textColor));
 
-		costField = new ChoiceBox();
+		costField = new ChoiceBox<Integer>();
 		costField.getItems().addAll(1, 2, 3, 4, 5);
 		
 		HBox costBox = new HBox(20);
@@ -101,7 +101,7 @@ public class ModifyRestaurantForm extends VBox {
 		hour.setFont(Font.font(font, FontWeight.BOLD, dimC));
 		hour.setTextFill(Color.web(textColor));
 
-		hourField = new ChoiceBox(FXCollections.observableArrayList("Lunch", "Dinner", "Lunch/Dinner"));
+		hourField = new ChoiceBox<String>(FXCollections.observableArrayList("Lunch", "Dinner", "Lunch/Dinner"));
 		//hourField.getItems().addAll("Lunch", "Dinner", "Lunch&Dinner");
 		
 		HBox hourBox = new HBox(20);
