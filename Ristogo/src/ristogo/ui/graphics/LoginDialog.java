@@ -1,28 +1,47 @@
 package ristogo.ui.graphics;
 
-import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.util.Pair;
+import java.util.*;
+
+import javafx.application.*;
+import javafx.geometry.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.control.ButtonBar.*;
+import javafx.scene.image.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.text.*;
+import javafx.stage.*;
+import javafx.util.*;
+
+import ristogo.config.Configuration;
 
 public class LoginDialog extends Dialog<Pair<String, String>>  {
 	
+	
 	public LoginDialog() {
+		
+		Stage stage = (Stage) getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image(this.getClass().getResource("/resources/logo.png").toString()));
+		
+		DialogPane dialogPane = getDialogPane();
+		dialogPane.setStyle("-fx-background-color: "+ Configuration.getConfig().getTextColor()+" ;");
 		
 		setTitle("RistoGo - Login");
 		setHeaderText("Welcome to Ristogo!\n "
 				+ "The application that allows you to book tables\n "
 				+ "at your favorite restaurants!");
+		
+		dialogPane.getStyleClass().remove("alert");
 
+	    GridPane header = (GridPane)dialogPane.lookup(".header-panel"); 
+	    header.setStyle("-fx-background-color: "+Configuration.getConfig().getTextColor()+" ; "
+	            + "-fx-font-family: "+Configuration.getConfig().getFont()+" ;"
+	            + "-fx-wrap-text: true ;"
+	            + "-fx-text-fill: "+Configuration.getConfig().getBackgroundColor()+" ;");
+	    
+	    header.lookup(".label").setStyle("-fx-text-fill: "+Configuration.getConfig().getBackgroundColor()+" ;");
+		
 		ImageView img = new ImageView(this.getClass().getResource("/resources/whiteLogo.png").toString());
 		img.setFitHeight(50);
 		img.setFitWidth(50);
@@ -32,14 +51,13 @@ public class LoginDialog extends Dialog<Pair<String, String>>  {
 		ButtonType registerButtonType = new ButtonType("Register", ButtonData.OK_DONE);
 		getDialogPane().getButtonTypes().addAll(loginButtonType, registerButtonType, ButtonType.CANCEL);
 		
-		/*loginButtonType.setFont(Font.font(Configuration.getConfig().getFont(), FontWeight.BOLD, Configuration.getConfig().getDimCharacter()+3));
-		loginButtonType.setTextFill(Color.web(Configuration.getConfig().getTextColor()));
-		loginButtonType.setStyle("-fx-base: " + Configuration.getConfig().getBackgroundColor() ); 
+		ButtonBar buttonBar = (ButtonBar)this.getDialogPane().lookup(".button-bar");
+	    buttonBar.getButtons().forEach(b->b.setStyle("-fx-font-family: "+Configuration.getConfig().getFont()+";"
+	    										+"-fx-background-color: "+Configuration.getConfig().getBackgroundColor() +" ;"
+	    										+"-fx-text-fill: "+Configuration.getConfig().getTextColor() +" ;"
+	    										+"-fx-font-size: "+(Configuration.getConfig().getDimCharacter() +2)+"px ;"));
+	  
 		
-		registerButtonType.setFont(Font.font(Configuration.getConfig().getFont(), FontWeight.BOLD, Configuration.getConfig().getDimCharacter()+3));
-		registerButtonType.setTextFill(Color.web(Configuration.getConfig().getTextColor()));
-		registerButtonType.setStyle("-fx-base: " + Configuration.getConfig().getBackgroundColor());
-		 */
 		Label l1 = new Label("Name: ");
 		TextField username = new TextField();
 		username.setPromptText("Username");
@@ -47,7 +65,7 @@ public class LoginDialog extends Dialog<Pair<String, String>>  {
 		PasswordField password = new PasswordField();
 		password.setPromptText("Password");
 		
-	/*	l1.setFont(Font.font(Configuration.getConfig().getFont(), FontWeight.NORMAL, Configuration.getConfig().getDimCharacter()+3));
+		l1.setFont(Font.font(Configuration.getConfig().getFont(), FontWeight.NORMAL, Configuration.getConfig().getDimCharacter()+3));
 		l1.setTextFill(Color.web(Configuration.getConfig().getBackgroundColor()));
 		username.setFont(Font.font(Configuration.getConfig().getFont(), Configuration.getConfig().getDimCharacter()));
 		username.setMaxWidth(200);
@@ -56,7 +74,7 @@ public class LoginDialog extends Dialog<Pair<String, String>>  {
 		l2.setTextFill(Color.web(Configuration.getConfig().getBackgroundColor()));
 		password.setFont(Font.font(Configuration.getConfig().getFont(), Configuration.getConfig().getDimCharacter()));
 		password.setMaxWidth(200);
-	*/	
+		
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
@@ -66,16 +84,15 @@ public class LoginDialog extends Dialog<Pair<String, String>>  {
 		grid.add(username, 1, 0);
 		grid.add(l2, 0, 1);
 		grid.add(password, 1, 1);
-
+		
+		getDialogPane().setContent(grid);
 		
 		Node loginButton = getDialogPane().lookupButton(loginButtonType);
 		loginButton.setDisable(true);
 
 		username.textProperty().addListener((observable, oldValue, newValue) -> {
-		    loginButton.setDisable(newValue.trim().isEmpty());
+		    	loginButton.setDisable(newValue.trim().isEmpty());
 		});
-
-		getDialogPane().setContent(grid);
 
 		Platform.runLater(() -> username.requestFocus());
 
@@ -83,61 +100,11 @@ public class LoginDialog extends Dialog<Pair<String, String>>  {
 		    if (dialogButton == loginButtonType) {
 		        return new Pair<>(username.getText(), password.getText());
 		    }
+		    else if(dialogButton == registerButtonType) {
+		    	return new Pair<>("register","");
+		    }
 		    return null;
 		});
-		
-		DialogPane dialogPane = getDialogPane();
-		dialogPane.getStylesheets().add(getClass().getResource("/resources/MyDialog.css").toExternalForm());
-		dialogPane.getStyleClass().add("myDialog");
-		//dialogPane.setStyle(".dialog-pane { -fx-background-color: "+ Configuration.getConfig().getBackgroundColor() + ";};");
-		
-	
-		dialogPane.setStyle(".dialog-pane{\r\n" + 
-				"  -fx-border-color:black;\r\n" + 
-				"  -fx-border-width:2.0px;\r\n" + 
-				" }\r\n" + 
-				"\r\n" + 
-				"/**Costumization of The Bar where the buttons are located**/\r\n" + 
-				".dialog-pane > .button-bar > .container {\r\n" + 
-				"  -fx-background-color:black;\r\n" + 
-				"}\r\n" + 
-				"\r\n" + 
-				".dialog-pane > .content.label {\r\n" + 
-				"   -fx-padding: 0.5em 0.5em 0.5em 0.5em;\r\n" + 
-				"   -fx-background-color: yellow;\r\n" + 
-				"   -fx-text-fill:black;\r\n" + 
-				"   -fx-font-size:15.0px;\r\n" + 
-				"}\r\n" + 
-				"\r\n" + 
-				"/**Costumization of DialogPane Header**/\r\n" + 
-				".dialog-pane:header .header-panel {\r\n" + 
-				"  -fx-background-color: black;\r\n" + 
-				"}\r\n" + 
-				"\r\n" + 
-				".dialog-pane:header .header-panel .label{\r\n" + 
-				"  -fx-background-color: yellow;\r\n" + 
-				"  -fx-background-radius:10px;\r\n" + 
-				"  -fx-text-fill:black;\r\n" + 
-				"  -fx-font-size:15.0px;\r\n" + 
-				"}\r\n" + 
-				"\r\n" + 
-				"\r\n" + 
-				"/**Costumization of Buttons**/\r\n" + 
-				".dialog-pane .button{\r\n" + 
-				"   -fx-background-color:black;\r\n" + 
-				"   -fx-text-fill:white;\r\n" + 
-				"   -fx-wrap-text: true;\r\n" + 
-				"   -fx-effect: dropshadow( three-pass-box, yellow, 10.0, 0.0, 0.0, 0.0);\r\n" + 
-				"   -fx-cursor:hand;\r\n" + 
-				" }\r\n" + 
-				"\r\n" + 
-				".dialog-pane .button:hover{     \r\n" + 
-				"  -fx-background-color:white;\r\n" + 
-				"  -fx-text-fill:black;\r\n" + 
-				"  -fx-font-weight:bold; \r\n" + 
-				" }\r\n" + 
-				"");
-		
 		
 	}
 }
