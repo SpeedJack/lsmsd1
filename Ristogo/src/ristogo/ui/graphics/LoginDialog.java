@@ -1,19 +1,18 @@
 package ristogo.ui.graphics;
 
-import java.util.*;
-
-import javafx.application.*;
-import javafx.geometry.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.control.ButtonBar.*;
-import javafx.scene.image.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.util.*;
-import ristogo.config.Configuration;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.util.Pair;
 
 public class LoginDialog extends Dialog<Pair<String, String>>  {
 	
@@ -23,7 +22,7 @@ public class LoginDialog extends Dialog<Pair<String, String>>  {
 		setHeaderText("Welcome to Ristogo!\n "
 				+ "The application that allows you to book tables\n "
 				+ "at your favorite restaurants!");
-		
+
 		ImageView img = new ImageView(this.getClass().getResource("/resources/whiteLogo.png").toString());
 		img.setFitHeight(50);
 		img.setFitWidth(50);

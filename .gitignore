@@ -1,3 +1,6 @@
+# MySQL docker container
+docker/
+
 # main doc file
 doc/main.pdf
 

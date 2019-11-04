@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javafx.application.Application;
 import ristogo.config.Configuration;
 import ristogo.net.Protocol;
 import ristogo.ui.Console;
