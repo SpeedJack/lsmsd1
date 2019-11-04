@@ -1,5 +1,5 @@
 package ristogo.config;
-
+// TODO: use an XML file for configuration
 public class Configuration
 {
 	private static Configuration singletonObj;
@@ -17,7 +17,7 @@ public class Configuration
 	{
 		serverIp = "127.0.0.1";
 		serverPort = 8888;
-		forceCli = false;
+		forceCli = true;
 		font = "Open Sans";
 		dimCharacter = 12;
 		backgroundColor = "FFFFFF";

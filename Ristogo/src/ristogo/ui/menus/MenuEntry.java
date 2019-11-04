@@ -7,10 +7,11 @@ public class MenuEntry implements Comparable<MenuEntry>
 	private int key;
 	private String text;
 	private boolean exit;
+	private Object handlerData;
 	
 	private Consumer<MenuEntry> handler;
 	
-	public MenuEntry(int key, String text, boolean exit, Consumer<MenuEntry> handler)
+	public MenuEntry(int key, String text, boolean exit, Consumer<MenuEntry> handler, Object handlerData)
 	{
 		if (key < 0)
 			this.key = 0;
@@ -19,6 +20,17 @@ public class MenuEntry implements Comparable<MenuEntry>
 		this.text = text;
 		this.exit = exit;
 		this.handler = handler;
+		this.handlerData = handlerData;
+	}
+	
+	public MenuEntry(int key, String text, boolean exit, Consumer<MenuEntry> handler)
+	{
+		this(key, text, exit, handler, null);
+	}
+	
+	public MenuEntry(int key, String text, Consumer<MenuEntry> handler, Object handlerData)
+	{
+		this(key, text, false, handler, handlerData);
 	}
 	
 	public MenuEntry(int key, String text, Consumer<MenuEntry> handler)
@@ -60,6 +72,11 @@ public class MenuEntry implements Comparable<MenuEntry>
 	{
 		if (this.handler != null)
 			this.handler.accept(this);
+	}
+	
+	public Object getHandlerData()
+	{
+		return handlerData;
 	}
 
 	@Override

@@ -24,14 +24,7 @@ public class Ristogo
 		
 		Console.println("WELCOME TO RISTOGO!");
 		
-		try {
-			protocol = new Protocol(config.getServerIp(), config.getServerPort());
-		} catch (IOException ex) {
-			Logger.getLogger(Ristogo.class.getName()).log(Level.SEVERE, null, ex);
-			System.exit(1);
-		}
-		
-		new LoginMenu(protocol).show();
+		new LoginMenu().show();
 		close();
 	}
 	

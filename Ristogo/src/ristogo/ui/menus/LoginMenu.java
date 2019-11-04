@@ -5,35 +5,10 @@ import java.util.TreeSet;
 
 import ristogo.common.entities.User;
 import ristogo.common.net.ResponseMessage;
-import ristogo.net.Protocol;
 import ristogo.ui.Console;
 
 public class LoginMenu extends Menu
 {
-	private Protocol protocol;
-	
-	public LoginMenu(Protocol protocol)
-	{
-		this();
-		this.protocol = protocol;
-	}
-	
-	public LoginMenu(String prompt, Protocol protocol)
-	{
-		this(prompt);
-		this.protocol = protocol;
-	}
-	
-	private LoginMenu()
-	{
-		super();
-	}
-	
-	private LoginMenu(String prompt)
-	{
-		super(prompt);
-	}
-	
 	@Override
 	protected SortedSet<MenuEntry> getMenu()
 	{
@@ -78,9 +53,9 @@ public class LoginMenu extends Menu
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
-		User user = (User)resMsg.getEntity();
-		Console.println("SUCCESSFULLY LOGGED IN AS " + user.getUsername() + "!");
-		new UserMenu(protocol, user).show();
+		loggedUser = (User)resMsg.getEntity();
+		Console.println("SUCCESSFULLY LOGGED IN AS " + loggedUser.getUsername() + "!");
+		new UserMenu().show();
 	}
 
 }

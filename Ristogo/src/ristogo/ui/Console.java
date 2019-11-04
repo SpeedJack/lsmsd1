@@ -33,6 +33,35 @@ public class Console
 		return res;
 	}
 	
+	public static boolean askConfirm()
+	{
+		return askConfirm("Are you sure?", false);
+	}
+	
+	public static boolean askConfirm(boolean defaultYes)
+	{
+		return askConfirm("Are you sure?", defaultYes);
+	}
+	
+	public static boolean askConfirm(String prompt)
+	{
+		return askConfirm(prompt, false);
+	}
+	
+	public static boolean askConfirm(String prompt, boolean defaultYes)
+	{
+		while (true) {
+			print(prompt + " [" + ((defaultYes) ? "Y/n" : "y/N") + "]");
+			String selection = scanner.nextLine();
+			if ((defaultYes && selection.isBlank()) || selection.compareToIgnoreCase("Y") == 0)
+				return true;
+			if ((!defaultYes && selection.isBlank()) || selection.compareToIgnoreCase("N") == 0)
+				return false;
+			println("Invalid selection.");
+			newLine();
+		}
+	}
+	
 	public static void printPrompt(String str)
 	{
 		print(str + ": ");

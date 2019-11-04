@@ -9,9 +9,6 @@ import java.util.logging.Logger;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -26,24 +23,19 @@ import org.hibernate.annotations.LazyCollectionOption;
 public class User extends Entity
 {
 	private static final long serialVersionUID = -1609868778409848632L;
-
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="id")
-	private int id;
 	
 	@Column(name="username")
-	private String username;
+	protected String username;
 	
 	@Column(name="password")
-	private String password;
+	protected String password;
 	
 	@OneToMany(mappedBy="owner", fetch=FetchType.LAZY)
 	@LazyCollection(LazyCollectionOption.EXTRA)
-	private List<Restaurant> restaurants = new ArrayList<>();
+	protected List<Restaurant> restaurants = new ArrayList<>();
 	
 	@Formula(value="(SELECT COUNT(*) FROM restaurants r WHERE r.ownerId = id)")
-	private int restaurantCount;
+	protected int restaurantCount;
 	
 	public User()
 	{
@@ -57,7 +49,7 @@ public class User extends Entity
 	
 	public User(int id, String username, String password)
 	{
-		setId(id);
+		super(id);
 		setUsername(username);
 		setPassword(password);
 	}
@@ -95,16 +87,6 @@ public class User extends Entity
 			return false;
 		this.password = hashPassword(password);
 		return true;
-	}
-	
-	public void setId(int id)
-	{
-		this.id = id;
-	}
-	
-	public int getId()
-	{
-		return id;
 	}
 	
 	public String getUsername()
@@ -145,5 +127,30 @@ public class User extends Entity
 	public int getRestaurantCount()
 	{
 		return restaurantCount;
+	}
+	
+	public void addRestaurants(Restaurant... restaurants)
+	{
+		if (restaurants != null)
+			for (Restaurant restaurant: restaurants)
+				this.restaurants.add(restaurant);
+	}
+	
+	public void setRestaurants(List<Restaurant> restaurants)
+	{
+		this.restaurants = restaurants;
+	}
+	
+	public boolean hasRestaurant(int restaurantId)
+	{
+		for (Restaurant restaurant: restaurants)
+			if (restaurant.getId() == restaurantId)
+				return true;
+		return false;
+	}
+	
+	public boolean hasRestaurant(Restaurant restaurant)
+	{
+		return hasRestaurant(restaurant.getId());
 	}
 }

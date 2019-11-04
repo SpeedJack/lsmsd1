@@ -78,7 +78,7 @@ public class Message implements Serializable
 	
 	public Entity getEntity(int index)
 	{
-		if (index < 0 || index >= getEntitiesCount())
+		if (index < 0 || index >= getEntityCount())
 			return null;
 		return entities.get(index);
 	}
@@ -93,7 +93,7 @@ public class Message implements Serializable
 		entities.add(entity);
 	}
 	
-	public int getEntitiesCount()
+	public int getEntityCount()
 	{
 		return entities.size();
 	}

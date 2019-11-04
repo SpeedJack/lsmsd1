@@ -4,15 +4,18 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
+import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
 import ristogo.common.net.Message;
 import ristogo.common.net.RequestMessage;
 import ristogo.common.net.ResponseMessage;
+import ristogo.server.storage.RestaurantManager;
 import ristogo.server.storage.UserManager;
 
 public class Client extends Thread
@@ -22,11 +25,13 @@ public class Client extends Thread
 	private DataOutputStream outputStream;
 	private User loggedUser;
 	private UserManager userManager;
+	private RestaurantManager restaurantManager;
 	
 	public Client(Socket clientSocket)
 	{
 		socket = clientSocket;
 		userManager = new UserManager();
+		restaurantManager = new RestaurantManager();
 		try {
 			inputStream = new DataInputStream(clientSocket.getInputStream());
 			outputStream = new DataOutputStream(clientSocket.getOutputStream());
@@ -67,6 +72,12 @@ public class Client extends Thread
 			break;
 		case REGISTER:
 			handleRegisterRequest(reqMsg);
+			break;
+		case LIST_RESTAURANTS:
+			handleListRestaurantsRequest(reqMsg);
+			break;
+		case DELETE_RESTAURANT:
+			handleDeleteRestaurantRequest(reqMsg);
 			break;
 		default:
 			new ResponseMessage("Invalid request.").send(outputStream);
@@ -119,5 +130,37 @@ public class Client extends Thread
 			return;
 		}
 		new ResponseMessage(user).send(outputStream);
+	}
+	
+	private void handleListRestaurantsRequest(RequestMessage reqMsg)
+	{
+		if (loggedUser == null) {
+			new ResponseMessage("You must be logged in to perform this action.").send(outputStream);
+			return;
+		}
+		ResponseMessage resMsg = new ResponseMessage();
+		List<Restaurant> restaurants = loggedUser.getRestaurants();
+		for (Restaurant restaurant: restaurants)
+			resMsg.addEntity(restaurant);
+		resMsg.send(outputStream);
+	}
+	
+	private void handleDeleteRestaurantRequest(RequestMessage reqMsg)
+	{
+		if (loggedUser == null) {
+			new ResponseMessage("You must be logged in to perform this action.").send(outputStream);
+			return;
+		}
+		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
+		if (restaurant == null) {
+			new ResponseMessage("Invalid request.").send(outputStream);
+			return;
+		}
+		if (!loggedUser.hasRestaurant(restaurant)) {
+			new ResponseMessage("You can only delete restaurants that you own.").send(outputStream);
+			return;
+		}
+		restaurantManager.delete(restaurant.getId());
+		new ResponseMessage().send(outputStream);
 	}
 }

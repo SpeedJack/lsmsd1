@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+import ristogo.common.entities.Entity;
+import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
 import ristogo.common.net.ActionRequest;
 import ristogo.common.net.Message;
@@ -31,15 +33,14 @@ public class Protocol implements AutoCloseable
 		reqMsg.addEntity(user);
 		reqMsg.send(outputStream);
 		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && (resMsg.getEntitiesCount() != 1 || !(resMsg.getEntity() instanceof User)))
-			return new ResponseMessage("Invalid response from server.");
+		if (resMsg.isSuccess() && (resMsg.getEntityCount() != 1 || !(resMsg.getEntity() instanceof User)))
+			return getProtocolErrorMessage();
 		return resMsg;
 	}
 	
 	public ResponseMessage performLogout()
 	{
-		RequestMessage reqMsg = new RequestMessage(ActionRequest.LOGIN);
-		reqMsg.send(outputStream);
+		new RequestMessage(ActionRequest.LOGOUT).send(outputStream);
 		return (ResponseMessage)Message.receive(inputStream);
 	}
 	
@@ -50,9 +51,31 @@ public class Protocol implements AutoCloseable
 		reqMsg.addEntity(user);
 		reqMsg.send(outputStream);
 		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && (resMsg.getEntitiesCount() != 1 || !(resMsg.getEntity() instanceof User)))
-			return new ResponseMessage("Invalid response from server.");
+		if (resMsg.isSuccess() && (resMsg.getEntityCount() != 1 || !(resMsg.getEntity() instanceof User)))
+			return getProtocolErrorMessage();
 		return resMsg;
+	}
+	
+	public ResponseMessage getOwnRestaurants()
+	{
+		new RequestMessage(ActionRequest.LIST_RESTAURANTS).send(outputStream);
+		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
+		if (resMsg.isSuccess() && resMsg.getEntityCount() > 0)
+			for (Entity entity: resMsg.getEntities())
+				if (!(entity instanceof Restaurant))
+					return getProtocolErrorMessage();
+		return resMsg;
+	}
+	
+	public ResponseMessage deleteRestaurant(Restaurant restaurant)
+	{
+		new RequestMessage(ActionRequest.DELETE_RESTAURANT, restaurant).send(outputStream);
+		return (ResponseMessage)Message.receive(inputStream);
+	}
+	
+	private ResponseMessage getProtocolErrorMessage()
+	{
+		return new ResponseMessage("Invalid response from server.");
 	}
 	
 	public void close() throws IOException
