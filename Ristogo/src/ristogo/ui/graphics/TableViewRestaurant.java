@@ -1,22 +1,29 @@
 package ristogo.ui.graphics;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
+
+import java.util.List;
+
+import javafx.collections.*;
+import javafx.event.*;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.*;
+import javafx.scene.input.*;
+import javafx.util.*;
 import ristogo.config.Configuration;
 import ristogo.ui.graphics.beans.RestaurantBean;
 
-public class TableViewRestaurant extends TableView<RestaurantBean>
-{
+
+
+public class TableViewRestaurant extends TableView<RestaurantBean> {
+	
 	final ObservableList<RestaurantBean> restaurantList;
 	private TableColumn<RestaurantBean, String> nameColumn;
 	private TableColumn<RestaurantBean, String> typeColumn;
 	private TableColumn<RestaurantBean, String> priceColumn;
 	private TableColumn<RestaurantBean, String> cityColumn;
 	private TableColumn<RestaurantBean, String> addressColumn;
-
+	 
+		 
 	@SuppressWarnings("unchecked")
 	public TableViewRestaurant()
 	{
@@ -28,7 +35,8 @@ public class TableViewRestaurant extends TableView<RestaurantBean>
 		String font = Configuration.getConfig().getFontName();
 		double dimC = Configuration.getConfig().getFontSize();
 		String textColor = Configuration.getConfig().getFgColorName();
-
+		    
+		    
 		nameColumn = new TableColumn<RestaurantBean, String>("Name");
 		nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 		nameColumn.setStyle(
@@ -68,6 +76,10 @@ public class TableViewRestaurant extends TableView<RestaurantBean>
 		getColumns().addAll(nameColumn, typeColumn, priceColumn, cityColumn, addressColumn);
 		restaurantList = FXCollections.observableArrayList();
 		setItems(restaurantList);
-
-	}
+		    
+		  }	
+	   public void listRestaurants(){
+		   
+	   }
+	  
 }
