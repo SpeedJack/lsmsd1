@@ -1,8 +1,6 @@
 package ristogo.ui.menus.forms;
 
 import java.util.LinkedHashSet;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import ristogo.common.entities.User;
 import ristogo.ui.Console;

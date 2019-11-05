@@ -1,20 +1,20 @@
 package ristogo.ui.graphics;
 
-import java.time.*;
-import java.util.*;
-import javafx.collections.*;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import ristogo.config.Configuration;
 import ristogo.ui.graphics.beans.ReservationBean;
 
 public class TableViewReservation extends TableView<ReservationBean> {
 	
 	 private final ObservableList<ReservationBean> reservationList;
-	 private TableColumn nameColumn;
-	 private TableColumn dateColumn;
-	 private TableColumn hourColumn;
-	 private TableColumn seatsColumn;
+	 private TableColumn<ReservationBean, String> nameColumn;
+	 private TableColumn<ReservationBean, String> dateColumn;
+	 private TableColumn<ReservationBean, String> hourColumn;
+	 private TableColumn<ReservationBean, String> seatsColumn;
 	 
 	 
 	 @SuppressWarnings("unchecked")

@@ -1,13 +1,16 @@
 package ristogo.ui.graphics;
 
-import java.time.*;
+import java.time.LocalDate;
 
 import javafx.event.ActionEvent;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.text.*;
-import ristogo.config.Configuration;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import ristogo.ui.graphics.config.GUIConfig;
 
 
@@ -65,7 +68,7 @@ public class BookForm extends VBox {
 			Label hour = new Label("Booking Time: ");
 			hour.setFont(GUIConfig.getImportantFont());
 			hour.setTextFill(GUIConfig.getFgColor());
-			hourField = new ChoiceBox();
+			hourField = new ChoiceBox<String>();
 			hourField.setMinSize(70, 25);
 			hourField.setMaxSize(70, 25);
 			
@@ -82,7 +85,7 @@ public class BookForm extends VBox {
 			Label seats = new Label("Seats: ");
 			seats.setFont(GUIConfig.getInputFont());
 			seats.setTextFill(GUIConfig.getFgColor());
-			seatsField = new ChoiceBox();
+			seatsField = new ChoiceBox<Integer>();
 			seatsField.setDisable(true);
 			
 			HBox seatsBox = new HBox(20);

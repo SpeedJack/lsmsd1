@@ -9,7 +9,6 @@ import ristogo.common.net.ResponseMessage;
 import ristogo.ui.Console;
 import ristogo.ui.menus.forms.LoginForm;
 import ristogo.ui.menus.forms.RegisterForm;
-import ristogo.ui.menus.forms.TextForm;
 
 public class LoginMenu extends Menu
 {

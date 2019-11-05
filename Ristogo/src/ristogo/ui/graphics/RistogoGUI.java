@@ -1,23 +1,20 @@
 package ristogo.ui.graphics;
 
-import java.util.*;
-
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.image.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.stage.*;
-import javafx.util.*;
-
-import ristogo.config.Configuration;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import ristogo.ui.graphics.config.GUIConfig;
 
 
@@ -45,10 +42,10 @@ public class RistogoGUI extends Application
 		    }
 		    else {
 		    	//effettuaLogin
-		    	//controlla se è un ristoratore o un cliente
-		    	//se è un cliente
+		    	//controlla se ï¿½ un ristoratore o un cliente
+		    	//se ï¿½ un cliente
 		    	buildCostumerInterface();
-		    	//se è un ristoratore
+		    	//se ï¿½ un ristoratore
 		    	buildRestaurantOwnerInterface();
 		    	
 		    }

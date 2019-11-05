@@ -1,14 +1,13 @@
 package ristogo.ui.graphics;
 
-import javafx.collections.*;
-
-import javafx.scene.control.*;
-
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.text.*;
-
-import ristogo.config.Configuration;
+import javafx.collections.FXCollections;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import ristogo.ui.graphics.config.GUIConfig;
 
 public class ModifyRestaurantForm extends VBox {
@@ -44,7 +43,7 @@ public class ModifyRestaurantForm extends VBox {
 		Label type = new Label("Type: ");
 		type.setFont(GUIConfig.getImportantFont());
 		type.setTextFill(GUIConfig.getFgColor());
-		typeField = new ChoiceBox();
+		typeField = new ChoiceBox<String>();
 		typeField.getItems().addAll("Pizza", "Chinese", "Mexican", "Italian", "SteakHouse");
 
 		HBox typeBox = new HBox(20);
@@ -55,7 +54,7 @@ public class ModifyRestaurantForm extends VBox {
 		cost.setFont(GUIConfig.getImportantFont());
 		cost.setTextFill(GUIConfig.getFgColor());
 
-		costField = new ChoiceBox();
+		costField = new ChoiceBox<Integer>();
 		costField.getItems().addAll(1, 2, 3, 4, 5);
 		
 		HBox costBox = new HBox(20);
@@ -97,7 +96,7 @@ public class ModifyRestaurantForm extends VBox {
 		hour.setFont(GUIConfig.getImportantFont());
 		hour.setTextFill(GUIConfig.getFgColor());
 
-		hourField = new ChoiceBox(FXCollections.observableArrayList("Lunch", "Dinner", "Lunch/Dinner"));
+		hourField = new ChoiceBox<String>(FXCollections.observableArrayList("Lunch", "Dinner", "Lunch/Dinner"));
 		//hourField.getItems().addAll("Lunch", "Dinner", "Lunch&Dinner");
 		
 		HBox hourBox = new HBox(20);
