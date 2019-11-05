@@ -75,9 +75,6 @@ public class RistogoGUI extends Application
 	
 	private void buildCostumerInterface() {
 		
-		String font = Configuration.getConfig().getFont();
-		int dimC = Configuration.getConfig().getDimCharacter();
-		String textColor = Configuration.getConfig().getTextColor();
 		
 		
 		GridPane title = generateTitle();
@@ -193,10 +190,6 @@ public class RistogoGUI extends Application
 	
 	private void buildRestaurantOwnerInterface() {
 		
-		String font = Configuration.getConfig().getFont();
-		int dimC = Configuration.getConfig().getDimCharacter();
-		String textColor = Configuration.getConfig().getTextColor();
-		String backgroundColor = Configuration.getConfig().getBackgroundColor();
 		
 		GridPane title = generateTitle();
 		ModifyRestaurantForm modifyForm = new ModifyRestaurantForm();
@@ -230,9 +223,6 @@ public class RistogoGUI extends Application
 	
 	private GridPane generateTitle() {
 		
-		String font = Configuration.getConfig().getFont();
-		int dimC = Configuration.getConfig().getDimCharacter();
-		String textColor = Configuration.getConfig().getTextColor();
 		
 		Label title = new Label("RistoGo");
 		title.setFont(Font.font(font, FontWeight.BOLD, dimC+7));

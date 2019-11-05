@@ -9,6 +9,7 @@ import javafx.scene.paint.*;
 import javafx.scene.text.*;
 
 import ristogo.config.Configuration;
+import ristogo.ui.graphics.config.GUIConfig;
 
 public class ModifyRestaurantForm extends VBox {
 	
@@ -26,28 +27,23 @@ public class ModifyRestaurantForm extends VBox {
 		
 		super(20);
 		
-		String font = Configuration.getConfig().getFont();
-		int dimC = Configuration.getConfig().getDimCharacter();
-		String textColor = Configuration.getConfig().getTextColor();
-		String backgroundColor = Configuration.getConfig().getBackgroundColor();
-		
 		Label title = new Label("Modify your Restaurant");
 		title.setStyle("-fx-underline: true;");
-		title.setFont(Font.font(font, FontWeight.BOLD, dimC+3));
-		title.setTextFill(Color.web(textColor));
+		title.setFont(GUIConfig.getFormTitleFont());
+		title.setTextFill(GUIConfig.getFgColor());
 
 		Label name = new Label("Name: ");
 		TextField nameField = new TextField();
-		name.setFont(Font.font(font, FontWeight.BOLD, dimC));
-		name.setTextFill(Color.web(textColor));
+		name.setFont(GUIConfig.getImportantFont());
+		name.setTextFill(GUIConfig.getFgColor());
 		
 		HBox nameBox = new HBox(20);
 		nameBox.getChildren().addAll(name,nameField);
  
 		    
 		Label type = new Label("Type: ");
-		type.setFont(Font.font(font, FontWeight.BOLD, dimC));
-		type.setTextFill(Color.web(textColor));
+		type.setFont(GUIConfig.getImportantFont());
+		type.setTextFill(GUIConfig.getFgColor());
 		typeField = new ChoiceBox();
 		typeField.getItems().addAll("Pizza", "Chinese", "Mexican", "Italian", "SteakHouse");
 
@@ -56,8 +52,8 @@ public class ModifyRestaurantForm extends VBox {
 
 		
 		Label cost = new Label("Cost:");
-		cost.setFont(Font.font(font, FontWeight.BOLD, dimC));
-		cost.setTextFill(Color.web(textColor));
+		cost.setFont(GUIConfig.getImportantFont());
+		cost.setTextFill(GUIConfig.getFgColor());
 
 		costField = new ChoiceBox();
 		costField.getItems().addAll(1, 2, 3, 4, 5);
@@ -67,39 +63,39 @@ public class ModifyRestaurantForm extends VBox {
 		
 		Label city = new Label("City: ");
 		cityField = new TextField();
-		city.setFont(Font.font(font, FontWeight.BOLD, dimC));
-		city.setTextFill(Color.web(textColor));
+		city.setFont(GUIConfig.getImportantFont());
+		city.setTextFill(GUIConfig.getFgColor());
 		
 		HBox cityBox = new HBox(20);
 		cityBox.getChildren().addAll(city,cityField);
 		
 		Label address = new Label("Address: ");
 		addressField = new TextField();
-		address.setFont(Font.font(font, FontWeight.BOLD, dimC));
-		address.setTextFill(Color.web(textColor));
+		address.setFont(GUIConfig.getImportantFont());
+		address.setTextFill(GUIConfig.getFgColor());
 		
 		HBox addressBox = new HBox(20);
 		addressBox.getChildren().addAll(address,addressField);
 		
 		Label desc = new Label("Description: ");
 		descField = new TextArea();
-		desc.setFont(Font.font(font, FontWeight.BOLD, dimC));
-		desc.setTextFill(Color.web(textColor));
+		desc.setFont(GUIConfig.getImportantFont());
+		desc.setTextFill(GUIConfig.getFgColor());
 		descField.setWrapText(true);
 		descField.setMinSize(480, 100);
 		descField.setMaxSize(480, 100);
 		
 		Label seats = new Label("Seats: ");
 		seatsField = new TextField();
-		seats.setFont(Font.font(font, FontWeight.BOLD, dimC));
-		seats.setTextFill(Color.web(textColor));
+		seats.setFont(GUIConfig.getImportantFont());
+		seats.setTextFill(GUIConfig.getFgColor());
 		
 		HBox seatsBox = new HBox(20);
 		seatsBox.getChildren().addAll(seats,seatsField);
 		
 		Label hour = new Label("Hour:");
-		hour.setFont(Font.font(font, FontWeight.BOLD, dimC));
-		hour.setTextFill(Color.web(textColor));
+		hour.setFont(GUIConfig.getImportantFont());
+		hour.setTextFill(GUIConfig.getFgColor());
 
 		hourField = new ChoiceBox(FXCollections.observableArrayList("Lunch", "Dinner", "Lunch/Dinner"));
 		//hourField.getItems().addAll("Lunch", "Dinner", "Lunch&Dinner");
@@ -109,16 +105,16 @@ public class ModifyRestaurantForm extends VBox {
 
 //////////////////error/////////////////////////////////////////////////////     
 		Label error = new Label();
-		error.setFont(Font.font(font, FontWeight.NORMAL, dimC+3));
-		error.setTextFill(Color.web(backgroundColor));
+		error.setFont(GUIConfig.getTextFont());
+		error.setTextFill(GUIConfig.getInvertedFgColor());
 		error.setStyle("-fx-background-color:   red;");
 		error.setVisible(false);
 ///////////////////////////////////////////////////////////////////////////////
     	
     	Button commit = new Button("Commit");
-    	commit.setFont(Font.font(font, FontWeight.BOLD, dimC+2));
-    	commit.setTextFill(Color.web(backgroundColor));
-    	commit.setStyle("-fx-base: " + textColor );
+    	commit.setFont(GUIConfig.getButtonFont());
+    	commit.setTextFill(GUIConfig.getInvertedFgColor());
+
     	
     	/*FILL FORM WITH RESTAURANT
     	try {
@@ -153,7 +149,7 @@ public class ModifyRestaurantForm extends VBox {
                 "-fx-border-width: 2;" +
                 "-fx-border-insets: 3;" + 
                 "-fx-border-radius: 10;" + 
-                "-fx-border-color: "+ textColor +";");
+                "-fx-border-color: "+ "D9561D" +";");
 		
 
 		this.getChildren().addAll(boxModify);
