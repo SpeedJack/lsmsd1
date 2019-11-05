@@ -84,6 +84,21 @@ public class GUIConfig
 		return Font.font(config.getFontName(), FontWeight.NORMAL, getInputFontSize());
 	}
 	
+	public static Font getButtonFont()
+	{
+		return Font.font(config.getFontName(), FontWeight.NORMAL, getButtonFontSize());
+	}
+	
+	public static Font getFormTitleFont()
+	{
+		return getTextFont();
+	}
+	
+	public static Font getFormSubtitleFont()
+	{
+		return getInputFont();
+	}
+	
 	public static Color getFgColor()
 	{
 		return Color.web(config.getFgColorName());
