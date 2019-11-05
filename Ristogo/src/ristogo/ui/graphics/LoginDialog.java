@@ -20,32 +20,30 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import ristogo.config.Configuration;
+import ristogo.ui.graphics.config.GUIConfig;
 
-public class LoginDialog extends Dialog<Pair<String, String>>  {
-	
-	
-	public LoginDialog() {
-		
-		Stage stage = (Stage) getDialogPane().getScene().getWindow();
+public class LoginDialog extends Dialog<Pair<String, String>>
+{
+	public LoginDialog()
+	{
+		Configuration config = Configuration.getConfig();
+		DialogPane dialogPane = getDialogPane();
+		Stage stage = (Stage)dialogPane.getScene().getWindow();
 		stage.getIcons().add(new Image(this.getClass().getResource("/resources/logo.png").toString()));
 		
-		DialogPane dialogPane = getDialogPane();
-		dialogPane.setStyle("-fx-background-color: "+ Configuration.getConfig().getTextColor()+" ;");
+		dialogPane.setStyle(GUIConfig.getCSSBgColor());
 		
 		setTitle("RistoGo - Login");
-		setHeaderText("Welcome to Ristogo!\n "
-				+ "The application that allows you to book tables\n "
-				+ "at your favorite restaurants!");
+		setHeaderText("Welcome to Ristogo!\n" +
+			"The application that allows you to book tables\n" +
+			"at your favorite restaurants!");
 		
 		dialogPane.getStyleClass().remove("alert");
 
-	    GridPane header = (GridPane)dialogPane.lookup(".header-panel"); 
-	    header.setStyle("-fx-background-color: "+Configuration.getConfig().getTextColor()+" ; "
-	            + "-fx-font-family: "+Configuration.getConfig().getFont()+" ;"
-	            + "-fx-wrap-text: true ;"
-	            + "-fx-text-fill: "+Configuration.getConfig().getBackgroundColor()+" ;");
-	    
-	    header.lookup(".label").setStyle("-fx-text-fill: "+Configuration.getConfig().getBackgroundColor()+" ;");
+		GridPane header = (GridPane)dialogPane.lookup(".header-panel");
+		header.setStyle(GUIConfig.getCSSDialogHeaderStyle());
+
+		header.lookup(".label").setStyle("-fx-text-fill: " + config.getBackgroundColor() + ";");
 		
 		ImageView img = new ImageView(this.getClass().getResource("/resources/whiteLogo.png").toString());
 		img.setFitHeight(50);
@@ -54,14 +52,11 @@ public class LoginDialog extends Dialog<Pair<String, String>>  {
 		
 		ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
 		ButtonType registerButtonType = new ButtonType("Register", ButtonData.OK_DONE);
-		getDialogPane().getButtonTypes().addAll(loginButtonType, registerButtonType, ButtonType.CANCEL);
+		dialogPane.getButtonTypes().addAll(loginButtonType, registerButtonType, ButtonType.CANCEL);
 		
-		ButtonBar buttonBar = (ButtonBar)this.getDialogPane().lookup(".button-bar");
-	    buttonBar.getButtons().forEach(b->b.setStyle("-fx-font-family: "+Configuration.getConfig().getFont()+";"
-	    										+"-fx-background-color: "+Configuration.getConfig().getBackgroundColor() +" ;"
-	    										+"-fx-text-fill: "+Configuration.getConfig().getTextColor() +" ;"
-	    										+"-fx-font-size: "+(Configuration.getConfig().getDimCharacter() +2)+"px ;"));
-	  
+		ButtonBar buttonBar = (ButtonBar)dialogPane.lookup(".button-bar");
+		buttonBar.getButtons().forEach(b -> b.setStyle(GUIConfig.getCSSButtonStyle()));
+	
 		
 		Label l1 = new Label("Name: ");
 		TextField username = new TextField();
@@ -70,14 +65,14 @@ public class LoginDialog extends Dialog<Pair<String, String>>  {
 		PasswordField password = new PasswordField();
 		password.setPromptText("Password");
 		
-		l1.setFont(Font.font(Configuration.getConfig().getFont(), FontWeight.NORMAL, Configuration.getConfig().getDimCharacter()+3));
-		l1.setTextFill(Color.web(Configuration.getConfig().getBackgroundColor()));
-		username.setFont(Font.font(Configuration.getConfig().getFont(), Configuration.getConfig().getDimCharacter()));
+		l1.setFont(GUIConfig.getTextFont());
+		l1.setTextFill(GUIConfig.getFgColor());
+		username.setFont(GUIConfig.getInputFont());
 		username.setMaxWidth(200);
 		
-		l2.setFont(Font.font(Configuration.getConfig().getFont(), FontWeight.NORMAL, Configuration.getConfig().getDimCharacter()+3));
-		l2.setTextFill(Color.web(Configuration.getConfig().getBackgroundColor()));
-		password.setFont(Font.font(Configuration.getConfig().getFont(), Configuration.getConfig().getDimCharacter()));
+		l2.setFont(GUIConfig.getTextFont());
+		l2.setTextFill(GUIConfig.getFgColor());
+		password.setFont(GUIConfig.getInputFont());
 		password.setMaxWidth(200);
 		
 		GridPane grid = new GridPane();
@@ -96,20 +91,17 @@ public class LoginDialog extends Dialog<Pair<String, String>>  {
 		loginButton.setDisable(true);
 
 		username.textProperty().addListener((observable, oldValue, newValue) -> {
-		    	loginButton.setDisable(newValue.trim().isEmpty());
+			loginButton.setDisable(newValue.trim().isEmpty());
 		});
 
 		Platform.runLater(() -> username.requestFocus());
 
 		setResultConverter(dialogButton -> {
-		    if (dialogButton == loginButtonType) {
-		        return new Pair<>(username.getText(), password.getText());
-		    }
-		    else if(dialogButton == registerButtonType) {
-		    	return new Pair<>("register","");
-		    }
-		    return null;
+			if (dialogButton == loginButtonType)
+				return new Pair<String, String>(username.getText(), password.getText());
+			else if(dialogButton == registerButtonType)
+				return new Pair<String, String>("register","");
+			return null;
 		});
-		
 	}
 }

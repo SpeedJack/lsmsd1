@@ -17,9 +17,9 @@ public class Configuration
 	{
 		serverIp = "127.0.0.1";
 		serverPort = 8888;
-		forceCli = true;
+		forceCli = false;
 		font = "Open Sans";
-		dimCharacter = 12;
+		dimCharacter = 15;
 		backgroundColor = "FFFFFF";
 		textColor = "D9561D";
 		numberRowsDisplayable = 7;
@@ -47,20 +47,28 @@ public class Configuration
 		return forceCli;
 	}
 	
-	 public String getFont () {
-		    return font;
-	 }
-	 
-	 public double getDimCharacter () {
-		    return dimCharacter;
-	 }
-	 public String getBackgroundColor () {
-		    return backgroundColor;
-	 }
-	 public int getnumberRowsDisplayable () {
-		    return numberRowsDisplayable;
-	 }
-	 public String getTextColor () {
-		    return textColor;
-	 }
+	public String getFont()
+	{
+		return font;
+	}
+
+	public double getDimCharacter()
+	{
+		return dimCharacter;
+	}
+
+	public String getBackgroundColor()
+	{
+		return backgroundColor;
+	}
+
+	public int getnumberRowsDisplayable()
+	{
+		return numberRowsDisplayable;
+	}
+
+	public String getTextColor()
+	{
+		return textColor;
+	}
 }
