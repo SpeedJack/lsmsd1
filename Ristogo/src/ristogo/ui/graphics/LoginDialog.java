@@ -43,7 +43,7 @@ public class LoginDialog extends Dialog<Pair<String, String>>
 		GridPane header = (GridPane)dialogPane.lookup(".header-panel");
 		header.setStyle(GUIConfig.getCSSDialogHeaderStyle());
 
-		header.lookup(".label").setStyle("-fx-text-fill: " + config.getBackgroundColor() + ";");
+		header.lookup(".label").setStyle("-fx-text-fill: " + config.getBgColorName() + ";");
 		
 		ImageView img = new ImageView(this.getClass().getResource("/resources/whiteLogo.png").toString());
 		img.setFitHeight(50);

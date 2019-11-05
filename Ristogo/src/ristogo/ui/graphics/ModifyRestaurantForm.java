@@ -26,10 +26,10 @@ public class ModifyRestaurantForm extends VBox {
 		
 		super(20);
 		
-		String font = Configuration.getConfig().getFont();
-		double dimC = Configuration.getConfig().getDimCharacter();
-		String textColor = Configuration.getConfig().getTextColor();
-		String backgroundColor = Configuration.getConfig().getBackgroundColor();
+		String font = Configuration.getConfig().getFontName();
+		double dimC = Configuration.getConfig().getFontSize();
+		String textColor = Configuration.getConfig().getFgColorName();
+		String backgroundColor = Configuration.getConfig().getBgColorName();
 		
 		Label title = new Label("Modify your Restaurant");
 		title.setStyle("-fx-underline: true;");

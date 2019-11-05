@@ -11,27 +11,27 @@ public class GUIConfig
 	
 	public static double getFontSizeTiny()
 	{
-		return config.getDimCharacter() - 3;
+		return config.getFontSize() - 3;
 	}
 	
 	public static double getFontSizeSmall()
 	{
-		return config.getDimCharacter() - 1;
+		return config.getFontSize() - 1;
 	}
 	
 	public static double getFontSizeNormal()
 	{
-		return config.getDimCharacter();
+		return config.getFontSize();
 	}
 	
 	public static double getFontSizeLarge()
 	{
-		return config.getDimCharacter() + 4;
+		return config.getFontSize() + 4;
 	}
 	
 	public static double getFontSizeHuge()
 	{
-		return config.getDimCharacter() + 7;
+		return config.getFontSize() + 7;
 	}
 	
 	public static double getTitleFontSize()
@@ -61,37 +61,37 @@ public class GUIConfig
 	
 	public static Font getTitleFont()
 	{
-		return Font.font(config.getFont(), FontWeight.BOLD, getTitleFontSize());
+		return Font.font(config.getFontName(), FontWeight.BOLD, getTitleFontSize());
 	}
 	
 	public static Font getSubtitleFont()
 	{
-		return Font.font(config.getFont(), FontWeight.NORMAL, getSubtitleFontSize());
+		return Font.font(config.getFontName(), FontWeight.NORMAL, getSubtitleFontSize());
 	}
 	
 	public static Font getImportantFont()
 	{
-		return Font.font(config.getFont(), FontWeight.BOLD, getSubtitleFontSize());
+		return Font.font(config.getFontName(), FontWeight.BOLD, getSubtitleFontSize());
 	}
 	
 	public static Font getTextFont()
 	{
-		return Font.font(config.getFont(), FontWeight.NORMAL, getTextFontSize());
+		return Font.font(config.getFontName(), FontWeight.NORMAL, getTextFontSize());
 	}
 	
 	public static Font getInputFont()
 	{
-		return Font.font(config.getFont(), FontWeight.NORMAL, getInputFontSize());
+		return Font.font(config.getFontName(), FontWeight.NORMAL, getInputFontSize());
 	}
 	
 	public static Color getFgColor()
 	{
-		return Color.web(config.getTextColor());
+		return Color.web(config.getFgColorName());
 	}
 	
 	public static Color getBgColor()
 	{
-		return Color.web(config.getBackgroundColor());
+		return Color.web(config.getBgColorName());
 	}
 	
 	public static Color getInvertedFgColor()
@@ -106,27 +106,27 @@ public class GUIConfig
 	
 	public static String getCSSBgColor()
 	{
-		return "-fx-background-color: " + config.getBackgroundColor() + ";";
+		return "-fx-background-color: " + config.getBgColorName() + ";";
 	}
 	
 	public static String getCSSFgColor()
 	{
-		return "-fx-text-fill: " + config.getTextColor() + ";";
+		return "-fx-text-fill: " + config.getFgColorName() + ";";
 	}
 	
 	public static String getInvertedCSSBgColor()
 	{
-		return "-fx-background-color: " + config.getTextColor() + ";";
+		return "-fx-background-color: " + config.getFgColorName() + ";";
 	}
 	
 	public static String getInvertedCSSFgColor()
 	{
-		return "-fx-text-fill: " + config.getBackgroundColor() + ";";
+		return "-fx-text-fill: " + config.getBgColorName() + ";";
 	}
 	
 	public static String getCSSFontFamily()
 	{
-		return "-fx-font-family: " + config.getFont() + ";";
+		return "-fx-font-family: " + config.getFontName() + ";";
 	}
 	
 	public static String getCSSFontSizeTiny()

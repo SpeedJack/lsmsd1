@@ -25,9 +25,9 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
 		    setMaxHeight(Configuration.getConfig().getnumberRowsDisplayable()*getFixedCellSize());
 		    setMinWidth(600);
 		    setMaxWidth(600);
-			String font = Configuration.getConfig().getFont();
-			double dimC = Configuration.getConfig().getDimCharacter();
-			String textColor = Configuration.getConfig().getTextColor();
+			String font = Configuration.getConfig().getFontName();
+			double dimC = Configuration.getConfig().getFontSize();
+			String textColor = Configuration.getConfig().getFgColorName();
 		    
 		    
 		    nameColumn = new TableColumn("Name");

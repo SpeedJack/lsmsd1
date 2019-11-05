@@ -18,9 +18,9 @@ public class TableViewReservation extends TableView<ReservationBean> {
 	 
 	  public TableViewReservation (boolean isCustomer) {
 		  
-		  	String font = Configuration.getConfig().getFont();
-			double dimC = Configuration.getConfig().getDimCharacter();
-			String textColor = Configuration.getConfig().getTextColor();
+		  	String font = Configuration.getConfig().getFontName();
+			double dimC = Configuration.getConfig().getFontSize();
+			String textColor = Configuration.getConfig().getFgColorName();
 		  
 		    setEditable(false);
 		    setFixedCellSize(35);
