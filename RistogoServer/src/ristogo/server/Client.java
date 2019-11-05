@@ -76,9 +76,9 @@ public class Client extends Thread
 		case LIST_RESTAURANTS:
 			handleListRestaurantsRequest(reqMsg);
 			break;
-		case DELETE_RESTAURANT:
+		/*case DELETE_RESTAURANT:
 			handleDeleteRestaurantRequest(reqMsg);
-			break;
+			break;*/
 		default:
 			new ResponseMessage("Invalid request.").send(outputStream);
 		}
@@ -145,7 +145,7 @@ public class Client extends Thread
 		resMsg.send(outputStream);
 	}
 	
-	private void handleDeleteRestaurantRequest(RequestMessage reqMsg)
+	/*private void handleDeleteRestaurantRequest(RequestMessage reqMsg)
 	{
 		if (loggedUser == null) {
 			new ResponseMessage("You must be logged in to perform this action.").send(outputStream);
@@ -162,5 +162,5 @@ public class Client extends Thread
 		}
 		restaurantManager.delete(restaurant.getId());
 		new ResponseMessage().send(outputStream);
-	}
+	}*/
 }

@@ -13,7 +13,8 @@ public class Console
 	public static String askString(String prompt)
 	{
 		printPrompt(prompt);
-		return scanner.nextLine();
+		String str = scanner.nextLine();
+		return str.isBlank() ? null : str;
 	}
 	
 	public static String askPassword(String prompt)

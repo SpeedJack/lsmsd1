@@ -21,13 +21,18 @@ public class RestaurantMenu extends Menu
 	protected SortedSet<MenuEntry> getMenu()
 	{
 		SortedSet<MenuEntry> menu = new TreeSet<>();
-		menu.add(new MenuEntry(1, "Edit restaurant", true));
-		menu.add(new MenuEntry(2, "Delete restaurant", this::handleDeleteRestaurant, true));
+		menu.add(new MenuEntry(1, "Edit restaurant", true, this::handleEditRestaurant, true));
+		//menu.add(new MenuEntry(2, "Delete restaurant", this::handleDeleteRestaurant, true));
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
+	
+	private void handleEditRestaurant(MenuEntry entry)
+	{
+		
+	}
 
-	private void handleDeleteRestaurant(MenuEntry entry)
+	/*private void handleDeleteRestaurant(MenuEntry entry)
 	{
 		boolean confirm = Console.askConfirm();
 		if (confirm) {
@@ -37,5 +42,5 @@ public class RestaurantMenu extends Menu
 			else
 				Console.println(resMsg.getErrorMsg());
 		}
-	}
+	}*/
 }

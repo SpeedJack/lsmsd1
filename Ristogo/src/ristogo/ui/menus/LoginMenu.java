@@ -1,11 +1,15 @@
 package ristogo.ui.menus;
 
+import java.util.Hashtable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import ristogo.common.entities.User;
 import ristogo.common.net.ResponseMessage;
 import ristogo.ui.Console;
+import ristogo.ui.menus.forms.LoginForm;
+import ristogo.ui.menus.forms.RegisterForm;
+import ristogo.ui.menus.forms.TextForm;
 
 public class LoginMenu extends Menu
 {
@@ -21,13 +25,26 @@ public class LoginMenu extends Menu
 	
 	private void handleLogIn(MenuEntry entry)
 	{
-		Console.println("Please, log in:");
-		doLogin(Console.askString("USERNAME"), Console.askPassword("PASSWORD"));
+		LoginForm form = new LoginForm();
+		form.show();
+		Hashtable<Integer, String> response = form.getFields();
+		doLogin(response.get(0), response.get(1));
 	}
 	
 	private void handleRegister(MenuEntry entry)
 	{
-		Console.println("Create an account:");
+		RegisterForm form = new RegisterForm();
+		form.show();
+		Hashtable<Integer, String> response = form.getFields();
+		ResponseMessage resMsg = protocol.registerUser(response.get(0), response.get(1));
+		if (!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			return;
+		}
+		Console.println("USER " + ((User)resMsg.getEntity()).getUsername() + " SUCCESSFULLY CREATED!");
+		Console.newLine();
+		doLogin(response.get(0), response.get(1));
+		/*Console.println("Create an account:");
 		Console.newLine();
 		String username = Console.askString("USERNAME");
 		String password = Console.askPassword("PASSWORD");
@@ -43,7 +60,7 @@ public class LoginMenu extends Menu
 		}
 		Console.println("USER " + ((User)resMsg.getEntity()).getUsername() + " SUCCESSFULLY CREATED!");
 		Console.newLine();
-		doLogin(username, password);
+		doLogin(username, password);*/
 	}
 	
 	private void doLogin(String username, String password)

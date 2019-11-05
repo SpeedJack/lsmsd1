@@ -76,6 +76,11 @@ public class User extends Entity
 		return password.length() > 7;
 	}
 	
+	public static boolean validateUsername(String username)
+	{
+		return username.matches("^[A-Za-z0-9]{3,32}$");
+	}
+	
 	public void setUsername(String username)
 	{
 		this.username = username;
