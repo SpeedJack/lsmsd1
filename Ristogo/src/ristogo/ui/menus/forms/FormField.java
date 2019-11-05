@@ -29,12 +29,12 @@ public class FormField
 	
 	public FormField(String name, Predicate<String> validator)
 	{
-		this(name, false, null);
+		this(name, false, validator);
 	}
 	
 	public FormField(String name, boolean inputHidden, Predicate<String> validator)
 	{
-		this(name, inputHidden, null, null);
+		this(name, inputHidden, null, validator);
 	}
 	
 	public FormField(String name, String defaultValue, Predicate<String> validator)

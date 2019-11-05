@@ -44,23 +44,6 @@ public class LoginMenu extends Menu
 		Console.println("USER " + ((User)resMsg.getEntity()).getUsername() + " SUCCESSFULLY CREATED!");
 		Console.newLine();
 		doLogin(response.get(0), response.get(1));
-		/*Console.println("Create an account:");
-		Console.newLine();
-		String username = Console.askString("USERNAME");
-		String password = Console.askPassword("PASSWORD");
-		String passwordConfirm = Console.askPassword("CONFIRM PASSWORD");
-		if (!password.equals(passwordConfirm)) {
-			Console.println("Passwords do not match!");
-			return;
-		}
-		ResponseMessage resMsg = protocol.registerUser(username, password);
-		if (!resMsg.isSuccess()) {
-			Console.println(resMsg.getErrorMsg());
-			return;
-		}
-		Console.println("USER " + ((User)resMsg.getEntity()).getUsername() + " SUCCESSFULLY CREATED!");
-		Console.newLine();
-		doLogin(username, password);*/
 	}
 	
 	private void doLogin(String username, String password)
