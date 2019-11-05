@@ -1,12 +1,15 @@
 package ristogo.ui.graphics;
 
-import java.time.*;
+import java.time.LocalDate;
 
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.scene.text.*;
-import ristogo.config.Configuration;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import ristogo.ui.graphics.config.GUIConfig;
 
 public class BookForm extends VBox
