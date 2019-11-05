@@ -18,6 +18,7 @@ import javafx.stage.*;
 import javafx.util.*;
 
 import ristogo.config.Configuration;
+import ristogo.ui.graphics.config.GUIConfig;
 
 
 
@@ -31,7 +32,7 @@ public class RistogoGUI extends Application
 	{
 		applicationInterface = new HBox(10);
 		
-		LoginDialog login = new LoginDialog();
+		/*LoginDialog login = new LoginDialog();
 		RegisterDialog register = new RegisterDialog();
 		
 		Optional<Pair<String, String>> resultLogin = login.showAndWait();
@@ -53,8 +54,11 @@ public class RistogoGUI extends Application
 		    }
 		});
 		
+		*/
+		buildCostumerInterface();
+		
 	  Scene scene = new Scene(new Group(applicationInterface));
-	  scene.setFill(Color.web(Configuration.getConfig().getTextColor()));
+	  scene.setFill(GUIConfig.getBgColor());
 	  
 	  stage.setOnCloseRequest((WindowEvent ev) -> {
 									//logout
@@ -81,8 +85,8 @@ public class RistogoGUI extends Application
 		BookForm bookForm = new BookForm();
 	
 		Label subTitle = new Label("List of Restaurant");
-		subTitle.setFont(Font.font(font, FontWeight.BOLD, dimC+2));
-		subTitle.setTextFill(Color.web(textColor));
+		subTitle.setFont(GUIConfig.getFormTitleFont());
+		subTitle.setTextFill(GUIConfig.getFgColor());
 		subTitle.setStyle("-fx-underline: true;");
 		
 		TableViewRestaurant restaurant = new TableViewRestaurant();
@@ -90,8 +94,8 @@ public class RistogoGUI extends Application
 		
 	    Label description = new Label("Description: ");
 		TextArea descriptionField = new TextArea();
-		description.setFont(Font.font(font, FontWeight.BOLD, dimC-2));
-		description.setTextFill(Color.web(textColor));
+		description.setFont(GUIConfig.getFormTitleFont());
+		description.setTextFill(GUIConfig.getFgColor());
 		descriptionField.setWrapText(true);
 		descriptionField.setEditable(false);
 		descriptionField.setMinSize(480, 100);
@@ -121,8 +125,8 @@ public class RistogoGUI extends Application
 		descriptionBox.getChildren().addAll(description,descriptionField);
 		
 		Label subTitle2 = new Label("My Reservation");
-		subTitle2.setFont(Font.font(font, FontWeight.BOLD, dimC+2));
-		subTitle2.setTextFill(Color.web(textColor));
+		subTitle2.setFont(GUIConfig.getFormTitleFont());
+		subTitle2.setTextFill(GUIConfig.getFgColor());
 		subTitle2.setStyle("-fx-underline: true;");
 		
 	    TableViewReservation reservation = new TableViewReservation(true);
@@ -132,7 +136,7 @@ public class RistogoGUI extends Application
 	    							bookForm.getDelRes().setDisable(false);
 	    							});
 	   
-
+/*
 	    bookForm.getBook().setOnAction((ActionEvent ev) -> {
 			try {
 				String n = bookForm.getNameField().getText();
@@ -178,7 +182,7 @@ public class RistogoGUI extends Application
 				bookForm.getDelRes().setDisable(true);
 			}
 		});
-
+*/
 	    
 		VBox leftPart = new VBox(10);
 		leftPart.getChildren().addAll(title,bookForm);
@@ -195,8 +199,8 @@ public class RistogoGUI extends Application
 		ModifyRestaurantForm modifyForm = new ModifyRestaurantForm();
 		
 		Label subTitle = new Label("List of Reservations at your restaurant");
-		subTitle.setFont(Font.font(font, FontWeight.BOLD, dimC+1));
-		subTitle.setTextFill(Color.web(textColor));
+		subTitle.setFont(GUIConfig.getSubtitleFont());
+		subTitle.setTextFill(GUIConfig.getFgColor());
 		subTitle.setStyle("-fx-underline: true;");
 		
 		
@@ -204,9 +208,8 @@ public class RistogoGUI extends Application
 	    reservation.listReservations(false);
 	    
 	   	Button refresh = new Button("Refresh");
-	   	refresh.setFont(Font.font(font, FontWeight.BOLD, dimC+2));
-	   	refresh.setTextFill(Color.web(backgroundColor));
-	   	refresh.setStyle("-fx-base: " + textColor );
+	   	refresh.setFont(GUIConfig.getButtonFont());
+	   	refresh.setTextFill(GUIConfig.getInvertedFgColor());
 	   
 	   	refresh.setOnAction((ActionEvent ev) -> {
 	   											reservation.listReservations(false);
@@ -225,20 +228,20 @@ public class RistogoGUI extends Application
 		
 		
 		Label title = new Label("RistoGo");
-		title.setFont(Font.font(font, FontWeight.BOLD, dimC+7));
-		title.setTextFill(Color.web(textColor)); 
+		title.setFont(GUIConfig.getTitleFont());
+		title.setTextFill(GUIConfig.getFgColor()); 
 		
 		ImageView icon = new ImageView("resources/logo.png");
 		icon.setFitHeight(30);
 		icon.setFitWidth(30);
 		
 		Label title2 = new Label("Welcome ");
-		title2.setFont(Font.font(font, FontWeight.NORMAL, dimC+4));
-		title2.setTextFill(Color.web(textColor));
+		title2.setFont(GUIConfig.getFormTitleFont());
+		title2.setTextFill(GUIConfig.getFgColor());
 		
 		Label nameUser = new Label("AAAAAAAAAAAAAAAAAAAAAAAA");
-		nameUser.setFont(Font.font(font, FontWeight.BOLD, dimC+4));
-		nameUser.setTextFill(Color.web(textColor));
+		nameUser.setFont(GUIConfig.getFormTitleFont());
+		nameUser.setTextFill(GUIConfig.getFgColor());
 		
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
