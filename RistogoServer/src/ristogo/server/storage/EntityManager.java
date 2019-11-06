@@ -11,14 +11,12 @@ public class EntityManager implements AutoCloseable
 	private static final EntityManagerFactory factory;
 	private static final ThreadLocal<javax.persistence.EntityManager> threadLocal;
 	
-	protected javax.persistence.EntityManager em;
-	
 	static {
 		factory = Persistence.createEntityManagerFactory("ristogo");
 		threadLocal = new ThreadLocal<javax.persistence.EntityManager>();
 	}
 	
-	private static javax.persistence.EntityManager getEM()
+	protected static javax.persistence.EntityManager getEM()
 	{
 		javax.persistence.EntityManager entityManager = threadLocal.get();
 		if (entityManager == null) {
@@ -29,14 +27,9 @@ public class EntityManager implements AutoCloseable
 		return entityManager;
 	}
 	
-	public EntityManager()
-	{
-		em = getEM();
-	}
-	
 	public void close()
 	{
-		em.close();
+		getEM().close();
 		threadLocal.set(null);
 	}
 	
@@ -47,6 +40,7 @@ public class EntityManager implements AutoCloseable
 	
 	public void insert(Entity entity)
 	{
+		javax.persistence.EntityManager em = getEM();
 		em.getTransaction().begin();
 		em.persist(entity);
 		em.getTransaction().commit();
@@ -54,11 +48,12 @@ public class EntityManager implements AutoCloseable
 	
 	public Entity get(Class<? extends Entity> entityClass, int entityId)
 	{
-		return (Entity)em.find(entityClass, entityId);
+		return (Entity)getEM().find(entityClass, entityId);
 	}
 	
 	public void update(Entity entity)
 	{
+		javax.persistence.EntityManager em = getEM();
 		em.getTransaction().begin();
 		em.merge(entity);
 		em.getTransaction().commit();
@@ -66,6 +61,7 @@ public class EntityManager implements AutoCloseable
 	
 	public void delete(Class<? extends Entity> entityClass, int entityId)
 	{
+		javax.persistence.EntityManager em = getEM();
 		em.getTransaction().begin();
 		Entity entity = (Entity)em.getReference(entityClass, entityId);
 		em.remove(entity);

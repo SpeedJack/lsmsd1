@@ -13,6 +13,7 @@ public class UserManager extends EntityManager
 {
 	public User getUserByUsername(String username)
 	{
+		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(User.class);
 		Root<User> from = cq.from(User.class);

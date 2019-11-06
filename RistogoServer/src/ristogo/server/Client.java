@@ -46,6 +46,7 @@ public class Client extends Thread
 		while (!Thread.currentThread().isInterrupted())
 			process();
 		userManager.close();
+		restaurantManager.close();
 		try {
 			inputStream.close();
 			outputStream.close();
