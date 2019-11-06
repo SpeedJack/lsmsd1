@@ -52,7 +52,7 @@ public class FormField
 	
 	public String getValue()
 	{
-		if (value == null)
+		if (value == null || value.isBlank())
 			return defaultValue;
 		return value;
 	}
