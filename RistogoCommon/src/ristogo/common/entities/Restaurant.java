@@ -14,7 +14,7 @@ public class Restaurant extends Entity
 {
 	private static final long serialVersionUID = -2839130753004235292L;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="ownerId")
 	private User owner;
 	
@@ -119,5 +119,22 @@ public class Restaurant extends Entity
 	public void setOpeningHours(OpeningHours openingHours)
 	{
 		this.openingHours = openingHours;
+	}
+	
+	public boolean isOwner(User user)
+	{
+		return owner.getId() == user.getId();
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "Name: " + getName() + "\n" +
+			"Genre: " + getGenre() + "\n" +
+			"Price: " + getPrice().toString() + "\n" +
+			"City: " + getCity() + "\n" +
+			"Address: " + getAddress() + "\n" +
+			"Description: " + getDescription() + "\n" +
+			"Opening hours: " + getOpeningHours().toString() + "\n";
 	}
 }

@@ -82,8 +82,13 @@ public class MenuEntry implements Comparable<MenuEntry>
 	@Override
 	public int compareTo(MenuEntry me)
 	{
-		if (exit ^ me.exit)
+		if (key == 0)
+			return Integer.MAX_VALUE;
+		if (me.key == 0)
+			return Integer.MIN_VALUE;
+		int diff = key - me.key;
+		if (diff == 0 && (exit ^ me.exit))
 			return exit ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-		return key - me.key;
+		return diff;
 	}
 }
