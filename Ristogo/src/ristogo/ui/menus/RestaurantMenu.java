@@ -1,9 +1,15 @@
 package ristogo.ui.menus;
 
+import java.util.Hashtable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import ristogo.common.entities.OpeningHours;
+import ristogo.common.entities.Price;
 import ristogo.common.entities.Restaurant;
+import ristogo.common.net.ResponseMessage;
+import ristogo.ui.Console;
+import ristogo.ui.menus.forms.RestaurantForm;
 
 public class RestaurantMenu extends Menu
 {
@@ -27,7 +33,20 @@ public class RestaurantMenu extends Menu
 	
 	private void handleEditRestaurant(MenuEntry entry)
 	{
-		
+		Hashtable<Integer, String> response = new RestaurantForm(restaurant).show();
+		restaurant.setName(response.get(0));
+		restaurant.setGenre(response.get(1));
+		restaurant.setPrice(Price.valueOf(response.get(2)));
+		restaurant.setCity(response.get(3));
+		restaurant.setAddress(response.get(4));
+		restaurant.setDescription(response.get(5));
+		restaurant.setOpeningHours(OpeningHours.valueOf(response.get(6)));
+		ResponseMessage resMsg = protocol.editRestaurant(restaurant);
+		if (resMsg.isSuccess())
+			Console.println("Restaurant successfully saved!");
+		else
+			Console.println(resMsg.getErrorMsg());
+		Console.newLine();
 	}
 
 	/*private void handleDeleteRestaurant(MenuEntry entry)

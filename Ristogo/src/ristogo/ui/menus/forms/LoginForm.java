@@ -3,6 +3,7 @@ package ristogo.ui.menus.forms;
 import java.util.LinkedHashSet;
 
 import ristogo.common.entities.User;
+import ristogo.ui.Console;
 
 public class LoginForm extends TextForm
 {
@@ -15,19 +16,27 @@ public class LoginForm extends TextForm
 	protected LinkedHashSet<FormField> createFields()
 	{
 		LinkedHashSet<FormField> fields = new LinkedHashSet<FormField>();
-		fields.add(new FormField("USERNAME", this::usernameValidator));
-		fields.add(new FormField("PASSWORD", true, this::passwordValidator));
+		fields.add(new FormField("USERNAME", this::validateUsername));
+		fields.add(new FormField("PASSWORD", true, this::validatePassword));
 		return fields;
 	}
 	
-	private boolean usernameValidator(String username)
+	private boolean validateUsername(String username)
 	{
-		return User.validateUsername(username);
+		if (!User.validateUsername(username)) {
+			Console.println("Invalid username.");
+			return false;
+		}
+		return true;
 	}
 	
-	private boolean passwordValidator(String password)
+	private boolean validatePassword(String password)
 	{
-		return User.validatePassword(password);
+		if (!User.validatePassword(password)) {
+			Console.println("Invalid password.");
+			return false;
+		}
+		return true;
 	}
 
 }

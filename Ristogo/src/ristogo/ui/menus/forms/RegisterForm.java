@@ -16,20 +16,26 @@ public class RegisterForm extends TextForm
 	protected LinkedHashSet<FormField> createFields()
 	{
 		LinkedHashSet<FormField> fields = new LinkedHashSet<FormField>();
-		fields.add(new FormField("USERNAME", this::usernameValidator));
-		fields.add(new FormField("PASSWORD", true, this::passwordValidator));
+		fields.add(new FormField("USERNAME", this::validateUsername));
+		fields.add(new FormField("PASSWORD", true, this::validatePassword));
 		return fields;
 	}
 	
-	private boolean usernameValidator(String username)
+	private boolean validateUsername(String username)
 	{
-		return User.validateUsername(username);
+		if (!User.validateUsername(username)) {
+			Console.println("Invalid username.");
+			return false;
+		}
+		return true;
 	}
 	
-	private boolean passwordValidator(String password)
+	private boolean validatePassword(String password)
 	{
-		if (!User.validatePassword(password))
+		if (!User.validatePassword(password)) {
+			Console.println("Invalid password.");
 			return false;
+		}
 		FormField confirm = new FormField("CONFIRM PASSWORD", true);
 		confirm.show();
 		if (!confirm.getValue().equals(password)) {

@@ -22,21 +22,16 @@ public abstract class TextForm
 		this.prompt = prompt;
 	}
 	
-	public void show()
+	public Hashtable<Integer, String> show()
 	{
 		if (!prompt.isBlank())
 			Console.println(prompt + ":");
 		Console.newLine();
 		fields = createFields();
-		for (FormField entry: fields)
-			entry.show();
-	}
-	
-	public Hashtable<Integer, String> getFields()
-	{
 		Hashtable<Integer, String> ht = new Hashtable<Integer, String>();
 		int i = 0;
 		for (FormField field: fields) {
+			field.show();
 			ht.put(i, field.getValue());
 			i++;
 		}

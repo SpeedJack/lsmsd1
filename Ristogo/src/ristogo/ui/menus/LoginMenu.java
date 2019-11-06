@@ -24,17 +24,13 @@ public class LoginMenu extends Menu
 	
 	private void handleLogIn(MenuEntry entry)
 	{
-		LoginForm form = new LoginForm();
-		form.show();
-		Hashtable<Integer, String> response = form.getFields();
+		Hashtable<Integer, String> response = new LoginForm().show();
 		doLogin(response.get(0), response.get(1));
 	}
 	
 	private void handleRegister(MenuEntry entry)
 	{
-		RegisterForm form = new RegisterForm();
-		form.show();
-		Hashtable<Integer, String> response = form.getFields();
+		Hashtable<Integer, String> response = new RegisterForm().show();
 		ResponseMessage resMsg = protocol.registerUser(response.get(0), response.get(1));
 		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());

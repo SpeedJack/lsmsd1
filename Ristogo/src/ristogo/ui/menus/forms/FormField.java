@@ -6,11 +6,11 @@ import ristogo.ui.Console;
 
 public class FormField
 {
-	private String name;
-	private String defaultValue;
-	private String value;
-	private boolean inputHidden;
-	private Predicate<String> validator;
+	protected String name;
+	protected String defaultValue;
+	protected String value;
+	protected boolean inputHidden;
+	protected Predicate<String> validator;
 	
 	public FormField(String name)
 	{
@@ -42,7 +42,7 @@ public class FormField
 		this(name, false, defaultValue, validator);
 	}
 	
-	private FormField(String name, boolean inputHidden, String defaultValue, Predicate<String> validator)
+	protected FormField(String name, boolean inputHidden, String defaultValue, Predicate<String> validator)
 	{
 		this.name = name;
 		this.inputHidden = inputHidden;
@@ -62,7 +62,7 @@ public class FormField
 		this.value = value;
 	}
 	
-	private boolean isValid()
+	protected boolean isValid()
 	{
 		if (this.validator == null)
 			return true;
@@ -73,12 +73,13 @@ public class FormField
 	{
 		while (true) {
 			if (inputHidden)
-				value = Console.askPassword(this.toString());
+				setValue(Console.askPassword(this.toString()));
 			else
-				value = Console.askString(this.toString());
+				setValue(Console.askString(this.toString()));
 			if (isValid())
 				return;
-			Console.println("Invalid value.");
+			if (this.validator == null)
+				Console.println("Invalid value.");
 		}
 	}
 	

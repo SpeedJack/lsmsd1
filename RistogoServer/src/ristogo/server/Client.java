@@ -76,6 +76,9 @@ public class Client extends Thread
 		case LIST_RESTAURANTS:
 			handleListRestaurantsRequest(reqMsg);
 			break;
+		case EDIT_RESTAURANT:
+			handleEditRestaurantRequest(reqMsg);
+			break;
 		/*case DELETE_RESTAURANT:
 			handleDeleteRestaurantRequest(reqMsg);
 			break;*/
@@ -143,6 +146,25 @@ public class Client extends Thread
 		for (Restaurant restaurant: restaurants)
 			resMsg.addEntity(restaurant);
 		resMsg.send(outputStream);
+	}
+	
+	private void handleEditRestaurantRequest(RequestMessage reqMsg)
+	{
+		if (loggedUser == null) {
+			new ResponseMessage("You must be logged in to perform this action.").send(outputStream);
+			return;
+		}
+		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
+		if (restaurant == null) {
+			new ResponseMessage("Invalid request.").send(outputStream);
+			return;
+		}
+		if (!loggedUser.hasRestaurant(restaurant)) {
+			new ResponseMessage("You can only edit restaurants that you own.").send(outputStream);
+			return;
+		}
+		restaurantManager.update(restaurant);
+		new ResponseMessage().send(outputStream);
 	}
 	
 	/*private void handleDeleteRestaurantRequest(RequestMessage reqMsg)

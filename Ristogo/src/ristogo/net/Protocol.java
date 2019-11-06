@@ -67,6 +67,12 @@ public class Protocol implements AutoCloseable
 		return resMsg;
 	}
 	
+	public ResponseMessage editRestaurant(Restaurant restaurant)
+	{
+		new RequestMessage(ActionRequest.EDIT_RESTAURANT, restaurant).send(outputStream);
+		return (ResponseMessage)Message.receive(inputStream);
+	}
+	
 	public ResponseMessage deleteRestaurant(Restaurant restaurant)
 	{
 		new RequestMessage(ActionRequest.DELETE_RESTAURANT, restaurant).send(outputStream);
