@@ -1,6 +1,5 @@
 package ristogo.ui.menus.forms;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 
 import ristogo.common.entities.OpeningHours;

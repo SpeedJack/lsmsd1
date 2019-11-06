@@ -1,11 +1,6 @@
 package ristogo;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import ristogo.config.Configuration;
-import ristogo.net.Protocol;
 import ristogo.ui.Console;
 import ristogo.ui.menus.LoginMenu;
 
