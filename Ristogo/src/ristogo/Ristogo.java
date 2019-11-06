@@ -11,7 +11,6 @@ import ristogo.ui.menus.LoginMenu;
 
 public class Ristogo
 {	
-	private static Protocol protocol;
 
 	public static void main(String[] args)
 	{
@@ -30,12 +29,6 @@ public class Ristogo
 	
 	private static void close()
 	{
-		try {
-			protocol.close();
-		} catch (IOException ex) {
-			Logger.getLogger(Ristogo.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		
 		Console.close();
 		System.exit(0);
 	}
