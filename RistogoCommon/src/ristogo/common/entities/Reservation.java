@@ -2,39 +2,26 @@ package ristogo.common.entities;
 
 import java.time.LocalDate;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import ristogo.common.entities.enums.ReservationTime;
 
-@javax.persistence.Entity
-@Table(name = "reservations")
 public class Reservation extends Entity
 {
 	private static final long serialVersionUID = -1379979727099899831L;
 
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "userId")
 	protected User user;
-
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "restaurantId")
 	protected Restaurant restaurant;
-
-	@Column(name = "date")
 	protected LocalDate date;
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "time")
 	protected ReservationTime time;
-
-	@Column(name = "seats")
 	protected int seats;
+	
+	public Reservation(User user, Restaurant restaurant, LocalDate date, ReservationTime time, int seats)
+	{
+		this.user = user;
+		this.restaurant = restaurant;
+		this.date = date;
+		this.time = time;
+		this.seats = seats;
+	}
 
 	public void setUser(User user)
 	{

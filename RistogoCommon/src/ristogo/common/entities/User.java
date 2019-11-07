@@ -7,51 +7,20 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.FilterJoinTable;
-import org.hibernate.annotations.Formula;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.ParamDef;
-
-
-
-@javax.persistence.Entity
-@Table(name="users")
-@FilterDef(name="activeReservations", parameters=@ParamDef(name="currentDate", type="date"))
 public class User extends Entity
 {
 	private static final long serialVersionUID = -1609868778409848632L;
-	
-	@Column(name="username")
+
 	protected String username;
-	
-	@Column(name="password")
 	protected String password;
-	
-	@OneToMany(mappedBy="owner", fetch=FetchType.LAZY)
-	@LazyCollection(LazyCollectionOption.EXTRA)
 	protected List<Restaurant> restaurants = new ArrayList<>();
-	
-	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
-	@LazyCollection(LazyCollectionOption.EXTRA)
-	@Filter(name="activeReservations", condition="date >= :currentDate")
 	protected List<Reservation> activeReservations = new ArrayList<>();
-	
-	@Transient
-	@Formula(value="(SELECT COUNT(*) FROM restaurants r WHERE r.ownerId = id)")
-	protected int restaurantCount;
+	protected boolean hasRestaurants;
 	
 	public User()
 	{
-		this(0, "", "");
+		this(0, "", null);
 	}
 	
 	public User(String username, String password)
@@ -61,12 +30,19 @@ public class User extends Entity
 	
 	public User(int id, String username, String password)
 	{
-		super(id);
-		setUsername(username);
-		setPassword(password);
+		this(id, username, password, false);
 	}
 	
-	private final static String hashPassword(String password)
+	public User(int id, String username, String password, boolean hasRestaurants)
+	{
+		super(id);
+		setUsername(username);
+		if (password != null)
+			setPassword(password);
+		this.hasRestaurants = hasRestaurants;
+	}
+	
+	public final static String hashPassword(String password)
 	{
 		String passwordHash;
 		try {
@@ -85,12 +61,12 @@ public class User extends Entity
 	
 	public static boolean validatePassword(String password)
 	{
-		return password.length() > 7;
+		return password != null && password.length() > 7;
 	}
 	
 	public static boolean validateUsername(String username)
 	{
-		return username.matches("^[A-Za-z0-9]{3,32}$");
+		return username != null && username.matches("^[A-Za-z0-9]{3,32}$");
 	}
 	
 	public void setUsername(String username)
@@ -138,12 +114,12 @@ public class User extends Entity
 	
 	public boolean hasRestaurants()
 	{
-		return getRestaurantCount() > 0;
+		return hasRestaurants;
 	}
 	
-	public int getRestaurantCount()
+	public boolean isOwner()
 	{
-		return restaurantCount;
+		return hasRestaurants();
 	}
 	
 	public void addRestaurants(Restaurant... restaurants)

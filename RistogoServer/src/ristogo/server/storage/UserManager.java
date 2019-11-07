@@ -8,19 +8,20 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 
 import ristogo.common.entities.User;
+import ristogo.server.storage.entities.User_;
 
 public class UserManager extends EntityManager
 {
-	public User getUserByUsername(String username)
+	public User_ getUserByUsername(String username)
 	{
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<User> cq = cb.createQuery(User.class);
-		Root<User> from = cq.from(User.class);
-		CriteriaQuery<User> select = cq.select(from);
+		CriteriaQuery<User_> cq = cb.createQuery(User_.class);
+		Root<User_> from = cq.from(User_.class);
+		CriteriaQuery<User_> select = cq.select(from);
 		ParameterExpression<String> usernamePar = cb.parameter(String.class);
 		select.where(cb.equal(from.get("username"), usernamePar));
-		TypedQuery<User> query = em.createQuery(cq);
+		TypedQuery<User_> query = em.createQuery(cq);
 		query.setParameter(usernamePar, username);
 		try {
 			return query.getSingleResult();
@@ -29,23 +30,43 @@ public class UserManager extends EntityManager
 		}
 	}
 	
-	public User get(int userId)
+	public User_ get(int userId)
 	{
-		return (User)super.get(User.class, userId);
+		return (User_)super.get(User_.class, userId);
 	}
 	
 	public void delete(int userId)
 	{
-		super.delete(User.class, userId);
+		super.delete(User_.class, userId);
 	}
 	
-	public User get(User user)
+	public User_ get(User_ user)
 	{
 		return get(user.getId());
+	}
+	
+	public User_ get(User user)
+	{
+		return get(user.getId());
+	}
+	
+	public void delete(User_ user)
+	{
+		delete(user.getId());
 	}
 	
 	public void delete(User user)
 	{
 		delete(user.getId());
+	}
+	
+	public void update(User user)
+	{
+		super.update(get(user));
+	}
+	
+	public void insert(User user)
+	{
+		super.insert(User_.fromCommonEntity(user));
 	}
 }

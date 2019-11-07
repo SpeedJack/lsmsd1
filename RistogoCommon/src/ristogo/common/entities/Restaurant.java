@@ -3,64 +3,36 @@ package ristogo.common.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.FilterJoinTable;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.ParamDef;
-
 import ristogo.common.entities.enums.OpeningHours;
+import ristogo.common.entities.enums.Price;
 
-@javax.persistence.Entity
-@Table(name="restaurants")
-@FilterDef(name="activeReservations", parameters=@ParamDef(name="currentDate", type="date"))
-@DynamicUpdate
 public class Restaurant extends Entity
 {
 	private static final long serialVersionUID = -2839130753004235292L;
 	
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="ownerId")
 	private User owner;
-	
-	@Column(name="name")
 	private String name;
-	
-	@Column(name="genre")
 	private String genre;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(name="price")
 	private Price price;
-	
-	@Column(name="city")
 	private String city;
-	
-	@Column(name="address")
 	private String address;
-	
-	@Column(name="description")
 	private String description;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(name="openingHours")
+	private int seats;
 	private OpeningHours openingHours;
-	
-	@OneToMany(mappedBy="restaurant", fetch=FetchType.LAZY)
-	@LazyCollection(LazyCollectionOption.EXTRA)
-	@Filter(name="activeReservations", condition="date >= :currentDate")
 	protected List<Reservation> activeReservations = new ArrayList<>();
+	
+	public Restaurant(String name, User owner, String genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
+	{
+		this.name = name;
+		this.owner = owner;
+		this.genre = genre;
+		this.price = price;
+		this.city = city;
+		this.address = address;
+		this.description = description;
+		this.seats = seats;
+		this.openingHours = openingHours;
+	}
 	
 	public void setOwner(User owner)
 	{
@@ -130,6 +102,16 @@ public class Restaurant extends Entity
 	public void setDescription(String description)
 	{
 		this.description = description;
+	}
+	
+	public int getSeats()
+	{
+		return seats;
+	}
+	
+	public void setSeats(int seats)
+	{
+		this.seats = seats;
 	}
 
 	public OpeningHours getOpeningHours()

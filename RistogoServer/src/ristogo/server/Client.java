@@ -19,13 +19,15 @@ import ristogo.common.net.ResponseMessage;
 import ristogo.server.storage.ReservationManager;
 import ristogo.server.storage.RestaurantManager;
 import ristogo.server.storage.UserManager;
+import ristogo.server.storage.entities.Restaurant_;
+import ristogo.server.storage.entities.User_;
 
 public class Client extends Thread
 {
 	private Socket socket;
 	private DataInputStream inputStream;
 	private DataOutputStream outputStream;
-	private User loggedUser;
+	private User_ loggedUser;
 	private UserManager userManager;
 	private RestaurantManager restaurantManager;
 	private ReservationManager reservationManager;
@@ -104,10 +106,10 @@ public class Client extends Thread
 			return;
 		}
 
-		User savedUser = userManager.getUserByUsername(user.getUsername());
-		if (savedUser != null && savedUser.checkPasswordHash(user.getPasswordHash())) {
+		User_ savedUser = userManager.getUserByUsername(user.getUsername());
+		if (savedUser != null && user.checkPasswordHash(savedUser.getPasswordHash())) {
 			loggedUser = savedUser;
-			new ResponseMessage(savedUser).send(outputStream);
+			new ResponseMessage(loggedUser.toCommonEntity()).send(outputStream);
 			return;
 		}
 		new ResponseMessage("Invalid username or password.").send(outputStream);
@@ -151,9 +153,9 @@ public class Client extends Thread
 			return;
 		}
 		ResponseMessage resMsg = new ResponseMessage();
-		List<Restaurant> restaurants = loggedUser.getRestaurants();
-		for (Restaurant restaurant: restaurants)
-			resMsg.addEntity(restaurant);
+		List<Restaurant_> restaurants = loggedUser.getRestaurants();
+		for (Restaurant_ restaurant: restaurants)
+			resMsg.addEntity(restaurant.toCommonEntity());
 		resMsg.send(outputStream);
 	}
 	
@@ -168,7 +170,7 @@ public class Client extends Thread
 			new ResponseMessage("Invalid request.").send(outputStream);
 			return;
 		}
-		if (!loggedUser.hasRestaurant(restaurant)) {
+		if (!loggedUser.hasRestaurant(restaurant.getId())) {
 			new ResponseMessage("You can only edit restaurants that you own.").send(outputStream);
 			return;
 		}

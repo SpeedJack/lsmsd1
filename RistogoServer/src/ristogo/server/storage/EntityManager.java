@@ -8,7 +8,7 @@ import javax.persistence.Persistence;
 
 import org.hibernate.Session;
 
-import ristogo.common.entities.Entity;
+import ristogo.server.storage.entities.Entity_;
 
 public class EntityManager implements AutoCloseable
 {
@@ -48,7 +48,7 @@ public class EntityManager implements AutoCloseable
 		factory.close();
 	}
 	
-	public void insert(Entity entity)
+	public void insert(Entity_ entity)
 	{
 		javax.persistence.EntityManager em = getEM();
 		em.getTransaction().begin();
@@ -56,12 +56,12 @@ public class EntityManager implements AutoCloseable
 		em.getTransaction().commit();
 	}
 	
-	public Entity get(Class<? extends Entity> entityClass, int entityId)
+	public Entity_ get(Class<? extends Entity_> entityClass, int entityId)
 	{
-		return (Entity)getEM().find(entityClass, entityId);
+		return (Entity_)getEM().find(entityClass, entityId);
 	}
 	
-	public void update(Entity entity)
+	public void update(Entity_ entity)
 	{
 		javax.persistence.EntityManager em = getEM();
 		em.getTransaction().begin();
@@ -69,11 +69,11 @@ public class EntityManager implements AutoCloseable
 		em.getTransaction().commit();
 	}
 	
-	public void delete(Class<? extends Entity> entityClass, int entityId)
+	public void delete(Class<? extends Entity_> entityClass, int entityId)
 	{
 		javax.persistence.EntityManager em = getEM();
 		em.getTransaction().begin();
-		Entity entity = (Entity)em.getReference(entityClass, entityId);
+		Entity_ entity = (Entity_)em.getReference(entityClass, entityId);
 		em.remove(entity);
 		em.getTransaction().commit();
 	}
