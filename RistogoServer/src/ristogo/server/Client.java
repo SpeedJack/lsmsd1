@@ -10,11 +10,13 @@ import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
+import ristogo.common.entities.Entity;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
 import ristogo.common.net.Message;
 import ristogo.common.net.RequestMessage;
 import ristogo.common.net.ResponseMessage;
+import ristogo.server.storage.ReservationManager;
 import ristogo.server.storage.RestaurantManager;
 import ristogo.server.storage.UserManager;
 
@@ -26,12 +28,14 @@ public class Client extends Thread
 	private User loggedUser;
 	private UserManager userManager;
 	private RestaurantManager restaurantManager;
+	private ReservationManager reservationManager;
 	
 	public Client(Socket clientSocket)
 	{
 		socket = clientSocket;
 		userManager = new UserManager();
 		restaurantManager = new RestaurantManager();
+		reservationManager = new ReservationManager();
 		try {
 			inputStream = new DataInputStream(clientSocket.getInputStream());
 			outputStream = new DataOutputStream(clientSocket.getOutputStream());
@@ -47,6 +51,7 @@ public class Client extends Thread
 			process();
 		userManager.close();
 		restaurantManager.close();
+		reservationManager.close();
 		try {
 			inputStream.close();
 			outputStream.close();
@@ -79,6 +84,9 @@ public class Client extends Thread
 			break;
 		case EDIT_RESTAURANT:
 			handleEditRestaurantRequest(reqMsg);
+			break;
+		case LIST_OWN_RESERVATIONS:
+			handleListOwnReservationsRequest(reqMsg);
 			break;
 		/*case DELETE_RESTAURANT:
 			handleDeleteRestaurantRequest(reqMsg);
@@ -166,6 +174,15 @@ public class Client extends Thread
 		}
 		restaurantManager.update(restaurant);
 		new ResponseMessage().send(outputStream);
+	}
+	
+	private void handleListOwnReservationsRequest(RequestMessage reqMsg)
+	{
+		if (loggedUser == null) {
+			new ResponseMessage("You must be logged in to perform this action.").send(outputStream);
+			return;
+		}
+		new ResponseMessage(loggedUser.getActiveReservations().toArray(new Entity[0])).send(outputStream);
 	}
 	
 	/*private void handleDeleteRestaurantRequest(RequestMessage reqMsg)

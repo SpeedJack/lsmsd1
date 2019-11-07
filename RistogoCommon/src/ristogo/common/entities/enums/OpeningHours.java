@@ -1,4 +1,4 @@
-package ristogo.common.entities;
+package ristogo.common.entities.enums;
 
 public enum OpeningHours
 {

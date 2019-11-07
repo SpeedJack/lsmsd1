@@ -1,8 +1,12 @@
 package ristogo.server.storage;
 
+import java.util.Date;
+
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
+
+import org.hibernate.Session;
 
 import ristogo.common.entities.Entity;
 
@@ -25,6 +29,12 @@ public class EntityManager implements AutoCloseable
 			threadLocal.set(entityManager);
 		}
 		return entityManager;
+	}
+	
+	public EntityManager()
+	{
+		Session session = getEM().unwrap(Session.class);
+		session.enableFilter("activeReservations").setParameter("currentDate", new Date());
 	}
 	
 	public void close()

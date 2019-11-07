@@ -52,8 +52,10 @@ public class Message implements Serializable
 	
 	public void send(DataOutputStream output)
 	{
+		String xml = this.toXML();
+		System.err.println("SENDING:\n" + xml);
 		try {
-			output.writeUTF(this.toXML());
+			output.writeUTF(xml);
 		} catch (IOException ex) {
 			Logger.getLogger(Message.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -64,6 +66,7 @@ public class Message implements Serializable
 		String xml;
 		try {
 			xml = input.readUTF();
+			System.err.println("RECEIVED:\n" + xml);
 			return fromXML(xml);
 		} catch (IOException ex) {
 			Logger.getLogger(Message.class.getName()).log(Level.SEVERE, null, ex);

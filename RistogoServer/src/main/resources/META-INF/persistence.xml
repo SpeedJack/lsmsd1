@@ -5,6 +5,7 @@
 	<persistence-unit name="ristogo">
 		<class>ristogo.common.entities.User</class>
 		<class>ristogo.common.entities.Restaurant</class>
+		<class>ristogo.common.entities.Reservation</class>
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/ristogo?serverTimezone=UTC" />

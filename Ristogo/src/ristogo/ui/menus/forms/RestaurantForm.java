@@ -3,9 +3,9 @@ package ristogo.ui.menus.forms;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
 
-import ristogo.common.entities.OpeningHours;
 import ristogo.common.entities.Price;
 import ristogo.common.entities.Restaurant;
+import ristogo.common.entities.enums.OpeningHours;
 
 public class RestaurantForm extends TextForm
 {

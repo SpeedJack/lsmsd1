@@ -11,15 +11,21 @@ import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.FilterJoinTable;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.ParamDef;
 
 
 
 @javax.persistence.Entity
 @Table(name="users")
+@FilterDef(name="activeReservations", parameters=@ParamDef(name="currentDate", type="date"))
 public class User extends Entity
 {
 	private static final long serialVersionUID = -1609868778409848632L;
@@ -34,6 +40,12 @@ public class User extends Entity
 	@LazyCollection(LazyCollectionOption.EXTRA)
 	protected List<Restaurant> restaurants = new ArrayList<>();
 	
+	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
+	@LazyCollection(LazyCollectionOption.EXTRA)
+	@Filter(name="activeReservations", condition="date >= :currentDate")
+	protected List<Reservation> activeReservations = new ArrayList<>();
+	
+	@Transient
 	@Formula(value="(SELECT COUNT(*) FROM restaurants r WHERE r.ownerId = id)")
 	protected int restaurantCount;
 	
@@ -157,5 +169,10 @@ public class User extends Entity
 	public boolean hasRestaurant(Restaurant restaurant)
 	{
 		return hasRestaurant(restaurant.getId());
+	}
+	
+	public List<Reservation> getActiveReservations()
+	{
+		return activeReservations;
 	}
 }

@@ -1,15 +1,31 @@
 package ristogo.common.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.FilterJoinTable;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.ParamDef;
+
+import ristogo.common.entities.enums.OpeningHours;
 
 @javax.persistence.Entity
 @Table(name="restaurants")
+@FilterDef(name="activeReservations", parameters=@ParamDef(name="currentDate", type="date"))
+@DynamicUpdate
 public class Restaurant extends Entity
 {
 	private static final long serialVersionUID = -2839130753004235292L;
@@ -40,6 +56,11 @@ public class Restaurant extends Entity
 	@Enumerated(EnumType.STRING)
 	@Column(name="openingHours")
 	private OpeningHours openingHours;
+	
+	@OneToMany(mappedBy="restaurant", fetch=FetchType.LAZY)
+	@LazyCollection(LazyCollectionOption.EXTRA)
+	@Filter(name="activeReservations", condition="date >= :currentDate")
+	protected List<Reservation> activeReservations = new ArrayList<>();
 	
 	public void setOwner(User owner)
 	{

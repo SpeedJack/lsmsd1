@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import ristogo.common.entities.Entity;
+import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
 import ristogo.common.net.ActionRequest;
@@ -77,6 +78,17 @@ public class Protocol implements AutoCloseable
 	{
 		new RequestMessage(ActionRequest.DELETE_RESTAURANT, restaurant).send(outputStream);
 		return (ResponseMessage)Message.receive(inputStream);
+	}
+	
+	public ResponseMessage getOwnActiveReservations()
+	{
+		new RequestMessage(ActionRequest.LIST_OWN_RESERVATIONS).send(outputStream);
+		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
+		if (resMsg.isSuccess() && resMsg.getEntityCount() > 0)
+			for (Entity entity: resMsg.getEntities())
+				if (!(entity instanceof Reservation))
+					return getProtocolErrorMessage();
+		return resMsg;
 	}
 	
 	private ResponseMessage getProtocolErrorMessage()
