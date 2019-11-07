@@ -11,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+import ristogo.common.entities.OpeningHours;
 import ristogo.ui.graphics.config.GUIConfig;
 
 
@@ -134,6 +136,51 @@ public class BookForm extends VBox {
 														e.getMessage();
 													}
 						    					});
+			book.setOnAction((ActionEvent ev) -> {
+													try {
+														String n = nameField.getText();
+														String d = dateField.getValue().toString();
+														String h = hourField.getValue();
+														int s = seatsField.getValue();
+														//boolean res = MANDARE RICHIESTA RESERVE
+														boolean res = true;
+														if(res) {
+															//CONSUMER LISTA PRENOTAZIONI
+														}
+														else {
+															error.setText("Error: Booking Failed. Retry");
+															error.setVisible(true);
+															seatsField.getItems().clear();
+															
+														}
+														book.setDisable(true);
+														
+													}catch(NullPointerException e) {
+														e.getMessage();
+														error.setText("Error: fill out the entire form to be able to book");
+														error.setVisible(true);
+													}
+												});
+
+			delRes.setOnAction((ActionEvent ev) -> {
+												try {
+													//int idRes = CONSUMER ID PRENOTAZIONE
+													//boolean res = MANDARE RICHIESTA DELETE_RESERVE
+													boolean res = true;
+													if(res) {
+														//CONSUMER LISTA PRENOTAZIONI
+														delRes.setDisable(true);
+													}
+													else {
+														error.setText("Error: Delection Failed. Retry");
+														error.setVisible(true);
+														
+													}
+												}catch(NullPointerException e) {
+													e.getMessage();
+													delRes.setDisable(true);
+												}
+											});
 			
 			dateField.setOnAction((ActionEvent ev) -> { 
 														seatsField.setDisable(true);
@@ -153,6 +200,26 @@ public class BookForm extends VBox {
 	                "-fx-border-radius: 10;" + 
 	                "-fx-border-color: "+ "D9561D" +";");
 					
+	}
+	
+	
+	public void fillOutForm(String name, String hour) {
+    	try {
+    		delRes.setDisable(true);
+			nameField.setText(name);
+			hourField.getItems().clear();
+			if(hour.equals("BOTH")) {
+				hourField.getItems().addAll("Lunch", "Dinner");
+			}
+			else if(hour.equals("LUNCH")) {
+				hourField.getItems().add("Lunch");
+			}
+			else {
+				hourField.getItems().add("Dinner");
+			}
+    	}catch(NullPointerException npe) {
+    		//do nothing
+    	}
 	}
 	
 	public TextField getNameField() {

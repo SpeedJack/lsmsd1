@@ -74,7 +74,20 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
 		restaurantList = FXCollections.observableArrayList();
 		setItems(restaurantList);
 		    
-		  }	
+	}	
+	
+ 	public String getSelectionName() {
+ 		return this.getSelectionModel().getSelectedItem().getName();
+ 	}
+ 	
+ 	public String getSelectionDescription() {
+ 		return this.getSelectionModel().getSelectedItem().getDescription();
+ 	}
+ 	
+ 	public String getSelectionHours() {
+ 		return this.getSelectionModel().getSelectedItem().getOpening();
+ 	}
+ 	
 	   public void listRestaurants(){
 		   
 	   }

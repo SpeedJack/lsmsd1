@@ -73,6 +73,7 @@ public class TableViewReservation extends TableView<ReservationBean> {
 			reservationList = FXCollections.observableArrayList();
 			setItems(reservationList);
 		}
+	 
 	  
 	  	public void listReservations(boolean isCostumer) {
 		  

@@ -103,26 +103,6 @@ public class RistogoGUI extends Application
 		descriptionField.setMinSize(480, 100);
 		descriptionField.setMaxSize(480, 100);
 		
-	    restaurant.setOnMouseClicked((e) -> {
-	    	try {
-	    		bookForm.getDelRes().setDisable(true);
-				bookForm.getNameField().setText(restaurant.getSelectionModel().getSelectedItem().getName());
-				descriptionField.setText(restaurant.getSelectionModel().getSelectedItem().getDescription());
-				bookForm.getHourField().getItems().clear();
-				if(restaurant.getSelectionModel().getSelectedItem().getOpening() == "ALWAYS") {
-					bookForm.getHourField().getItems().addAll("Lunch", "Dinner");
-				}
-				else if(restaurant.getSelectionModel().getSelectedItem().getOpening() == "LUNCH") {
-					bookForm.getHourField().getItems().add("Lunch");
-				}
-				else {
-					bookForm.getHourField().getItems().add("Dinner");
-				}
-	    	}catch(NullPointerException npe) {
-	    		//do nothing
-	    	}	
-		});
-	  
 		HBox descriptionBox = new HBox(20);
 		descriptionBox.getChildren().addAll(description,descriptionField);
 		
@@ -134,57 +114,14 @@ public class RistogoGUI extends Application
 	    TableViewReservation reservation = new TableViewReservation(true);
 	    reservation.listReservations(true);
 	    
+	    restaurant.setOnMouseClicked((e) -> {
+	    	bookForm.fillOutForm(restaurant.getSelectionName(), restaurant.getSelectionHours());
+	    	descriptionField.setText(restaurant.getSelectionDescription());
+		});
+	  
 	    reservation.setOnMouseClicked((e) -> {
 	    							bookForm.getDelRes().setDisable(false);
 	    							});
-	   
-/*
-	    bookForm.getBook().setOnAction((ActionEvent ev) -> {
-			try {
-				String n = bookForm.getNameField().getText();
-				String d = bookForm.getDateField().getValue().toString();
-				String h = bookForm.getHourField().getValue();
-				int s = bookForm.getSeatsField().getValue();
-				//boolean res = MANDARE RICHIESTA PRENOTAZIONE
-				boolean res = true;
-				if(res) {
-					reservation.listReservations(true);
-				}
-				else {
-					error.setText("Error: bookForming Failed. Retry");
-					error.setVisible(true);
-					seats_f.getItems().clear();
-					
-				}
-				bookForm.getBook().setDisable(true);
-				
-			}catch(NullPointerException e) {
-				e.getMessage();
-				error.setText("Error: fill out the entire form to be able to bookForm");
-				error.setVisible(true);
-			}
-		});
-
-	bookForm.getDelRes().setOnAction((ActionEvent ev) -> {
-			try {
-				int idRes = reservation.getSelectionModel().getSelectedItem().getReservation();
-				//boolean res = MANDARE CANCELLA PRENOTAZIONE
-				boolean res = true;
-				if(res) {
-					reservation.listReservations(true);
-					bookForm.getDelRes().setDisable(true);
-				}
-				else {
-					error.setText("Error: Delection Failed. Retry");
-					error.setVisible(true);
-					
-				}
-			}catch(NullPointerException e) {
-				e.getMessage();
-				bookForm.getDelRes().setDisable(true);
-			}
-		});
-*/
 	    
 		VBox leftPart = new VBox(10);
 		leftPart.getChildren().addAll(title,bookForm);

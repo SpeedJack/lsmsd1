@@ -1,6 +1,7 @@
 package ristogo.ui.graphics;
 
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -8,6 +9,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
 import ristogo.ui.graphics.config.GUIConfig;
 
 public class ModifyRestaurantForm extends VBox {
@@ -32,7 +34,7 @@ public class ModifyRestaurantForm extends VBox {
 		title.setTextFill(GUIConfig.getFgColor());
 
 		Label name = new Label("Name: ");
-		TextField nameField = new TextField();
+		nameField = new TextField();
 		name.setFont(GUIConfig.getBoldTextFont());
 		name.setTextFill(GUIConfig.getFgColor());
 		
@@ -141,6 +143,41 @@ public class ModifyRestaurantForm extends VBox {
     		
     	}
     	*/
+    	
+    	commit.setOnAction((ActionEvent ev) -> {
+			error.setVisible(false);
+	    	try {
+				String n = nameField.getText();
+				String t = typeField.getValue().toString();
+				String c = costField.getValue().toString();
+				String ct = cityField.getText();
+				String add = addressField.getText();
+				String d = descField.getText();
+				String s = seatsField.getText();
+				String h;
+				if(hourField.getValue().equals("Lunch")) {
+					h = "LUNCH";
+				}
+				else if(hourField.getValue().contentEquals("Dinner")) {
+					h="DINNER";
+				}
+				else {
+					h = "ALWAYS";
+				}
+				//boolean res = MANDARE COMMIT
+				boolean res = true;
+				if(!res) {
+					error.setText("Error: Commit Failed. Retry");
+					error.setVisible(true);
+					//FILL FORM WITH RESTAURANT ?
+				}
+				
+			}catch(NullPointerException e) {
+				e.getMessage();
+				error.setText("Error: fill out the entire form to be able to commit");
+				error.setVisible(true);
+			}
+		});
 		
 		VBox boxModify = new VBox(20);
 		boxModify.getChildren().addAll(title,nameBox, typeBox, costBox, cityBox, addressBox, desc, descField, seatsBox, hourBox, error, commit);
@@ -161,85 +198,4 @@ public class ModifyRestaurantForm extends VBox {
 		
 	}
 	
-	public TextField getNameField() {
-		return nameField;
-	}
-
-
-	public void setNameField(TextField nameField) {
-		this.nameField = nameField;
-	}
-
-
-	public ChoiceBox<String> getTypeField() {
-		return typeField;
-	}
-
-
-	public void setTypeField(ChoiceBox<String> typeField) {
-		this.typeField = typeField;
-	}
-
-
-	public ChoiceBox<Integer> getCostField() {
-		return costField;
-	}
-
-
-	public void setCostField(ChoiceBox<Integer> costField) {
-		this.costField = costField;
-	}
-
-
-	public TextField getCityField() {
-		return cityField;
-	}
-
-
-	public void setCityField(TextField cityField) {
-		this.cityField = cityField;
-	}
-
-
-	public TextField getAddressField() {
-		return addressField;
-	}
-
-
-	public void setAddressField(TextField addressField) {
-		this.addressField = addressField;
-	}
-
-
-	public TextArea getDescField() {
-		return descField;
-	}
-
-
-	public void setDescField(TextArea descField) {
-		this.descField = descField;
-	}
-
-
-	public TextField getSeatsField() {
-		return seatsField;
-	}
-
-
-	public void setSeatsField(TextField seatsField) {
-		this.seatsField = seatsField;
-	}
-
-
-	public ChoiceBox<String> getHourField() {
-		return hourField;
-	}
-
-
-	public void setHourField(ChoiceBox<String> hourField) {
-		this.hourField = hourField;
-	}
-
-
-
 }
