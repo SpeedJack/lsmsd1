@@ -17,9 +17,9 @@ public class Configuration
 	{
 		serverIp = "127.0.0.1";
 		serverPort = 8888;
-		forceCli = true;
+		forceCli = false;
 		fontName = "Open Sans";
-		fontSize = 15;
+		fontSize = 14;
 		bgColorName = "FFFFFF";
 		fgColorName = "D9561D";
 		numberRowsDisplayable = 7;

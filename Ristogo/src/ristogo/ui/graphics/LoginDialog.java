@@ -62,14 +62,14 @@ public class LoginDialog extends Dialog<Pair<String, String>>
 		PasswordField password = new PasswordField();
 		password.setPromptText("Password");
 		
-		l1.setFont(GUIConfig.getTextFont());
+		l1.setFont(GUIConfig.getFormTitleFont());
 		l1.setTextFill(GUIConfig.getFgColor());
-		username.setFont(GUIConfig.getInputFont());
+		username.setFont(GUIConfig.getTextFont());
 		username.setMaxWidth(200);
 		
-		l2.setFont(GUIConfig.getTextFont());
+		l2.setFont(GUIConfig.getFormTitleFont());
 		l2.setTextFill(GUIConfig.getFgColor());
-		password.setFont(GUIConfig.getInputFont());
+		password.setFont(GUIConfig.getTextFont());
 		password.setMaxWidth(200);
 		
 		GridPane grid = new GridPane();

@@ -55,17 +55,17 @@ public class RegisterDialog extends Dialog<Pair<String, String>>
 		ChoiceBox<String> cb = new ChoiceBox<String>();
 		cb.getItems().addAll("Customer", "Restaurant Owner");
 
-		l1.setFont(GUIConfig.getTextFont());
+		l1.setFont(GUIConfig.getFormTitleFont());
 		l1.setTextFill(GUIConfig.getFgColor());
-		username.setFont(GUIConfig.getInputFont());
+		username.setFont(GUIConfig.getTextFont());
 		username.setMaxWidth(200);
 
-		l2.setFont(GUIConfig.getTextFont());
+		l2.setFont(GUIConfig.getFormTitleFont());
 		l2.setTextFill(GUIConfig.getFgColor());
-		password.setFont(GUIConfig.getInputFont());
+		password.setFont(GUIConfig.getTextFont());
 		password.setMaxWidth(200);
 
-		l3.setFont(GUIConfig.getTextFont());
+		l3.setFont(GUIConfig.getFormTitleFont());
 		l3.setTextFill(GUIConfig.getFgColor());
 
 		GridPane grid = new GridPane();

@@ -39,7 +39,7 @@ public class BookForm extends VBox {
 			
 			Label name = new Label("Name of Restaurant: ");
 			nameField = new TextField();
-			name.setFont(GUIConfig.getImportantFont());
+			name.setFont(GUIConfig.getBoldTextFont());
 			name.setTextFill(GUIConfig.getFgColor());
 			nameField.setEditable(false);
 			
@@ -48,7 +48,7 @@ public class BookForm extends VBox {
 	 
 			    
 			Label date = new Label("Date of Reservation: ");
-			date.setFont(GUIConfig.getImportantFont());
+			date.setFont(GUIConfig.getBoldTextFont());
 			date.setTextFill(GUIConfig.getFgColor());
 			dateField = new DatePicker();
 			dateField.setDayCellFactory(picker -> new DateCell() {   //Disable all past dates
@@ -66,7 +66,7 @@ public class BookForm extends VBox {
 			 
 			
 			Label hour = new Label("Booking Time: ");
-			hour.setFont(GUIConfig.getImportantFont());
+			hour.setFont(GUIConfig.getBoldTextFont());
 			hour.setTextFill(GUIConfig.getFgColor());
 			hourField = new ChoiceBox<String>();
 			hourField.setMinSize(70, 25);
@@ -80,10 +80,11 @@ public class BookForm extends VBox {
 	    	check = new Button("Check");
 	    	check.setFont(GUIConfig.getButtonFont());
 	    	check.setTextFill(GUIConfig.getInvertedFgColor());
+	    	check.setStyle(GUIConfig.getInvertedCSSBgColor() );
 			
 			
 			Label seats = new Label("Seats: ");
-			seats.setFont(GUIConfig.getInputFont());
+			seats.setFont(GUIConfig.getBoldTextFont());
 			seats.setTextFill(GUIConfig.getFgColor());
 			seatsField = new ChoiceBox<Integer>();
 			seatsField.setDisable(true);
@@ -103,11 +104,13 @@ public class BookForm extends VBox {
 			book = new Button("Book");
 			book.setFont(GUIConfig.getButtonFont());
 			book.setTextFill(GUIConfig.getInvertedFgColor());
+			book.setStyle(GUIConfig.getInvertedCSSBgColor() );
 			book.setDisable(true);
 			
 			delRes = new Button("Del. Res.");
 			delRes.setFont(GUIConfig.getButtonFont());
 			delRes.setTextFill(GUIConfig.getInvertedFgColor());
+			delRes.setStyle(GUIConfig.getInvertedCSSBgColor() );
 			delRes.setDisable(true);
 			
 			HBox buttonBox = new HBox(20);
@@ -143,12 +146,12 @@ public class BookForm extends VBox {
 													});
 			
 			this.getChildren().addAll(title,subTitle,nameBox, dateBox, hourBox, check, seatsBox, error, buttonBox);
-	        /*this.setStyle("-fx-padding: 7;" + 
+	        this.setStyle("-fx-padding: 7;" + 
 	                "-fx-border-style: solid inside;" + 
 	                "-fx-border-width: 2;" +
 	                "-fx-border-insets: 3;" + 
 	                "-fx-border-radius: 10;" + 
-	                "-fx-border-color: "+ "D9561D" +";");*/
+	                "-fx-border-color: "+ "D9561D" +";");
 					
 	}
 	

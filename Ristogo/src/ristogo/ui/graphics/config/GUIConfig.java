@@ -9,10 +9,16 @@ public class GUIConfig
 {
 	private static Configuration config = Configuration.getConfig();
 	
+	public static double getFontSizeVeryTiny()
+	{
+		return config.getFontSize() - 4;
+	}
+	
 	public static double getFontSizeTiny()
 	{
-		return config.getFontSize() - 3;
+		return config.getFontSize() - 2;
 	}
+	
 	
 	public static double getFontSizeSmall()
 	{
@@ -24,39 +30,53 @@ public class GUIConfig
 		return config.getFontSize();
 	}
 	
-	public static double getFontSizeLarge()
-	{
-		return config.getFontSize() + 4;
+	public static double getFontSizeLarge() {
+		
+		return config.getFontSize() +1;
 	}
+	
+	public static double getFontSizeBig() {
+		
+		return config.getFontSize() +2;
+	}
+	
 	
 	public static double getFontSizeHuge()
 	{
-		return config.getFontSize() + 7;
+		return config.getFontSize() + 5;
 	}
+	
 	
 	public static double getTitleFontSize()
 	{
 		return getFontSizeHuge();
 	}
-	
+
 	public static double getSubtitleFontSize()
 	{
+		return getFontSizeBig();
+	}
+	
+	public static double getFormTitleFontSize() {
 		return getFontSizeLarge();
 	}
 	
+	public static double getFormSubtitleFontSize() {
+		return getFontSizeSmall();
+	}
 	public static double getTextFontSize()
 	{
-		return getFontSizeNormal();
+		return getFontSizeTiny();
+	}
+	
+	public static double getVeryTinyTextFontSize() {
+		
+		return getFontSizeVeryTiny();
 	}
 	
 	public static double getButtonFontSize()
 	{
-		return getFontSizeSmall();
-	}
-	
-	public static double getInputFontSize()
-	{
-		return getFontSizeTiny();
+		return getFontSizeNormal();
 	}
 	
 	public static Font getTitleFont()
@@ -69,35 +89,42 @@ public class GUIConfig
 		return Font.font(config.getFontName(), FontWeight.NORMAL, getSubtitleFontSize());
 	}
 	
-	public static Font getImportantFont()
+	public static Font getBoldSubtitleFont()
 	{
 		return Font.font(config.getFontName(), FontWeight.BOLD, getSubtitleFontSize());
 	}
 	
+	public static Font getFormTitleFont()
+	{
+		return Font.font(config.getFontName(), FontWeight.BOLD, getFormTitleFontSize());
+	}
+	
+	public static Font getFormSubtitleFont()
+	{
+		return Font.font(config.getFontName(), FontWeight.NORMAL, getFormSubtitleFontSize());
+	}
+
 	public static Font getTextFont()
 	{
 		return Font.font(config.getFontName(), FontWeight.NORMAL, getTextFontSize());
 	}
 	
-	public static Font getInputFont()
+	public static Font getBoldTextFont()
 	{
-		return Font.font(config.getFontName(), FontWeight.NORMAL, getInputFontSize());
+		return Font.font(config.getFontName(), FontWeight.BOLD, getTextFontSize());
 	}
+	
+	public static Font getBoldVeryTinyTextFont()
+	{
+		return Font.font(config.getFontName(), FontWeight.BOLD, getVeryTinyTextFontSize());
+	}
+	
 	
 	public static Font getButtonFont()
 	{
-		return Font.font(config.getFontName(), FontWeight.NORMAL, getButtonFontSize());
+		return Font.font(config.getFontName(), FontWeight.BOLD, getButtonFontSize());
 	}
 	
-	public static Font getFormTitleFont()
-	{
-		return getTextFont();
-	}
-	
-	public static Font getFormSubtitleFont()
-	{
-		return getInputFont();
-	}
 	
 	public static Color getFgColor()
 	{
@@ -131,7 +158,7 @@ public class GUIConfig
 	
 	public static String getInvertedCSSBgColor()
 	{
-		return "-fx-background-color: " + config.getFgColorName() + ";";
+		return "-fx-base: " + config.getFgColorName() + ";";
 	}
 	
 	public static String getInvertedCSSFgColor()

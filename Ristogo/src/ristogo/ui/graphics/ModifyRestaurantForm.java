@@ -33,7 +33,7 @@ public class ModifyRestaurantForm extends VBox {
 
 		Label name = new Label("Name: ");
 		TextField nameField = new TextField();
-		name.setFont(GUIConfig.getImportantFont());
+		name.setFont(GUIConfig.getBoldTextFont());
 		name.setTextFill(GUIConfig.getFgColor());
 		
 		HBox nameBox = new HBox(20);
@@ -41,7 +41,7 @@ public class ModifyRestaurantForm extends VBox {
  
 		    
 		Label type = new Label("Type: ");
-		type.setFont(GUIConfig.getImportantFont());
+		type.setFont(GUIConfig.getBoldTextFont());
 		type.setTextFill(GUIConfig.getFgColor());
 		typeField = new ChoiceBox<String>();
 		typeField.getItems().addAll("Pizza", "Chinese", "Mexican", "Italian", "SteakHouse");
@@ -51,7 +51,7 @@ public class ModifyRestaurantForm extends VBox {
 
 		
 		Label cost = new Label("Cost:");
-		cost.setFont(GUIConfig.getImportantFont());
+		cost.setFont(GUIConfig.getBoldTextFont());
 		cost.setTextFill(GUIConfig.getFgColor());
 
 		costField = new ChoiceBox<Integer>();
@@ -62,7 +62,7 @@ public class ModifyRestaurantForm extends VBox {
 		
 		Label city = new Label("City: ");
 		cityField = new TextField();
-		city.setFont(GUIConfig.getImportantFont());
+		city.setFont(GUIConfig.getBoldTextFont());
 		city.setTextFill(GUIConfig.getFgColor());
 		
 		HBox cityBox = new HBox(20);
@@ -70,7 +70,7 @@ public class ModifyRestaurantForm extends VBox {
 		
 		Label address = new Label("Address: ");
 		addressField = new TextField();
-		address.setFont(GUIConfig.getImportantFont());
+		address.setFont(GUIConfig.getBoldTextFont());
 		address.setTextFill(GUIConfig.getFgColor());
 		
 		HBox addressBox = new HBox(20);
@@ -78,7 +78,7 @@ public class ModifyRestaurantForm extends VBox {
 		
 		Label desc = new Label("Description: ");
 		descField = new TextArea();
-		desc.setFont(GUIConfig.getImportantFont());
+		desc.setFont(GUIConfig.getBoldTextFont());
 		desc.setTextFill(GUIConfig.getFgColor());
 		descField.setWrapText(true);
 		descField.setMinSize(480, 100);
@@ -86,14 +86,14 @@ public class ModifyRestaurantForm extends VBox {
 		
 		Label seats = new Label("Seats: ");
 		seatsField = new TextField();
-		seats.setFont(GUIConfig.getImportantFont());
+		seats.setFont(GUIConfig.getBoldTextFont());
 		seats.setTextFill(GUIConfig.getFgColor());
 		
 		HBox seatsBox = new HBox(20);
 		seatsBox.getChildren().addAll(seats,seatsField);
 		
 		Label hour = new Label("Hour:");
-		hour.setFont(GUIConfig.getImportantFont());
+		hour.setFont(GUIConfig.getBoldTextFont());
 		hour.setTextFill(GUIConfig.getFgColor());
 
 		hourField = new ChoiceBox<String>(FXCollections.observableArrayList("Lunch", "Dinner", "Lunch/Dinner"));
@@ -113,6 +113,7 @@ public class ModifyRestaurantForm extends VBox {
     	Button commit = new Button("Commit");
     	commit.setFont(GUIConfig.getButtonFont());
     	commit.setTextFill(GUIConfig.getInvertedFgColor());
+    	commit.setStyle(GUIConfig.getInvertedCSSBgColor() );
 
     	
     	/*FILL FORM WITH RESTAURANT
