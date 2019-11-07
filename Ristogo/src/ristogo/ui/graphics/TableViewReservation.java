@@ -8,7 +8,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import ristogo.config.Configuration;
 import ristogo.ui.graphics.beans.ReservationBean;
 
-public class TableViewReservation extends TableView<ReservationBean> {
+public class TableViewReservation extends TableView<ReservationBean>  {
 	
 	 private final ObservableList<ReservationBean> reservationList;
 	 private TableColumn<ReservationBean, String> nameColumn;
@@ -76,7 +76,7 @@ public class TableViewReservation extends TableView<ReservationBean> {
 	 
 	  
 	  	public void listReservations(boolean isCostumer) {
-		  
+		  //CHIAMARE LIST RESERVATION
 	  	}
 
 }

@@ -1,6 +1,7 @@
 package ristogo.ui.graphics;
 
 import java.time.LocalDate;
+import java.util.function.Consumer;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
@@ -11,6 +12,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+
 import ristogo.ui.graphics.config.GUIConfig;
 
 
@@ -23,8 +26,10 @@ public class BookForm extends VBox {
 	private Button check;
 	private Button book;
 	private Button delRes;
+
+	private int idRestoDelete;
 	
-	public BookForm () {
+	public BookForm (Consumer<Boolean> listReservation) {
 		
 			super(20);
 		
@@ -80,7 +85,7 @@ public class BookForm extends VBox {
 	    	check = new Button("Check");
 	    	check.setFont(GUIConfig.getButtonFont());
 	    	check.setTextFill(GUIConfig.getInvertedFgColor());
-	    	check.setStyle(GUIConfig.getInvertedCSSBgColor() );
+	    	check.setStyle(GUIConfig.getInvertedCSSBgColorButton() );
 			
 			
 			Label seats = new Label("Seats: ");
@@ -104,13 +109,13 @@ public class BookForm extends VBox {
 			book = new Button("Book");
 			book.setFont(GUIConfig.getButtonFont());
 			book.setTextFill(GUIConfig.getInvertedFgColor());
-			book.setStyle(GUIConfig.getInvertedCSSBgColor() );
+			book.setStyle(GUIConfig.getInvertedCSSBgColorButton() );
 			book.setDisable(true);
 			
 			delRes = new Button("Del. Res.");
 			delRes.setFont(GUIConfig.getButtonFont());
 			delRes.setTextFill(GUIConfig.getInvertedFgColor());
-			delRes.setStyle(GUIConfig.getInvertedCSSBgColor() );
+			delRes.setStyle(GUIConfig.getInvertedCSSBgColorButton() );
 			delRes.setDisable(true);
 			
 			HBox buttonBox = new HBox(20);
@@ -143,7 +148,7 @@ public class BookForm extends VBox {
 														//boolean res = MANDARE RICHIESTA RESERVE
 														boolean res = true;
 														if(res) {
-															//CONSUMER LISTA PRENOTAZIONI
+															listReservation.accept(true);
 														}
 														else {
 															error.setText("Error: Booking Failed. Retry");
@@ -162,11 +167,10 @@ public class BookForm extends VBox {
 
 			delRes.setOnAction((ActionEvent ev) -> {
 												try {
-													//int idRes = CONSUMER ID PRENOTAZIONE
 													//boolean res = MANDARE RICHIESTA DELETE_RESERVE
 													boolean res = true;
 													if(res) {
-														//CONSUMER LISTA PRENOTAZIONI
+														listReservation.accept(true);
 														delRes.setDisable(true);
 													}
 													else {
@@ -220,60 +224,13 @@ public class BookForm extends VBox {
     	}
 	}
 	
-	public TextField getNameField() {
-		return nameField;
-	}
-
-	public void setNameField(TextField nameField) {
-		this.nameField = nameField;
-	}
-
-	public DatePicker getDateField() {
-		return dateField;
-	}
-
-	public void setDateField(DatePicker dateField) {
-		this.dateField = dateField;
-	}
-
-	public ChoiceBox<String> getHourField() {
-		return hourField;
-	}
-
-	public void setHourField(ChoiceBox<String> hourField) {
-		this.hourField = hourField;
-	}
-
-	public ChoiceBox<Integer> getSeatsField() {
-		return seatsField;
-	}
-
-	public void setSeatsField(ChoiceBox<Integer> seatsField) {
-		this.seatsField = seatsField;
-	}
-
-	public Button getCheck() {
-		return check;
-	}
-
-	public void setCheck(Button check) {
-		this.check = check;
-	}
-
-	public Button getBook() {
-		return book;
-	}
-
-	public void setBook(Button book) {
-		this.book = book;
-	}
-
+	
 	public Button getDelRes() {
 		return delRes;
 	}
-
-	public void setDelRes(Button delRes) {
-		this.delRes = delRes;
+	
+	public void setIdResToDelete(int id) {
+		this.idRestoDelete = id;
 	}
 
 }

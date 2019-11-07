@@ -115,7 +115,7 @@ public class ModifyRestaurantForm extends VBox {
     	Button commit = new Button("Commit");
     	commit.setFont(GUIConfig.getButtonFont());
     	commit.setTextFill(GUIConfig.getInvertedFgColor());
-    	commit.setStyle(GUIConfig.getInvertedCSSBgColor() );
+    	commit.setStyle(GUIConfig.getInvertedCSSBgColorButton() );
 
     	
     	/*FILL FORM WITH RESTAURANT

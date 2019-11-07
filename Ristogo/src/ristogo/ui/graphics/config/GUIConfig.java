@@ -158,12 +158,17 @@ public class GUIConfig
 	
 	public static String getInvertedCSSBgColor()
 	{
-		return "-fx-base: " + config.getFgColorName() + ";";
+		return "-fx-background-color: " + config.getFgColorName() + ";";
 	}
 	
 	public static String getInvertedCSSFgColor()
 	{
 		return "-fx-text-fill: " + config.getBgColorName() + ";";
+	}
+	
+	public static String getInvertedCSSBgColorButton()
+	{
+		return "-fx-base: " + config.getFgColorName() + ";";
 	}
 	
 	public static String getCSSFontFamily()
@@ -218,8 +223,8 @@ public class GUIConfig
 	
 	public static String getCSSButtonStyle()
 	{
-		return getCSSFontFamily() + getInvertedCSSBgColor() +
-			getInvertedCSSFgColor() + getCSSButtonFontSize();
+		return getCSSFontFamily() + getCSSBgColor() +
+			getCSSFgColor() + getCSSButtonFontSize();
 	}
 	
 	public static String getCSSDialogHeaderStyle()

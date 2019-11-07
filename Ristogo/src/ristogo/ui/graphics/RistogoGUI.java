@@ -1,6 +1,7 @@
 package ristogo.ui.graphics;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -19,6 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Pair;
+import ristogo.common.entities.User;
 import ristogo.ui.graphics.config.GUIConfig;
 
 
@@ -27,6 +29,7 @@ public class RistogoGUI extends Application
 {
 
 	private HBox applicationInterface;
+	private User loggedUser;
 
 	@Override
 	public void start(Stage stage) throws Exception
@@ -34,43 +37,28 @@ public class RistogoGUI extends Application
 		applicationInterface = new HBox(10);
 		
 		LoginDialog login = new LoginDialog();
-		RegisterDialog register = new RegisterDialog();
+		login.showAndWait();
 		
-	/*	Optional<Pair<String, String>> resultLogin = login.showAndWait();
-		Optional<Pair<String, String>> resultRegister;
-		
-		resultLogin.ifPresent(loginReturn -> {
-		    if(loginReturn.getKey().equals("register")) {
-		    	
-		    	//resultRegister = register.showAndWait();
-		    }
-		    else {
-		    	//effettuaLogin
-		    	//controlla se � un ristoratore o un cliente
-		    	//se � un cliente
-		    	buildCostumerInterface();
-		    	//se � un ristoratore
-		    	buildRestaurantOwnerInterface();
-		    	
-		    }
-		});
-		*/
-		
-		//buildCostumerInterface();
-		buildRestaurantOwnerInterface();
-		
-	  Scene scene = new Scene(new Group(applicationInterface));
-	  scene.setFill(GUIConfig.getBgColor());
-	  
-	  stage.setOnCloseRequest((WindowEvent ev) -> {
-									//logout
-								});
-	  stage.setTitle("RistoGo");
-	  stage.setResizable(false);
-	  stage.setScene(scene);
-	  stage.getIcons().add(new Image("/resources/logo.png"));
-	  stage.show(); 
- 
+		loggedUser = login.getResult();
+		if(loggedUser!= null) {
+			if(loggedUser.hasRestaurants()) {
+				buildRestaurantOwnerInterface();
+			}
+			else {
+				buildCostumerInterface();
+			}
+			Scene scene = new Scene(new Group(applicationInterface));
+			scene.setFill(GUIConfig.getBgColor());
+			  
+			stage.setOnCloseRequest((WindowEvent ev) -> {
+											//logout
+										});
+			stage.setTitle("RistoGo");
+			stage.setResizable(false);
+			stage.setScene(scene);
+			stage.getIcons().add(new Image("/resources/logo.png"));
+			stage.show(); 
+		}
 	}
 	
 	public static void launch(String... args)
@@ -82,10 +70,13 @@ public class RistogoGUI extends Application
 	private void buildCostumerInterface() {
 		
 		
-		
 		GridPane title = generateTitle();
-		BookForm bookForm = new BookForm();
-	
+		
+	    TableViewReservation reservation = new TableViewReservation(true);
+	    reservation.listReservations(true);
+	    
+	    BookForm bookForm = new BookForm(reservation::listReservations);
+		
 		Label subTitle = new Label("List of Restaurant");
 		subTitle.setFont(GUIConfig.getFormTitleFont());
 		subTitle.setTextFill(GUIConfig.getFgColor());
@@ -110,9 +101,6 @@ public class RistogoGUI extends Application
 		subTitle2.setFont(GUIConfig.getFormTitleFont());
 		subTitle2.setTextFill(GUIConfig.getFgColor());
 		subTitle2.setStyle("-fx-underline: true;");
-		
-	    TableViewReservation reservation = new TableViewReservation(true);
-	    reservation.listReservations(true);
 	    
 	    restaurant.setOnMouseClicked((e) -> {
 	    	bookForm.fillOutForm(restaurant.getSelectionName(), restaurant.getSelectionHours());
@@ -121,6 +109,7 @@ public class RistogoGUI extends Application
 	  
 	    reservation.setOnMouseClicked((e) -> {
 	    							bookForm.getDelRes().setDisable(false);
+	    							bookForm.setIdResToDelete(reservation.getSelectionModel().getSelectedItem().getId());
 	    							});
 	    
 		VBox leftPart = new VBox(10);

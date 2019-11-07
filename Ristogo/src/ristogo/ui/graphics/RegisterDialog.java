@@ -1,8 +1,10 @@
 package ristogo.ui.graphics;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -17,10 +19,11 @@ import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
 import ristogo.ui.graphics.config.GUIConfig;
 
-public class RegisterDialog extends Dialog<Pair<String, String>>
-{
-	public RegisterDialog()
-	{
+public class RegisterDialog extends Dialog {
+	
+	public RegisterDialog(){
+
+		
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.setStyle(GUIConfig.getCSSBgColor());
 
@@ -30,7 +33,7 @@ public class RegisterDialog extends Dialog<Pair<String, String>>
 		dialogPane.getStyleClass().remove("alert");
 
 		GridPane header = (GridPane)dialogPane.lookup(".header-panel");
-		header.setStyle(GUIConfig.getCSSDialogHeaderStyle());
+		//header.setStyle(GUIConfig.getCSSDialogHeaderStyle());
 
 		header.lookup(".label").setStyle(GUIConfig.getCSSFgColor());
 
@@ -44,7 +47,7 @@ public class RegisterDialog extends Dialog<Pair<String, String>>
 
 		ButtonBar buttonBar = (ButtonBar)dialogPane.lookup(".button-bar");
 		buttonBar.getButtons().forEach(b -> b.setStyle(GUIConfig.getCSSButtonStyle()));
-
+////////////////////////////CONTENUTO//////////////////////////////////////////////////////////////////////
 		Label l1 = new Label("Name: ");
 		TextField username = new TextField();
 		username.setPromptText("Username");
@@ -82,7 +85,8 @@ public class RegisterDialog extends Dialog<Pair<String, String>>
 
 		dialogPane.setContent(grid);
 
-		Node registerButton = dialogPane.lookupButton(registerButtonType);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+		Button registerButton = (Button)dialogPane.lookupButton(registerButtonType);
 		registerButton.setDisable(true);
 
 		username.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -90,6 +94,10 @@ public class RegisterDialog extends Dialog<Pair<String, String>>
 		});
 
 		Platform.runLater(() -> username.requestFocus());
+		
+		registerButton.setOnAction((ActionEvent ev) -> {
 
+		    //MANDARE REQUEST REGISTER
+													});
 	}
 }
