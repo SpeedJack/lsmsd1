@@ -174,8 +174,10 @@ public class Client extends Thread
 			new ResponseMessage("You can only edit restaurants that you own.").send(outputStream);
 			return;
 		}
-		restaurantManager.update(restaurant);
-		new ResponseMessage().send(outputStream);
+		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		restaurant_.merge(restaurant);
+		restaurantManager.update(restaurant_);
+		new ResponseMessage(restaurant_.toCommonEntity()).send(outputStream);
 	}
 	
 	private void handleListOwnReservationsRequest(RequestMessage reqMsg)

@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
@@ -64,10 +65,15 @@ public class Restaurant_ extends Entity_
 	@Filter(name="activeReservations", condition="date >= :currentDate")
 	protected List<Reservation_> activeReservations = new ArrayList<>();
 	
-	public Restaurant_(String name, User_ owner, String genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
+	public Restaurant_()
 	{
+		this(0, null, null, null, null, null, null, 0, null);
+	}
+	
+	public Restaurant_(int id, String name, String genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
+	{
+		super(id);
 		this.name = name;
-		this.owner = owner;
 		this.genre = genre;
 		this.price = price;
 		this.city = city;
@@ -80,12 +86,24 @@ public class Restaurant_ extends Entity_
 	@Override
 	public Restaurant toCommonEntity()
 	{
-		return new Restaurant(getName(), getOwner().toCommonEntity(), getGenre(), getPrice(), getCity(), getAddress(), getDescription(), getSeats(), getOpeningHours());
+		return new Restaurant(getId(), getName(), getOwner().getUsername(), getGenre(), getPrice(), getCity(), getAddress(), getDescription(), getSeats(), getOpeningHours());
 	}
 	
 	public static Restaurant_ fromCommonEntity(Restaurant restaurant)
 	{
-		return new Restaurant_(restaurant.getName(), null, restaurant.getGenre(), restaurant.getPrice(), restaurant.getCity(), restaurant.getAddress(), restaurant.getDescription(), restaurant.getSeats(), restaurant.getOpeningHours());
+		return new Restaurant_(restaurant.getId(), restaurant.getName(), restaurant.getGenre(), restaurant.getPrice(), restaurant.getCity(), restaurant.getAddress(), restaurant.getDescription(), restaurant.getSeats(), restaurant.getOpeningHours());
+	}
+	
+	public void merge(Restaurant restaurant)
+	{
+		setName(restaurant.getName());
+		setGenre(restaurant.getGenre());
+		setPrice(restaurant.getPrice());
+		setCity(restaurant.getCity());
+		setAddress(restaurant.getAddress());
+		setDescription(restaurant.getDescription());
+		setSeats(restaurant.getSeats());
+		setOpeningHours(restaurant.getOpeningHours());
 	}
 	
 	public void setOwner(User_ owner)

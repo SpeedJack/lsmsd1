@@ -1,5 +1,6 @@
 package ristogo.ui;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.SortedSet;
 
@@ -28,10 +29,17 @@ public class Console
 	
 	public static int askInteger(String prompt)
 	{
-		printPrompt(prompt);
-		int res = scanner.nextInt();
-		scanner.nextLine(); // consume input buffer till new line
-		return res;
+		while (true) {
+			printPrompt(prompt);
+			try {
+				int res = scanner.nextInt();
+				return res;
+			} catch (InputMismatchException ex) {
+				Console.println("Not a number.");
+			} finally {
+				scanner.nextLine();
+			}
+		}
 	}
 	
 	public static boolean askConfirm()

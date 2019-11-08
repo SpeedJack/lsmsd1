@@ -14,8 +14,6 @@ public class User extends Entity
 
 	protected String username;
 	protected String password;
-	protected List<Restaurant> restaurants = new ArrayList<>();
-	protected List<Reservation> activeReservations = new ArrayList<>();
 	protected boolean hasRestaurants;
 	
 	public User()
@@ -107,11 +105,6 @@ public class User extends Entity
 		return password.matches("^[a-fA-F0-9]{64}$");
 	}
 	
-	public List<Restaurant> getRestaurants()
-	{
-		return restaurants;
-	}
-	
 	public boolean hasRestaurants()
 	{
 		return hasRestaurants;
@@ -120,35 +113,5 @@ public class User extends Entity
 	public boolean isOwner()
 	{
 		return hasRestaurants();
-	}
-	
-	public void addRestaurants(Restaurant... restaurants)
-	{
-		if (restaurants != null)
-			for (Restaurant restaurant: restaurants)
-				this.restaurants.add(restaurant);
-	}
-	
-	public void setRestaurants(List<Restaurant> restaurants)
-	{
-		this.restaurants = restaurants;
-	}
-	
-	public boolean hasRestaurant(int restaurantId)
-	{
-		for (Restaurant restaurant: restaurants)
-			if (restaurant.getId() == restaurantId)
-				return true;
-		return false;
-	}
-	
-	public boolean hasRestaurant(Restaurant restaurant)
-	{
-		return hasRestaurant(restaurant.getId());
-	}
-	
-	public List<Reservation> getActiveReservations()
-	{
-		return activeReservations;
 	}
 }

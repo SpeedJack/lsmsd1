@@ -62,7 +62,7 @@ public class UserManager extends EntityManager
 	
 	public void update(User user)
 	{
-		super.update(get(user));
+		super.update(User_.fromCommonEntity(user));
 	}
 	
 	public void insert(User user)

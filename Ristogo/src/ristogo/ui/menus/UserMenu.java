@@ -31,22 +31,12 @@ public class UserMenu extends Menu
 	
 	private void handleViewOwnReservations(MenuEntry entry)
 	{
-		ResponseMessage resMsg = protocol.getOwnActiveReservations();
-		if (resMsg.getEntityCount() < 1) {
-			Console.println("No active reservations to show.");
-			return;
-		}
-		new ReservationListMenu(resMsg.getEntities().toArray(new Reservation[0])).show();
+		new ReservationListMenu().show();
 	}
 	
 	private void handleManageRestaurants(MenuEntry entry)
 	{
-		ResponseMessage resMsg = protocol.getOwnRestaurants();
-		if (resMsg.getEntityCount() < 1) {
-			Console.println("No restaurants to show.");
-			return;
-		}
-		new RestaurantListMenu(resMsg.getEntities().toArray(new Restaurant[0])).show();
+		new RestaurantListMenu().show();
 	}
 
 }

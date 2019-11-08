@@ -23,10 +23,8 @@ public class RestaurantMenu extends Menu
 	{
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		menu.add(new MenuEntry(1, "View details", this::handleViewRestaurant));
-		if (restaurant.isOwner(loggedUser)) {
-			menu.add(new MenuEntry(2, "Edit restaurant", true, this::handleEditRestaurant));
-			//menu.add(new MenuEntry(3, "Delete restaurant", this::handleDeleteRestaurant));
-		}
+		menu.add(new MenuEntry(2, "Edit restaurant", true, this::handleEditRestaurant));
+		//menu.add(new MenuEntry(3, "Delete restaurant", this::handleDeleteRestaurant));
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
@@ -39,12 +37,16 @@ public class RestaurantMenu extends Menu
 	
 	private void handleEditRestaurant(MenuEntry entry)
 	{
+		Restaurant old = restaurant;
 		new RestaurantForm(restaurant).show();
 		ResponseMessage resMsg = protocol.editRestaurant(restaurant);
-		if (resMsg.isSuccess())
+		if (resMsg.isSuccess()) {
 			Console.println("Restaurant successfully saved!");
-		else
+			restaurant = (Restaurant)resMsg.getEntity();
+		} else {
 			Console.println(resMsg.getErrorMsg());
+			restaurant = old;
+		}
 		Console.newLine();
 	}
 

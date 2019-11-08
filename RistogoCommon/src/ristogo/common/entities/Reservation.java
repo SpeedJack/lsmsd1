@@ -8,39 +8,40 @@ public class Reservation extends Entity
 {
 	private static final long serialVersionUID = -1379979727099899831L;
 
-	protected User user;
-	protected Restaurant restaurant;
+	protected String userName;
+	protected String restaurantName;
 	protected LocalDate date;
 	protected ReservationTime time;
 	protected int seats;
 	
-	public Reservation(User user, Restaurant restaurant, LocalDate date, ReservationTime time, int seats)
+	public Reservation(int id, String userName, String restaurantName, LocalDate date, ReservationTime time, int seats)
 	{
-		this.user = user;
-		this.restaurant = restaurant;
+		super(id);
+		this.userName = userName;
+		this.restaurantName = restaurantName;
 		this.date = date;
 		this.time = time;
 		this.seats = seats;
 	}
 
-	public void setUser(User user)
+	public void setUserName(String userName)
 	{
-		this.user = user;
+		this.userName = userName;
 	}
 
-	public User getUser()
+	public String getUserName()
 	{
-		return user;
+		return userName;
 	}
 
-	public void setRestaurant(Restaurant restaurant)
+	public void setRestaurantName(String restaurantName)
 	{
-		this.restaurant = restaurant;
+		this.restaurantName = restaurantName;
 	}
 
-	public Restaurant getRestaurant()
+	public String getRestaurantName()
 	{
-		return restaurant;
+		return restaurantName;
 	}
 
 	public void setDate(LocalDate date)

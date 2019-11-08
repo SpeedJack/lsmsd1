@@ -5,28 +5,27 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import ristogo.common.entities.Entity;
 import ristogo.common.entities.Reservation;
+import ristogo.common.net.ResponseMessage;
+import ristogo.ui.Console;
 
 public class ReservationListMenu extends Menu
 {
-	private List<Reservation> reservations = new ArrayList<>();
-	
-	public ReservationListMenu(Reservation... reservations)
-	{
-		super("Select a reservation to view or edit");
-		if (reservations != null)
-			for (Reservation reservation: reservations)
-				this.reservations.add(reservation);
-	}
-
 	@Override
 	protected SortedSet<MenuEntry> getMenu()
 	{
+		ResponseMessage resMsg = protocol.getOwnActiveReservations();
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i = 1;
-		for (Reservation reservation: reservations) {
-			menu.add(new MenuEntry(i, reservation.getRestaurant() + " " + reservation.getDate().toString() + " " + reservation.getTime().toString(), this::handleReservationSelection, reservation));
-			i++;
+		if (resMsg.getEntityCount() < 1) {
+			Console.println("No active reservations to show.");
+		} else {
+			for (Entity entity: resMsg.getEntities()) {
+				Reservation reservation = (Reservation)entity;
+				menu.add(new MenuEntry(i, reservation.getRestaurantName() + " " + reservation.getDate() + " " + reservation.getTime(), this::handleReservationSelection, reservation));
+				i++;
+			}
 		}
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;

@@ -37,7 +37,7 @@ public class RestaurantManager extends EntityManager
 	
 	public void update(Restaurant restaurant)
 	{
-		super.update(get(restaurant));
+		super.update(Restaurant_.fromCommonEntity(restaurant));
 	}
 	
 	public void insert(Restaurant restaurant)

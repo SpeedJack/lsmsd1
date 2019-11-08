@@ -10,7 +10,7 @@ public class Restaurant extends Entity
 {
 	private static final long serialVersionUID = -2839130753004235292L;
 	
-	private User owner;
+	private String ownerName;
 	private String name;
 	private String genre;
 	private Price price;
@@ -21,10 +21,11 @@ public class Restaurant extends Entity
 	private OpeningHours openingHours;
 	protected List<Reservation> activeReservations = new ArrayList<>();
 	
-	public Restaurant(String name, User owner, String genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
+	public Restaurant(int id, String name, String ownerName, String genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
 	{
+		super(id);
 		this.name = name;
-		this.owner = owner;
+		this.ownerName = ownerName;
 		this.genre = genre;
 		this.price = price;
 		this.city = city;
@@ -34,14 +35,14 @@ public class Restaurant extends Entity
 		this.openingHours = openingHours;
 	}
 	
-	public void setOwner(User owner)
+	public void setOwnerName(String ownerName)
 	{
-		this.owner = owner;
+		this.ownerName = ownerName;
 	}
 	
-	public User getOwner()
+	public String getOwnerName()
 	{
-		return owner;
+		return ownerName;
 	}
 	
 	public void setName(String name)
@@ -124,15 +125,11 @@ public class Restaurant extends Entity
 		this.openingHours = openingHours;
 	}
 	
-	public boolean isOwner(User user)
-	{
-		return owner.getId() == user.getId();
-	}
-	
 	@Override
 	public String toString()
 	{
 		return "Name: " + getName() + "\n" +
+			"Owner: " + getOwnerName() + "\n" + 
 			"Genre: " + getGenre() + "\n" +
 			"Price: " + getPrice().toString() + "\n" +
 			"City: " + getCity() + "\n" +

@@ -35,8 +35,14 @@ public class Reservation_ extends Entity_
 	@Column(name = "seats")
 	protected int seats;
 	
-	public Reservation_(User_ user, Restaurant_ restaurant, LocalDate date, ReservationTime time, int seats)
+	public Reservation_()
 	{
+		this(0, null, null, null, null, 0);
+	}
+	
+	public Reservation_(int id, User_ user, Restaurant_ restaurant, LocalDate date, ReservationTime time, int seats)
+	{
+		super(id);
 		this.user = user;
 		this.restaurant = restaurant;
 		this.date = date;
@@ -47,7 +53,7 @@ public class Reservation_ extends Entity_
 	@Override
 	public Reservation toCommonEntity()
 	{
-		return new Reservation(getUser().toCommonEntity(), getRestaurant().toCommonEntity(), getDate(), getTime(), getSeats());
+		return new Reservation(getId(), getUser().getUsername(), getRestaurant().getName(), getDate(), getTime(), getSeats());
 	}
 
 	public void setUser(User_ user)
