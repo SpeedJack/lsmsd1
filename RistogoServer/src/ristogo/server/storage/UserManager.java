@@ -7,7 +7,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 
-import ristogo.common.entities.User;
 import ristogo.server.storage.entities.User_;
 
 public class UserManager extends EntityManager
@@ -43,30 +42,5 @@ public class UserManager extends EntityManager
 	public User_ get(User_ user)
 	{
 		return get(user.getId());
-	}
-	
-	public User_ get(User user)
-	{
-		return get(user.getId());
-	}
-	
-	public void delete(User_ user)
-	{
-		delete(user.getId());
-	}
-	
-	public void delete(User user)
-	{
-		delete(user.getId());
-	}
-	
-	public void update(User user)
-	{
-		super.update(User_.fromCommonEntity(user));
-	}
-	
-	public void insert(User user)
-	{
-		super.insert(User_.fromCommonEntity(user));
 	}
 }

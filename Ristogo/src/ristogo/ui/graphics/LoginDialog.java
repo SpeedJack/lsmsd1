@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.*;
-
+import ristogo.common.entities.Customer;
 import ristogo.common.entities.User;
 import ristogo.config.Configuration;
 import ristogo.ui.graphics.config.GUIConfig;
@@ -107,7 +107,7 @@ public class LoginDialog extends Dialog<User>{
 		setResultConverter(dialogButton -> {
 		    if (dialogButton == loginButtonType) {
 		    	//MANDARE COMANDO LOGIN
-		        return new User("ciao", "ciao");
+		        return new Customer("ciao", "ciao");
 		    }
 		    else if(dialogButton == registerButtonType) {
 		    	RegisterDialog register = new RegisterDialog();

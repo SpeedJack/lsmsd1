@@ -41,7 +41,7 @@ public class RistogoGUI extends Application
 		
 		loggedUser = login.getResult();
 		if(loggedUser!= null) {
-			if(loggedUser.hasRestaurants()) {
+			if(loggedUser.isOwner()) {
 				buildRestaurantOwnerInterface();
 			}
 			else {

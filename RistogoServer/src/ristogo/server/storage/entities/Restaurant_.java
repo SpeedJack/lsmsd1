@@ -12,7 +12,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
@@ -83,27 +82,21 @@ public class Restaurant_ extends Entity_
 		this.openingHours = openingHours;
 	}
 	
-	@Override
 	public Restaurant toCommonEntity()
 	{
 		return new Restaurant(getId(), getName(), getOwner().getUsername(), getGenre(), getPrice(), getCity(), getAddress(), getDescription(), getSeats(), getOpeningHours());
 	}
 	
-	public static Restaurant_ fromCommonEntity(Restaurant restaurant)
+	public void merge(Restaurant r)
 	{
-		return new Restaurant_(restaurant.getId(), restaurant.getName(), restaurant.getGenre(), restaurant.getPrice(), restaurant.getCity(), restaurant.getAddress(), restaurant.getDescription(), restaurant.getSeats(), restaurant.getOpeningHours());
-	}
-	
-	public void merge(Restaurant restaurant)
-	{
-		setName(restaurant.getName());
-		setGenre(restaurant.getGenre());
-		setPrice(restaurant.getPrice());
-		setCity(restaurant.getCity());
-		setAddress(restaurant.getAddress());
-		setDescription(restaurant.getDescription());
-		setSeats(restaurant.getSeats());
-		setOpeningHours(restaurant.getOpeningHours());
+		setName(r.getName());
+		setGenre(r.getGenre());
+		setPrice(r.getPrice());
+		setCity(r.getCity());
+		setAddress(r.getAddress());
+		setDescription(r.getDescription());
+		setSeats(r.getSeats());
+		setOpeningHours(r.getOpeningHours());
 	}
 	
 	public void setOwner(User_ owner)

@@ -21,6 +21,11 @@ public class Restaurant extends Entity
 	private OpeningHours openingHours;
 	protected List<Reservation> activeReservations = new ArrayList<>();
 	
+	public Restaurant(String name, String ownerName)
+	{
+		this(0, name, ownerName, null, null, null, null, null, 0, null);
+	}
+	
 	public Restaurant(int id, String name, String ownerName, String genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
 	{
 		super(id);

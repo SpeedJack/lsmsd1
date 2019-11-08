@@ -8,17 +8,26 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class User extends Entity
+public abstract class User extends Entity
 {
 	private static final long serialVersionUID = -1609868778409848632L;
 
 	protected String username;
 	protected String password;
-	protected boolean hasRestaurants;
 	
 	public User()
 	{
-		this(0, "", null);
+		this(null);
+	}
+	
+	public User(String username)
+	{
+		this(username, null);
+	}
+	
+	public User(int id, String username)
+	{
+		this(id, username, null);
 	}
 	
 	public User(String username, String password)
@@ -28,16 +37,38 @@ public class User extends Entity
 	
 	public User(int id, String username, String password)
 	{
-		this(id, username, password, false);
-	}
-	
-	public User(int id, String username, String password, boolean hasRestaurants)
-	{
 		super(id);
 		setUsername(username);
 		if (password != null)
 			setPassword(password);
-		this.hasRestaurants = hasRestaurants;
+	}
+	
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+	
+	public boolean setPassword(String password)
+	{
+		if (!validatePassword(password))
+			return false;
+		setPasswordHash(hashPassword(password));
+		return true;
+	}
+	
+	public void setPasswordHash(String passwordHash)
+	{
+		password = passwordHash;
+	}
+	
+	public String getUsername()
+	{
+		return this.username;
+	}
+	
+	public String getPasswordHash()
+	{
+		return this.password;
 	}
 	
 	public final static String hashPassword(String password)
@@ -67,29 +98,6 @@ public class User extends Entity
 		return username != null && username.matches("^[A-Za-z0-9]{3,32}$");
 	}
 	
-	public void setUsername(String username)
-	{
-		this.username = username;
-	}
-	
-	public boolean setPassword(String password)
-	{
-		if (!validatePassword(password))
-			return false;
-		this.password = hashPassword(password);
-		return true;
-	}
-	
-	public String getUsername()
-	{
-		return this.username;
-	}
-	
-	public String getPasswordHash()
-	{
-		return this.password;
-	}
-	
 	public boolean checkPassword(String password)
 	{
 		return this.password.equals(hashPassword(password));
@@ -105,13 +113,8 @@ public class User extends Entity
 		return password.matches("^[a-fA-F0-9]{64}$");
 	}
 	
-	public boolean hasRestaurants()
-	{
-		return hasRestaurants;
-	}
-	
 	public boolean isOwner()
 	{
-		return hasRestaurants();
+		return (this instanceof Owner);
 	}
 }

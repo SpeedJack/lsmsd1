@@ -21,7 +21,7 @@ public class Message implements Serializable
 {
 	private static final long serialVersionUID = -5181705765357502182L;
 	
-	private final List<Entity> entities = new ArrayList<>();
+	protected final List<Entity> entities = new ArrayList<>();
 	
 	public Message(Entity... entities)
 	{

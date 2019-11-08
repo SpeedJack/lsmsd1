@@ -7,7 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
@@ -16,6 +15,8 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.ParamDef;
 
+import ristogo.common.entities.Customer;
+import ristogo.common.entities.Owner;
 import ristogo.common.entities.User;
 
 
@@ -31,14 +32,14 @@ public class User_ extends Entity_
 	@Column(name="password")
 	protected String password;
 	
-	@OneToMany(mappedBy="owner", fetch=FetchType.LAZY)
-	@LazyCollection(LazyCollectionOption.EXTRA)
-	protected List<Restaurant_> restaurants = new ArrayList<>();
-	
 	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
 	@LazyCollection(LazyCollectionOption.EXTRA)
 	@Filter(name="activeReservations", condition="date >= :currentDate")
 	protected List<Reservation_> activeReservations = new ArrayList<>();
+	
+	@OneToMany(mappedBy="owner", fetch=FetchType.LAZY)
+	@LazyCollection(LazyCollectionOption.EXTRA)
+	protected List<Restaurant_> restaurants = new ArrayList<>();
 	
 	@Formula(value="(SELECT COUNT(*) FROM restaurants r WHERE r.ownerId = id)")
 	protected int restaurantCount;
@@ -50,7 +51,8 @@ public class User_ extends Entity_
 	
 	public User_(String username, String password)
 	{
-		this(0, username, password);
+		setUsername(username);
+		setPasswordHash(password);
 	}
 	
 	public User_(int id, String username, String password)
@@ -60,15 +62,16 @@ public class User_ extends Entity_
 		setPasswordHash(password);
 	}
 	
-	@Override
 	public User toCommonEntity()
 	{
-		return new User(getId(), getUsername(), null, getRestaurantCount() > 0);
+		return isOwner() ? new Owner(getId(), getUsername()) : new Customer(getId(), getUsername());
+		
 	}
 	
-	public static User_ fromCommonEntity(User user)
+	public void merge(User user)
 	{
-		return new User_(user.getId(), user.getUsername(), user.getPasswordHash());
+		setUsername(user.getUsername());
+		setPasswordHash(user.getPasswordHash());
 	}
 	
 	public void setUsername(String username)
@@ -92,6 +95,16 @@ public class User_ extends Entity_
 	public String getPasswordHash()
 	{
 		return this.password;
+	}
+
+	public boolean isOwner()
+	{
+		return hasRestaurants();
+	}
+	
+	public List<Reservation_> getActiveReservations()
+	{
+		return activeReservations;
 	}
 	
 	public List<Restaurant_> getRestaurants()
@@ -132,10 +145,5 @@ public class User_ extends Entity_
 	public boolean hasRestaurant(Restaurant_ restaurant)
 	{
 		return hasRestaurant(restaurant.getId());
-	}
-	
-	public List<Reservation_> getActiveReservations()
-	{
-		return activeReservations;
 	}
 }

@@ -1,6 +1,5 @@
 package ristogo.server.storage;
 
-import ristogo.common.entities.Restaurant;
 import ristogo.server.storage.entities.Restaurant_;
 
 public class RestaurantManager extends EntityManager
@@ -20,28 +19,8 @@ public class RestaurantManager extends EntityManager
 		return get(restaurant.getId());
 	}
 	
-	public Restaurant_ get(Restaurant restaurant)
-	{
-		return get(restaurant.getId());
-	}
-	
 	public void delete(Restaurant_ restaurant)
 	{
 		delete(restaurant.getId());
-	}
-	
-	public void delete(Restaurant restaurant)
-	{
-		delete(restaurant.getId());
-	}
-	
-	public void update(Restaurant restaurant)
-	{
-		super.update(Restaurant_.fromCommonEntity(restaurant));
-	}
-	
-	public void insert(Restaurant restaurant)
-	{
-		super.insert(Restaurant_.fromCommonEntity(restaurant));
 	}
 }

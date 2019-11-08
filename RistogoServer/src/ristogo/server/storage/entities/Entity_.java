@@ -6,8 +6,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
-import ristogo.common.entities.Entity;
-
 @MappedSuperclass
 public abstract class Entity_
 {
@@ -35,6 +33,4 @@ public abstract class Entity_
 	{
 		return id;
 	}
-	
-	public abstract Entity toCommonEntity();
 }

@@ -16,7 +16,7 @@ public class UserMenu extends Menu
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		menu.add(new MenuEntry(1, "View your currently active reservations", this::handleViewOwnReservations));
 		menu.add(new MenuEntry(2, "Reserve a table"));
-		if (loggedUser.hasRestaurants())
+		if (loggedUser.isOwner())
 			menu.add(new MenuEntry(3, "Manage your restaurants", this::handleManageRestaurants));
 		menu.add(new MenuEntry(0, "Log-Out", true, this::handleLogOut));
 		return menu;

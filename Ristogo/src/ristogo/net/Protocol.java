@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+import ristogo.common.entities.Customer;
 import ristogo.common.entities.Entity;
 import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
@@ -29,7 +30,7 @@ public class Protocol implements AutoCloseable
 	
 	public ResponseMessage performLogin(String username, String password)
 	{
-		User user = new User(username, password);
+		User user = new Customer(username, password);
 		RequestMessage reqMsg = new RequestMessage(ActionRequest.LOGIN);
 		reqMsg.addEntity(user);
 		reqMsg.send(outputStream);
@@ -47,7 +48,7 @@ public class Protocol implements AutoCloseable
 	
 	public ResponseMessage registerUser(String username, String password)
 	{
-		User user = new User(username, password);
+		User user = new Customer(username, password);
 		RequestMessage reqMsg = new RequestMessage(ActionRequest.REGISTER);
 		reqMsg.addEntity(user);
 		reqMsg.send(outputStream);

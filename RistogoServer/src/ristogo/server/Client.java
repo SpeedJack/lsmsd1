@@ -19,6 +19,8 @@ import ristogo.common.net.ResponseMessage;
 import ristogo.server.storage.ReservationManager;
 import ristogo.server.storage.RestaurantManager;
 import ristogo.server.storage.UserManager;
+import ristogo.server.storage.entities.Entity_;
+import ristogo.server.storage.entities.Reservation_;
 import ristogo.server.storage.entities.Restaurant_;
 import ristogo.server.storage.entities.User_;
 
@@ -70,123 +72,112 @@ public class Client extends Thread
 			Thread.currentThread().interrupt();
 			return;
 		}
-
-		switch (reqMsg.getAction()) {
-		case LOGIN:
-			handleLoginRequest(reqMsg);
-			break;
-		case LOGOUT:
-			handleLogoutRequest(reqMsg);
-			break;
-		case REGISTER:
-			handleRegisterRequest(reqMsg);
-			break;
-		case LIST_RESTAURANTS:
-			handleListRestaurantsRequest(reqMsg);
-			break;
-		case EDIT_RESTAURANT:
-			handleEditRestaurantRequest(reqMsg);
-			break;
-		case LIST_OWN_RESERVATIONS:
-			handleListOwnReservationsRequest(reqMsg);
-			break;
-		/*case DELETE_RESTAURANT:
-			handleDeleteRestaurantRequest(reqMsg);
-			break;*/
-		default:
-			new ResponseMessage("Invalid request.").send(outputStream);
-		}
-	}
-	
-	private void handleLoginRequest(RequestMessage reqMsg)
-	{
-		User user = (User)reqMsg.getEntity();
-		if (user == null) {
+		if (!reqMsg.isValid()) {
 			new ResponseMessage("Invalid request.").send(outputStream);
 			return;
 		}
-
+		ResponseMessage resMsg;
+		switch (reqMsg.getAction()) {
+		case LOGIN:
+			resMsg = handleLoginRequest(reqMsg);
+			break;
+		case LOGOUT:
+			resMsg = handleLogoutRequest(reqMsg);
+			break;
+		case REGISTER:
+			resMsg = handleRegisterRequest(reqMsg);
+			break;
+		case LIST_RESTAURANTS:
+			resMsg = handleListRestaurantsRequest(reqMsg);
+			break;
+		case EDIT_RESTAURANT:
+			resMsg = handleEditRestaurantRequest(reqMsg);
+			break;
+		case LIST_OWN_RESERVATIONS:
+			resMsg = handleListOwnReservationsRequest(reqMsg);
+			break;
+		/*case DELETE_RESTAURANT:
+			resMsg = handleDeleteRestaurantRequest(reqMsg);
+			break;*/
+		default:
+			resMsg = new ResponseMessage("Invalid request.");
+		}
+		resMsg.send(outputStream);
+	}
+	
+	private ResponseMessage handleLoginRequest(RequestMessage reqMsg)
+	{
+		if (loggedUser != null)
+			return new ResponseMessage("You are already logged in.");
+		User user = (User)reqMsg.getEntity();
 		User_ savedUser = userManager.getUserByUsername(user.getUsername());
 		if (savedUser != null && user.checkPasswordHash(savedUser.getPasswordHash())) {
 			loggedUser = savedUser;
-			new ResponseMessage(loggedUser.toCommonEntity()).send(outputStream);
-			return;
+			return new ResponseMessage(loggedUser.toCommonEntity());
 		}
-		new ResponseMessage("Invalid username or password.").send(outputStream);
+		return new ResponseMessage("Invalid username or password.");
 	}
 	
-	private void handleLogoutRequest(RequestMessage reqMsg)
+	private ResponseMessage handleLogoutRequest(RequestMessage reqMsg)
 	{
 		loggedUser = null;
-		new ResponseMessage().send(outputStream);
+		return new ResponseMessage();
 	}
 	
-	private void handleRegisterRequest(RequestMessage reqMsg)
+	private ResponseMessage handleRegisterRequest(RequestMessage reqMsg)
 	{
+		if (loggedUser != null)
+			return new ResponseMessage("You are already logged in.");
 		User user = (User)reqMsg.getEntity();
-		if (user == null) {
-			new ResponseMessage("Invalid request.").send(outputStream);
-			return;
-		}
-		if (user.getUsername().length() < 3) {
-			new ResponseMessage("Username must be at least 3 characters long.").send(outputStream);
-			return;
-		}
-		if (!user.hasValidPassword()) {
-			new ResponseMessage("Invalid password.").send(outputStream);
-			return;
-		}
+		if (user.getUsername().length() < 3)
+			return new ResponseMessage("Username must be at least 3 characters long.");
+		if (!user.hasValidPassword())
+			new ResponseMessage("Invalid password.");
 		
 		try {
-			userManager.insert(user);
+			User_ savedUser = new User_();
+			savedUser.merge(user);
+			userManager.insert(savedUser);
 		} catch (PersistenceException ex) {
-			new ResponseMessage("Username already in use.").send(outputStream);
-			return;
+			return new ResponseMessage("Username already in use.");
 		}
-		new ResponseMessage(user).send(outputStream);
+		return new ResponseMessage(user);
 	}
 	
-	private void handleListRestaurantsRequest(RequestMessage reqMsg)
+	private ResponseMessage handleListRestaurantsRequest(RequestMessage reqMsg)
 	{
-		if (loggedUser == null) {
-			new ResponseMessage("You must be logged in to perform this action.").send(outputStream);
-			return;
-		}
+		if (loggedUser == null)
+			return new ResponseMessage("You must be logged in to perform this action.");
 		ResponseMessage resMsg = new ResponseMessage();
 		List<Restaurant_> restaurants = loggedUser.getRestaurants();
 		for (Restaurant_ restaurant: restaurants)
 			resMsg.addEntity(restaurant.toCommonEntity());
-		resMsg.send(outputStream);
+		return resMsg;
 	}
 	
-	private void handleEditRestaurantRequest(RequestMessage reqMsg)
+	private ResponseMessage handleEditRestaurantRequest(RequestMessage reqMsg)
 	{
-		if (loggedUser == null) {
-			new ResponseMessage("You must be logged in to perform this action.").send(outputStream);
-			return;
-		}
+		if (loggedUser == null)
+			return new ResponseMessage("You must be logged in to perform this action.");
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
-		if (restaurant == null) {
-			new ResponseMessage("Invalid request.").send(outputStream);
-			return;
-		}
-		if (!loggedUser.hasRestaurant(restaurant.getId())) {
-			new ResponseMessage("You can only edit restaurants that you own.").send(outputStream);
-			return;
-		}
+		if (!loggedUser.hasRestaurant(restaurant.getId()))
+			return new ResponseMessage("You can only edit restaurants that you own.");
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
 		restaurant_.merge(restaurant);
+		restaurant_.setOwner(loggedUser);
 		restaurantManager.update(restaurant_);
-		new ResponseMessage(restaurant_.toCommonEntity()).send(outputStream);
+		return new ResponseMessage(restaurant_.toCommonEntity());
 	}
 	
-	private void handleListOwnReservationsRequest(RequestMessage reqMsg)
+	private ResponseMessage handleListOwnReservationsRequest(RequestMessage reqMsg)
 	{
-		if (loggedUser == null) {
-			new ResponseMessage("You must be logged in to perform this action.").send(outputStream);
-			return;
-		}
-		new ResponseMessage(loggedUser.getActiveReservations().toArray(new Entity[0])).send(outputStream);
+		if (loggedUser == null)
+			return new ResponseMessage("You must be logged in to perform this action.");
+		ResponseMessage resMsg = new ResponseMessage();
+		List<Reservation_> reservations = loggedUser.getActiveReservations();
+		for (Reservation_ reservation: reservations)
+			resMsg.addEntity(reservation.toCommonEntity());
+		return resMsg;
 	}
 	
 	/*private void handleDeleteRestaurantRequest(RequestMessage reqMsg)
