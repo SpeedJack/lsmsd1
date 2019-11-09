@@ -1,6 +1,7 @@
 package ristogo.ui.graphics;
 
 import javafx.application.*;
+import javafx.event.ActionEvent;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -24,11 +25,12 @@ public class LoginDialog extends Dialog<User>{
 	
 		Configuration config = Configuration.getConfig();
 		DialogPane dialogPane = getDialogPane();
+
 		Stage stage = (Stage)dialogPane.getScene().getWindow();
 		stage.getIcons().add(new Image(this.getClass().getResource("/resources/logo.png").toString()));
 		
 		dialogPane.setStyle(GUIConfig.getInvertedCSSBgColor());
-		
+
 		setTitle("RistoGo - Login");
 		setHeaderText("Welcome to Ristogo!\n" +
 			"The application that allows you to book tables\n" +
@@ -68,6 +70,12 @@ public class LoginDialog extends Dialog<User>{
 		password.setFont(GUIConfig.getTextFont());
 		password.setMaxWidth(200);
 		
+		Label error = new Label("Error: Login Failed. Retry");
+		error.setFont(GUIConfig.getFormTitleFont());
+		error.setTextFill(GUIConfig.getBgColor());
+		error.setStyle("-fx-background-color:   red;");
+		error.setVisible(false);
+		
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
@@ -78,25 +86,34 @@ public class LoginDialog extends Dialog<User>{
 		grid.add(l2, 0, 1);
 		grid.add(password, 1, 1);
 		
-		Label error = new Label("Error: Login Failed. Retry");
-		error.setFont(GUIConfig.getFormTitleFont());
-		error.setTextFill(GUIConfig.getBgColor());
-		error.setStyle("-fx-background-color:   red;");
-		error.setVisible(false);
+		Button registerButton = new Button("Register");
+		registerButton.setStyle(GUIConfig.getCSSFontFamily()
+							    +GUIConfig.getCSSBgColor()
+								+GUIConfig.getCSSFgColor()
+								+GUIConfig.getCSSFontSizeNormal());
+		HBox registerBox=new HBox();
+		registerBox.getChildren().add(registerButton);
+		registerBox.setAlignment(Pos.BASELINE_RIGHT);
 		
-		getDialogPane().setContent(grid);
-		//getDialogPane().setContent(error);
+		
+		VBox content = new VBox(10);
+		content.getChildren().addAll(grid,error, registerBox);
+		dialogPane.setContent(content);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////BUTTONS////////////////////////////////////////////////////////		
 		ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
-		ButtonType registerButtonType = new ButtonType("Register", ButtonData.OK_DONE);
-		dialogPane.getButtonTypes().addAll(loginButtonType, registerButtonType, ButtonType.CANCEL);
-		
+		dialogPane.getButtonTypes().addAll(loginButtonType, ButtonType.CLOSE);
+
 		ButtonBar buttonBar = (ButtonBar)dialogPane.lookup(".button-bar");
 		buttonBar.getButtons().forEach(b -> b.setStyle(GUIConfig.getCSSFontFamily()
 														+GUIConfig.getCSSBgColor()
 														+GUIConfig.getCSSFgColor()
 														+GUIConfig.getCSSFontSizeNormal()));
+		
+		Node closeButton = getDialogPane().lookupButton(ButtonType.CLOSE);
+        closeButton.managedProperty().bind(closeButton.visibleProperty());
+        closeButton.setVisible(false);
+        
 		Node loginButton = getDialogPane().lookupButton(loginButtonType);
 		loginButton.setDisable(true);
 		username.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -104,17 +121,28 @@ public class LoginDialog extends Dialog<User>{
 		});
 		Platform.runLater(() -> username.requestFocus());
 		
+		registerButton.setOnAction((ActionEvent ev) -> {
+									RegisterDialog register = new RegisterDialog();
+									hide();
+
+									register.showAndWait();
+									
+									int res = register.getResult();
+									showAndWait();	
+						    		});
+		
 		setResultConverter(dialogButton -> {
 		    if (dialogButton == loginButtonType) {
 		    	//MANDARE COMANDO LOGIN
 		        return new Customer("ciao", "ciao");
 		    }
-		    else if(dialogButton == registerButtonType) {
-		    	RegisterDialog register = new RegisterDialog();
+		    else if(dialogButton == ButtonType.CLOSE) {
+			    return null; 
 		    }
-		    return null;
-		    
+			return null;
+
 		});	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	}
+	}	
+	
 }

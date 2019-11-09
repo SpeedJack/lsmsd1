@@ -191,7 +191,7 @@ public class RistogoGUI extends Application
 		title2.setFont(GUIConfig.getSubtitleFont());
 		title2.setTextFill(GUIConfig.getFgColor());
 		
-		Label nameUser = new Label("AAAAAAAAAAAAAAAAAAAAAAAA");
+		Label nameUser = new Label(loggedUser.getUsername());
 		nameUser.setFont(GUIConfig.getBoldSubtitleFont());
 		nameUser.setTextFill(GUIConfig.getFgColor());
 		
