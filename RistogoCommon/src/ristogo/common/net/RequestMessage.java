@@ -29,18 +29,18 @@ public class RequestMessage extends Message
 		case LOGIN:
 			return getEntityCount() == 1 && getEntity() instanceof User;
 		case REGISTER:
-			if (getEntityCount() == 1 && getEntity() instanceof User)
+			if (getEntityCount() == 1 && getEntity() instanceof Customer)
 				return true;
 			if (getEntityCount() != 2)
 				return false;
-			boolean hasUser = false;
+			boolean hasOwner = false;
 			boolean hasRestaurant = false;
 			for (Entity entity: getEntities())
-				if (entity instanceof User)
-					hasUser = true;
+				if (entity instanceof Owner)
+					hasOwner = true;
 				else if (entity instanceof Restaurant)
 					hasRestaurant = true;
-			return hasUser && hasRestaurant;
+			return hasOwner && hasRestaurant;
 				
 		case EDIT_RESTAURANT:
 			return getEntityCount() == 1 && getEntity() instanceof Restaurant;

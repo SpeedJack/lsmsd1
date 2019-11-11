@@ -3,6 +3,7 @@ package ristogo.ui.menus.forms;
 import java.util.LinkedHashSet;
 
 import ristogo.common.entities.User;
+import ristogo.common.entities.enums.UserType;
 import ristogo.ui.Console;
 
 public class RegisterForm extends TextForm
@@ -18,6 +19,7 @@ public class RegisterForm extends TextForm
 		LinkedHashSet<FormField> fields = new LinkedHashSet<FormField>();
 		fields.add(new FormField("USERNAME", this::validateUsername));
 		fields.add(new FormField("PASSWORD", true, this::validatePassword));
+		fields.add(new ChoiceFormField<UserType>("TYPE", UserType.CUSTOMER, UserType.class));
 		return fields;
 	}
 	

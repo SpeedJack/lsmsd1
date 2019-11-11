@@ -21,9 +21,9 @@ public class Restaurant extends Entity
 	private OpeningHours openingHours;
 	protected List<Reservation> activeReservations = new ArrayList<>();
 	
-	public Restaurant(String name, String ownerName)
+	public Restaurant(String ownerName)
 	{
-		this(0, name, ownerName, null, null, null, null, null, 0, null);
+		this(0, ownerName + "'s Restaurant", ownerName, null, null, null, null, null, 0, OpeningHours.BOTH);
 	}
 	
 	public Restaurant(int id, String name, String ownerName, String genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
@@ -135,11 +135,16 @@ public class Restaurant extends Entity
 	{
 		return "Name: " + getName() + "\n" +
 			"Owner: " + getOwnerName() + "\n" + 
-			"Genre: " + getGenre() + "\n" +
-			"Price: " + getPrice().toString() + "\n" +
-			"City: " + getCity() + "\n" +
-			"Address: " + getAddress() + "\n" +
-			"Description: " + getDescription() + "\n" +
+			"Genre: " + fieldToString(getGenre()) + "\n" +
+			"Price: " + fieldToString(getPrice()) + "\n" +
+			"City: " + fieldToString(getCity()) + "\n" +
+			"Address: " + fieldToString(getAddress()) + "\n" +
+			"Description: " + fieldToString(getDescription()) + "\n" +
 			"Opening hours: " + getOpeningHours().toString() + "\n";
+	}
+	
+	private String fieldToString(Object field)
+	{
+		return field == null ? "<NOT-SET>" : field.toString();
 	}
 }

@@ -13,6 +13,7 @@ import javax.persistence.PersistenceException;
 import ristogo.common.entities.Entity;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
+import ristogo.common.entities.enums.UserType;
 import ristogo.common.net.Message;
 import ristogo.common.net.RequestMessage;
 import ristogo.common.net.ResponseMessage;
@@ -128,20 +129,32 @@ public class Client extends Thread
 	{
 		if (loggedUser != null)
 			return new ResponseMessage("You are already logged in.");
-		User user = (User)reqMsg.getEntity();
+		User user = null;
+		Restaurant restaurant = null;
+		for (Entity entity: reqMsg.getEntities())
+			if (entity instanceof User)
+				user = (User)entity;
+			else if (entity instanceof Restaurant)
+				restaurant = (Restaurant)entity;
 		if (user.getUsername().length() < 3)
 			return new ResponseMessage("Username must be at least 3 characters long.");
 		if (!user.hasValidPassword())
 			new ResponseMessage("Invalid password.");
-		
+		User_ savedUser = new User_();
 		try {
-			User_ savedUser = new User_();
 			savedUser.merge(user);
 			userManager.insert(savedUser);
 		} catch (PersistenceException ex) {
 			return new ResponseMessage("Username already in use.");
 		}
-		return new ResponseMessage(user);
+		if (restaurant != null) {
+			Restaurant_ savedRestaurant = new Restaurant_();
+			savedRestaurant.merge(restaurant);
+			savedRestaurant.setOwner(savedUser);
+			restaurantManager.insert(savedRestaurant);
+		}
+		userManager.refresh(savedUser);
+		return new ResponseMessage(savedUser.toCommonEntity());
 	}
 	
 	private ResponseMessage handleListRestaurantsRequest(RequestMessage reqMsg)

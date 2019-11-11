@@ -1,17 +1,17 @@
 package ristogo.common.entities.enums;
 
-public enum ReservationTime
+public enum UserType
 {
-	LUNCH,
-	DINNER;
+	CUSTOMER,
+	OWNER;
 	
 	public String toString()
 	{
 		switch (this) {
-		case LUNCH:
-			return "Lunch";
-		case DINNER:
-			return "Dinner";
+		case CUSTOMER:
+			return "Customer";
+		case OWNER:
+			return "Owner";
 		default:
 			return "Unknown";
 		}

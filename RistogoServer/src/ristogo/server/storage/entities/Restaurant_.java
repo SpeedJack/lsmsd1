@@ -66,7 +66,7 @@ public class Restaurant_ extends Entity_
 	
 	public Restaurant_()
 	{
-		this(0, null, null, null, null, null, null, 0, null);
+		this(0, null, null, null, null, null, null, 0, OpeningHours.BOTH);
 	}
 	
 	public Restaurant_(int id, String name, String genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)

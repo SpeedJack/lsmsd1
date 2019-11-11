@@ -77,4 +77,9 @@ public class EntityManager implements AutoCloseable
 		em.remove(entity);
 		em.getTransaction().commit();
 	}
+	
+	public void refresh(Entity_ entity)
+	{
+		getEM().refresh(entity);
+	}
 }

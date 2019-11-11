@@ -7,6 +7,7 @@ import java.net.Socket;
 
 import ristogo.common.entities.Customer;
 import ristogo.common.entities.Entity;
+import ristogo.common.entities.Owner;
 import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
@@ -28,9 +29,8 @@ public class Protocol implements AutoCloseable
 		outputStream = new DataOutputStream(socket.getOutputStream());
 	}
 	
-	public ResponseMessage performLogin(String username, String password)
+	public ResponseMessage performLogin(User user)
 	{
-		User user = new Customer(username, password);
 		RequestMessage reqMsg = new RequestMessage(ActionRequest.LOGIN);
 		reqMsg.addEntity(user);
 		reqMsg.send(outputStream);
@@ -46,14 +46,25 @@ public class Protocol implements AutoCloseable
 		return (ResponseMessage)Message.receive(inputStream);
 	}
 	
-	public ResponseMessage registerUser(String username, String password)
+	public ResponseMessage registerUser(Customer customer)
 	{
-		User user = new Customer(username, password);
 		RequestMessage reqMsg = new RequestMessage(ActionRequest.REGISTER);
-		reqMsg.addEntity(user);
+		reqMsg.addEntity(customer);
 		reqMsg.send(outputStream);
 		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && (resMsg.getEntityCount() != 1 || !(resMsg.getEntity() instanceof User)))
+		if (resMsg.isSuccess() && (resMsg.getEntityCount() != 1 || !(resMsg.getEntity() instanceof Customer)))
+			return getProtocolErrorMessage();
+		return resMsg;
+	}
+	
+	public ResponseMessage registerUser(Owner owner, Restaurant restaurant)
+	{
+		RequestMessage reqMsg = new RequestMessage(ActionRequest.REGISTER);
+		reqMsg.addEntity(owner);
+		reqMsg.addEntity(restaurant);
+		reqMsg.send(outputStream);
+		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
+		if (resMsg.isSuccess() && (resMsg.getEntityCount() != 1 || !(resMsg.getEntity() instanceof Owner)))
 			return getProtocolErrorMessage();
 		return resMsg;
 	}

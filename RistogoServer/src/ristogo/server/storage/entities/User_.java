@@ -18,6 +18,7 @@ import org.hibernate.annotations.ParamDef;
 import ristogo.common.entities.Customer;
 import ristogo.common.entities.Owner;
 import ristogo.common.entities.User;
+import ristogo.common.entities.enums.UserType;
 
 
 
@@ -64,7 +65,19 @@ public class User_ extends Entity_
 	
 	public User toCommonEntity()
 	{
-		return isOwner() ? new Owner(getId(), getUsername()) : new Customer(getId(), getUsername());
+		return toCommonEntity(isOwner() ? UserType.OWNER : UserType.CUSTOMER);
+	}
+	
+	public User toCommonEntity(UserType type)
+	{
+		switch (type) {
+		case OWNER:
+			return new Owner(getId(), getUsername());
+		case CUSTOMER:
+			return new Customer(getId(), getUsername());
+		default:
+			return null;
+		}
 		
 	}
 	

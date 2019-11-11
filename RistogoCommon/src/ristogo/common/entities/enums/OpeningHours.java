@@ -4,5 +4,19 @@ public enum OpeningHours
 {
 	LUNCH,
 	DINNER,
-	BOTH
+	BOTH;
+	
+	public String toString()
+	{
+		switch (this) {
+		case LUNCH:
+			return "Lunch";
+		case DINNER:
+			return "Dinner";
+		case BOTH:
+			return "Both";
+		default:
+			return "Unknown";
+		}
+	}
 }

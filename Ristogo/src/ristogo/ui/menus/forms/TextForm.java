@@ -1,5 +1,6 @@
 package ristogo.ui.menus.forms;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
 
@@ -22,13 +23,13 @@ public abstract class TextForm
 		this.prompt = prompt;
 	}
 	
-	public Hashtable<Integer, String> show()
+	public HashMap<Integer, String> show()
 	{
 		if (!prompt.isBlank())
 			Console.println(prompt + ":");
 		Console.newLine();
 		fields = createFields();
-		Hashtable<Integer, String> ht = new Hashtable<Integer, String>();
+		HashMap<Integer, String> ht = new HashMap<Integer, String>();
 		int i = 0;
 		for (FormField field: fields) {
 			field.show();

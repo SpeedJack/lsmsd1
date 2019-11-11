@@ -1,5 +1,6 @@
 package ristogo.ui.menus.forms;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
 
@@ -21,20 +22,23 @@ public class RestaurantForm extends TextForm
 	protected LinkedHashSet<FormField> createFields()
 	{
 		LinkedHashSet<FormField> fields = new LinkedHashSet<FormField>();
-		fields.add(new FormField("Name", restaurant.getName(), (s) -> { return s.length() < 33; }));
-		fields.add(new FormField("Genre", restaurant.getGenre(), (s) -> { return s.length() < 33; }));
-		fields.add(new ChoiceFormField("Price", restaurant.getPrice().toString(), Price.class));
-		fields.add(new FormField("City", restaurant.getCity(), (s) -> { return s.length() < 33; }));
-		fields.add(new FormField("Address", restaurant.getAddress(), (s) -> { return s.length() < 33; }));
+		fields.add(new FormField("Name", restaurant.getName(), (s) -> { return s != null && s.length() < 33; }));
+		fields.add(new FormField("Genre", restaurant.getGenre(), (s) -> { return s == null || s.length() < 33; }));
+		if (restaurant.getPrice() != null)
+			fields.add(new ChoiceFormField<Price>("Price", restaurant.getPrice(), Price.class));
+		else
+			fields.add(new ChoiceFormField<Price>("Price", Price.class));
+		fields.add(new FormField("City", restaurant.getCity(), (s) -> { return s == null || s.length() < 33; }));
+		fields.add(new FormField("Address", restaurant.getAddress(), (s) -> { return s == null || s.length() < 33; }));
 		fields.add(new FormField("Description", restaurant.getDescription()));
-		fields.add(new ChoiceFormField("Opening hours", restaurant.getOpeningHours().toString(), OpeningHours.class));
+		fields.add(new ChoiceFormField<OpeningHours>("Opening hours", restaurant.getOpeningHours(), OpeningHours.class));
 		return fields;
 	}
 	
 	@Override
-	public Hashtable<Integer, String> show()
+	public HashMap<Integer, String> show()
 	{
-		Hashtable<Integer, String> response = super.show();
+		HashMap<Integer, String> response = super.show();
 		restaurant.setName(response.get(0));
 		restaurant.setGenre(response.get(1));
 		restaurant.setPrice(Price.valueOf(response.get(2)));
