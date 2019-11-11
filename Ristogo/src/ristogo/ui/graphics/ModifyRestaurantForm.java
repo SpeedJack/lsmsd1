@@ -9,7 +9,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
 import ristogo.ui.graphics.config.GUIConfig;
 
 public class ModifyRestaurantForm extends VBox {

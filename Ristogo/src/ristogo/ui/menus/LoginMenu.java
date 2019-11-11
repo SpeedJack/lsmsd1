@@ -1,7 +1,6 @@
 package ristogo.ui.menus;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 

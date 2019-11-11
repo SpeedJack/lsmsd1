@@ -9,6 +9,7 @@ public enum ActionRequest implements Serializable
 	REGISTER,
 	LIST_RESTAURANTS,
 	LIST_OWN_RESERVATIONS,
+	EDIT_RESERVATION,
 	CHECK,
 	RESERVE,
 	DELETE_RESERVE,

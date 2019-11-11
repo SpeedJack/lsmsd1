@@ -1,6 +1,7 @@
 package ristogo.ui.graphics.beans;
 
-import javafx.beans.property.*;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 public class UserBean extends EntityBean
 {

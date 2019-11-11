@@ -3,8 +3,6 @@ package ristogo.ui.menus.forms;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
-import ristogo.common.entities.enums.Price;
-
 public class ChoiceFormField<T extends Enum<T>> extends FormField
 {
 	protected LinkedHashMap<Integer, String> values = new LinkedHashMap<>();

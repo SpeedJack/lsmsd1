@@ -82,6 +82,10 @@ public class Reservation extends Entity
 	@Override
 	public String toString()
 	{
-		return "";
+		return "Restaurant: " + getRestaurantName() + "\n" +
+			"User: " + getUserName() + "\n" +
+			"Date: " + getDate() + "\n" +
+			"Time: " + getTime() + "\n" +
+			"Seats: " + getSeats() + "\n";
 	}
 }

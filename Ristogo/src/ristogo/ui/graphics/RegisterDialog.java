@@ -1,10 +1,8 @@
 package ristogo.ui.graphics;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -19,8 +17,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.Pair;
-import ristogo.common.entities.User;
 import ristogo.config.Configuration;
 import ristogo.ui.graphics.config.GUIConfig;
 

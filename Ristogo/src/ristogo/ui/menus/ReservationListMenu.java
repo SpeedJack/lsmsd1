@@ -1,7 +1,5 @@
 package ristogo.ui.menus;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -20,10 +18,11 @@ public class ReservationListMenu extends Menu
 		int i = 1;
 		if (resMsg.getEntityCount() < 1) {
 			Console.println("No active reservations to show.");
+			Console.newLine();
 		} else {
 			for (Entity entity: resMsg.getEntities()) {
 				Reservation reservation = (Reservation)entity;
-				menu.add(new MenuEntry(i, reservation.getRestaurantName() + " " + reservation.getDate() + " " + reservation.getTime(), this::handleReservationSelection, reservation));
+				menu.add(new MenuEntry(i, getReservationMenuName(reservation), this::handleReservationSelection, reservation));
 				i++;
 			}
 		}
@@ -31,8 +30,13 @@ public class ReservationListMenu extends Menu
 		return menu;
 	}
 	
+	private static String getReservationMenuName(Reservation reservation)
+	{
+		return reservation.getRestaurantName() + " " + reservation.getDate() + " " + reservation.getTime() + " x" + reservation.getSeats();
+	}
+	
 	private void handleReservationSelection(MenuEntry entry)
 	{
-		//new ReservationMenu((Reservation)entry.getHandlerData()).show();
+		new ReservationMenu((Reservation)entry.getHandlerData()).show();
 	}
 }

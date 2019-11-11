@@ -13,14 +13,12 @@ import javax.persistence.PersistenceException;
 import ristogo.common.entities.Entity;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
-import ristogo.common.entities.enums.UserType;
 import ristogo.common.net.Message;
 import ristogo.common.net.RequestMessage;
 import ristogo.common.net.ResponseMessage;
 import ristogo.server.storage.ReservationManager;
 import ristogo.server.storage.RestaurantManager;
 import ristogo.server.storage.UserManager;
-import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.entities.Reservation_;
 import ristogo.server.storage.entities.Restaurant_;
 import ristogo.server.storage.entities.User_;
@@ -97,6 +95,9 @@ public class Client extends Thread
 		case LIST_OWN_RESERVATIONS:
 			resMsg = handleListOwnReservationsRequest(reqMsg);
 			break;
+		/*case EDIT_RESERVATION:
+			resMsg = handleEditReservation(reqMsg);
+			break;*/
 		/*case DELETE_RESTAURANT:
 			resMsg = handleDeleteRestaurantRequest(reqMsg);
 			break;*/
@@ -192,6 +193,18 @@ public class Client extends Thread
 			resMsg.addEntity(reservation.toCommonEntity());
 		return resMsg;
 	}
+	
+	/*private ResponseMessage handleEditReservation(RequestMessage reqMsg)
+	{
+		if (loggedUser == null)
+			return new ResponseMessage("You must be logged in to perform this action.");
+		Reservation reservation = (Reservation)reqMsg.getEntity();
+		if (!loggedUser.hasReservation(reservation.getId()))
+			return new ResponseMessage("You can only edit your own reservations.");
+		Reservation_ reservation_ = reservationManager.get(reservation.getId());
+		reservation_.merge(reservation);
+		reservation_.setUser(loggedUser);
+	}*/
 	
 	/*private void handleDeleteRestaurantRequest(RequestMessage reqMsg)
 	{
