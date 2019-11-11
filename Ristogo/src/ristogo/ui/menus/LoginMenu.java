@@ -54,7 +54,7 @@ public class LoginMenu extends Menu
 			Console.println(resMsg.getErrorMsg());
 			return;
 		}
-		Console.println("USER " + ((User)resMsg.getEntity()).getUsername() + " SUCCESSFULLY CREATED!");
+		Console.println("User " + ((User)resMsg.getEntity()).getUsername() + " successfully created!");
 		Console.newLine();
 		doLogin(username, password);
 	}
@@ -67,7 +67,7 @@ public class LoginMenu extends Menu
 			return;
 		}
 		loggedUser = (User)resMsg.getEntity();
-		Console.println("SUCCESSFULLY LOGGED IN AS " + loggedUser.getUsername() + "!");
+		Console.println("Successfully logged in as " + loggedUser.getUsername() + "!");
 		new UserMenu().show();
 	}
 

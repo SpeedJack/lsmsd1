@@ -6,27 +6,26 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 
 import ristogo.common.entities.Reservation;
-import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.enums.ReservationTime;
 import ristogo.ui.Console;
 
-public class ReservationForm extends TextForm
+public class ReservationEditForm extends TextForm
 {
-	protected Restaurant restaurant;
-
-	public ReservationForm(Restaurant restaurant)
+	protected Reservation reservation;
+	
+	public ReservationEditForm(Reservation reservation)
 	{
-		super("Reserve a table");
-		this.restaurant = restaurant;
+		super("Editing reservation for " + reservation.getRestaurantName());
+		this.reservation = reservation;
 	}
 
 	@Override
 	protected LinkedHashSet<FormField> createFields()
 	{
 		LinkedHashSet<FormField> fields = new LinkedHashSet<FormField>();
-		fields.add(new FormField("Date", LocalDate.now().toString(), this::validateFutureDate));
-		fields.add(new ChoiceFormField<ReservationTime>("Time", ReservationTime.class));
-		fields.add(new FormField("Seats", this::validateSeats));
+		fields.add(new FormField("Date", reservation.getDate().toString(), this::validateFutureDate));
+		fields.add(new ChoiceFormField<ReservationTime>("Time", reservation.getTime(), ReservationTime.class));
+		fields.add(new FormField("Seats", Integer.toString(reservation.getSeats()), this::validatePositiveInteger));
 		return fields;
 	}
 	
@@ -58,15 +57,14 @@ public class ReservationForm extends TextForm
 		return true;
 	}
 	
-	private boolean validateSeats(String value)
+	@Override
+	public HashMap<Integer, String> show()
 	{
-		if (!validatePositiveInteger(value))
-			return false;
-		int seats = Integer.parseInt(value);
-		if (seats > restaurant.getSeats()) {
-			Console.println("The selected restaurant does not have enough available seats for this reservation.");
-			return false;
-		}
-		return true;
+		HashMap<Integer, String> response = super.show();
+		reservation.setDate(LocalDate.parse(response.get(0)));
+		reservation.setTime(ReservationTime.valueOf(response.get(1)));
+		reservation.setSeats(Integer.parseInt(response.get(2)));
+		return response;
 	}
+
 }

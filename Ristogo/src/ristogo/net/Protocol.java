@@ -71,7 +71,7 @@ public class Protocol implements AutoCloseable
 	
 	public ResponseMessage getOwnRestaurants()
 	{
-		new RequestMessage(ActionRequest.LIST_RESTAURANTS).send(outputStream);
+		new RequestMessage(ActionRequest.LIST_OWN_RESTAURANTS).send(outputStream);
 		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
 		if (resMsg.isSuccess() && resMsg.getEntityCount() > 0)
 			for (Entity entity: resMsg.getEntities())
@@ -111,6 +111,35 @@ public class Protocol implements AutoCloseable
 		new RequestMessage(ActionRequest.EDIT_RESERVATION, reservation).send(outputStream);
 		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
 		if (resMsg.isSuccess() && (resMsg.getEntityCount() != 1 || !(resMsg.getEntity() instanceof Reservation)))
+			return getProtocolErrorMessage();
+		return resMsg;
+	}
+	
+	public ResponseMessage getRestaurants()
+	{
+		new RequestMessage(ActionRequest.LIST_RESTAURANTS).send(outputStream);
+		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
+		if (resMsg.isSuccess() && resMsg.getEntityCount() > 0)
+			for (Entity entity: resMsg.getEntities())
+				if (!(entity instanceof Restaurant))
+					return getProtocolErrorMessage();
+		return resMsg;
+	}
+	
+	public ResponseMessage reserve(Reservation reservation, Restaurant restaurant)
+	{
+		new RequestMessage(ActionRequest.RESERVE, reservation, restaurant).send(outputStream);
+		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
+		if (resMsg.isSuccess() && (resMsg.getEntityCount() != 1 || !(resMsg.getEntity() instanceof Reservation)))
+			return getProtocolErrorMessage();
+		return resMsg;
+	}
+	
+	public ResponseMessage deleteReservation(Reservation reservation)
+	{
+		new RequestMessage(ActionRequest.DELETE_RESERVATION, reservation).send(outputStream);
+		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
+		if (resMsg.isSuccess() && resMsg.getEntityCount() > 0)
 			return getProtocolErrorMessage();
 		return resMsg;
 	}

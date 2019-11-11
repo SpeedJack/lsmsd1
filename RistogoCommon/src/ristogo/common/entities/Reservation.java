@@ -23,6 +23,11 @@ public class Reservation extends Entity
 		this.time = time;
 		this.seats = seats;
 	}
+	
+	public Reservation(String userName, String restaurantName, LocalDate date, ReservationTime time, int seats)
+	{
+		this(0, userName, restaurantName, date, time, seats);
+	}
 
 	public void setUserName(String userName)
 	{

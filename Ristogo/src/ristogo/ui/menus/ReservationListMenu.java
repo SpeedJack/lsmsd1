@@ -37,6 +37,6 @@ public class ReservationListMenu extends Menu
 	
 	private void handleReservationSelection(MenuEntry entry)
 	{
-		new ReservationMenu((Reservation)entry.getHandlerData()).show();
+		new ReservationManageMenu((Reservation)entry.getHandlerData()).show();
 	}
 }
