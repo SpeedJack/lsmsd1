@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.LinkedHashSet;
 
 import ristogo.common.entities.Restaurant;
+import ristogo.common.entities.enums.Genre;
 import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.Price;
 
@@ -23,7 +24,10 @@ public class RestaurantForm extends TextForm
 	{
 		LinkedHashSet<FormField> fields = new LinkedHashSet<FormField>();
 		fields.add(new FormField("Name", restaurant.getName(), (s) -> { return s != null && s.length() < 33; }));
-		fields.add(new FormField("Genre", restaurant.getGenre(), (s) -> { return s == null || s.length() < 33; }));
+		if (restaurant.getGenre() != null)
+			fields.add(new ChoiceFormField<Genre>("Genre", restaurant.getGenre(), Genre.class));
+		else
+			fields.add(new ChoiceFormField<Genre>("Genre", Genre.class));
 		if (restaurant.getPrice() != null)
 			fields.add(new ChoiceFormField<Price>("Price", restaurant.getPrice(), Price.class));
 		else
@@ -40,7 +44,7 @@ public class RestaurantForm extends TextForm
 	{
 		HashMap<Integer, String> response = super.show();
 		restaurant.setName(response.get(0));
-		restaurant.setGenre(response.get(1));
+		restaurant.setGenre(Genre.valueOf(response.get(1)));
 		restaurant.setPrice(Price.valueOf(response.get(2)));
 		restaurant.setCity(response.get(3));
 		restaurant.setAddress(response.get(4));

@@ -20,6 +20,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.ParamDef;
 
 import ristogo.common.entities.Restaurant;
+import ristogo.common.entities.enums.Genre;
 import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.Price;
 
@@ -36,8 +37,9 @@ public class Restaurant_ extends Entity_
 	@Column(name="name")
 	private String name;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(name="genre")
-	private String genre;
+	private Genre genre;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="price")
@@ -69,7 +71,7 @@ public class Restaurant_ extends Entity_
 		this(0, null, null, null, null, null, null, 0, OpeningHours.BOTH);
 	}
 	
-	public Restaurant_(int id, String name, String genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
+	public Restaurant_(int id, String name, Genre genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
 	{
 		super(id);
 		this.name = name;
@@ -119,12 +121,12 @@ public class Restaurant_ extends Entity_
 		return name;
 	}
 
-	public String getGenre()
+	public Genre getGenre()
 	{
 		return genre;
 	}
 
-	public void setGenre(String genre)
+	public void setGenre(Genre genre)
 	{
 		this.genre = genre;
 	}

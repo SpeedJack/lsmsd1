@@ -3,6 +3,7 @@ package ristogo.common.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import ristogo.common.entities.enums.Genre;
 import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.Price;
 
@@ -12,7 +13,7 @@ public class Restaurant extends Entity
 	
 	private String ownerName;
 	private String name;
-	private String genre;
+	private Genre genre;
 	private Price price;
 	private String city;
 	private String address;
@@ -26,7 +27,7 @@ public class Restaurant extends Entity
 		this(0, ownerName + "'s Restaurant", ownerName, null, null, null, null, null, 0, OpeningHours.BOTH);
 	}
 	
-	public Restaurant(int id, String name, String ownerName, String genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
+	public Restaurant(int id, String name, String ownerName, Genre genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
 	{
 		super(id);
 		this.name = name;
@@ -60,12 +61,12 @@ public class Restaurant extends Entity
 		return name;
 	}
 
-	public String getGenre()
+	public Genre getGenre()
 	{
 		return genre;
 	}
 
-	public void setGenre(String genre)
+	public void setGenre(Genre genre)
 	{
 		this.genre = genre;
 	}
