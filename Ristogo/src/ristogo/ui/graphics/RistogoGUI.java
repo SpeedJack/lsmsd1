@@ -1,8 +1,5 @@
 package ristogo.ui.graphics;
 
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -19,7 +16,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.util.Pair;
 import ristogo.common.entities.User;
 import ristogo.ui.graphics.config.GUIConfig;
 

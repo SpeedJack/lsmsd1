@@ -1,6 +1,7 @@
 package ristogo.ui.graphics.beans;
 
-import javafx.beans.property.*;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 public class ReservationBean extends EntityBean
 {

@@ -3,6 +3,7 @@ package ristogo.common.net;
 import ristogo.common.entities.Customer;
 import ristogo.common.entities.Entity;
 import ristogo.common.entities.Owner;
+import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
 
@@ -44,6 +45,8 @@ public class RequestMessage extends Message
 				
 		case EDIT_RESTAURANT:
 			return getEntityCount() == 1 && getEntity() instanceof Restaurant;
+		case EDIT_RESERVATION:
+			return getEntityCount() == 1 && getEntity() instanceof Reservation;
 		case LOGOUT:
 		case LIST_RESTAURANTS:
 		case LIST_OWN_RESERVATIONS:

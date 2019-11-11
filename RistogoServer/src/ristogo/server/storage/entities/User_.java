@@ -159,4 +159,17 @@ public class User_ extends Entity_
 	{
 		return hasRestaurant(restaurant.getId());
 	}
+	
+	public boolean hasReservation(int reservationId)
+	{
+		for (Reservation_ reservation: activeReservations)
+			if (reservation.getId() == reservationId)
+				return true;
+		return false;
+	}
+	
+	public boolean hasReservation(Reservation_ reservation)
+	{
+		return hasReservation(reservation.getId());
+	}
 }

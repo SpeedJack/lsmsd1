@@ -1,7 +1,6 @@
 package ristogo.ui.menus.forms;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.LinkedHashSet;
 
 import ristogo.ui.Console;

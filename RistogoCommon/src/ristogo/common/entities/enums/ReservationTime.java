@@ -16,4 +16,9 @@ public enum ReservationTime
 			return "Unknown";
 		}
 	}
+	
+	public OpeningHours toOpeningHours()
+	{
+		return OpeningHours.valueOf(this.name());
+	}
 }

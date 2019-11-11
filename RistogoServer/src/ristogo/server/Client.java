@@ -9,18 +9,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
 
 import ristogo.common.entities.Entity;
+import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
-import ristogo.common.entities.enums.UserType;
 import ristogo.common.net.Message;
 import ristogo.common.net.RequestMessage;
 import ristogo.common.net.ResponseMessage;
 import ristogo.server.storage.ReservationManager;
 import ristogo.server.storage.RestaurantManager;
 import ristogo.server.storage.UserManager;
-import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.entities.Reservation_;
 import ristogo.server.storage.entities.Restaurant_;
 import ristogo.server.storage.entities.User_;
@@ -96,6 +96,9 @@ public class Client extends Thread
 			break;
 		case LIST_OWN_RESERVATIONS:
 			resMsg = handleListOwnReservationsRequest(reqMsg);
+			break;
+		case EDIT_RESERVATION:
+			resMsg = handleEditReservation(reqMsg);
 			break;
 		/*case DELETE_RESTAURANT:
 			resMsg = handleDeleteRestaurantRequest(reqMsg);
@@ -179,6 +182,7 @@ public class Client extends Thread
 		restaurant_.merge(restaurant);
 		restaurant_.setOwner(loggedUser);
 		restaurantManager.update(restaurant_);
+		restaurantManager.refresh(restaurant_);
 		return new ResponseMessage(restaurant_.toCommonEntity());
 	}
 	
@@ -191,6 +195,35 @@ public class Client extends Thread
 		for (Reservation_ reservation: reservations)
 			resMsg.addEntity(reservation.toCommonEntity());
 		return resMsg;
+	}
+	
+	private ResponseMessage handleEditReservation(RequestMessage reqMsg)
+	{
+		if (loggedUser == null)
+			return new ResponseMessage("You must be logged in to perform this action.");
+		Reservation reservation = (Reservation)reqMsg.getEntity();
+		if (!loggedUser.hasReservation(reservation.getId()))
+			return new ResponseMessage("You can only edit your own reservations.");
+		Reservation_ reservation_ = reservationManager.get(reservation.getId());
+		Restaurant_ restaurant_ = reservation_.getRestaurant();
+		int availSeats = restaurant_.getSeats();
+		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), reservation.getTime());
+		if (reservations != null)
+			for (Reservation_ r: reservations)
+				if (r.getId() != reservation.getId())
+					availSeats -= r.getSeats();
+		if (reservation.getSeats() > availSeats)
+			return new ResponseMessage("Not enough seats for this date and time (available seats: " + availSeats + ").");
+		reservation_.merge(reservation);
+		reservation_.setUser(loggedUser);
+		reservation_.setRestaurant(restaurant_);
+		try {
+			reservationManager.update(reservation_);
+		} catch (RollbackException ex) {
+			return new ResponseMessage("You already have a reservation for " + reservation.getDate() + " at " + reservation.getTime() + ".");
+		}
+		reservationManager.refresh(reservation_);
+		return new ResponseMessage(reservation_.toCommonEntity());
 	}
 	
 	/*private void handleDeleteRestaurantRequest(RequestMessage reqMsg)

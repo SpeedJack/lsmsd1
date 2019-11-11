@@ -1,7 +1,5 @@
 package ristogo.ui.menus;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 

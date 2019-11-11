@@ -1,13 +1,13 @@
 package ristogo.ui.menus.forms;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.LinkedHashSet;
 
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.enums.Genre;
 import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.Price;
+import ristogo.ui.Console;
 
 public class RestaurantForm extends TextForm
 {
@@ -35,6 +35,7 @@ public class RestaurantForm extends TextForm
 		fields.add(new FormField("City", restaurant.getCity(), (s) -> { return s == null || s.length() < 33; }));
 		fields.add(new FormField("Address", restaurant.getAddress(), (s) -> { return s == null || s.length() < 33; }));
 		fields.add(new FormField("Description", restaurant.getDescription()));
+		fields.add(new FormField("Seats", Integer.toString(restaurant.getSeats()), this::validatePositiveInteger));
 		fields.add(new ChoiceFormField<OpeningHours>("Opening hours", restaurant.getOpeningHours(), OpeningHours.class));
 		return fields;
 	}
@@ -49,8 +50,22 @@ public class RestaurantForm extends TextForm
 		restaurant.setCity(response.get(3));
 		restaurant.setAddress(response.get(4));
 		restaurant.setDescription(response.get(5));
-		restaurant.setOpeningHours(OpeningHours.valueOf(response.get(6)));
+		restaurant.setSeats(Integer.parseInt(response.get(6)));
+		restaurant.setOpeningHours(OpeningHours.valueOf(response.get(7)));
 		return response;
+	}
+	
+	private boolean validatePositiveInteger(String value)
+	{
+		try {
+			int converted = Integer.parseInt(value);
+			if (converted <= 0)
+				return false;
+		} catch (NumberFormatException ex) {
+			Console.println("Invalid number.");
+			return false;
+		}
+		return true;
 	}
 	
 	/*private boolean validatePrice(String price)
