@@ -1,6 +1,7 @@
 package ristogo.server;
 
 import java.io.IOException;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,6 +12,7 @@ public class RistogoServer
 
 	public static void main(String[] args)
 	{
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		ClientPool pool = null;
 		try {
 			pool = new ClientPool(8888);

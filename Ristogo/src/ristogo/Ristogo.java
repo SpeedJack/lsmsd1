@@ -1,5 +1,7 @@
 package ristogo;
 
+import java.util.TimeZone;
+
 import ristogo.config.Configuration;
 import ristogo.ui.Console;
 import ristogo.ui.menus.LoginMenu;
@@ -9,6 +11,7 @@ public class Ristogo
 
 	public static void main(String[] args)
 	{
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		Configuration config = Configuration.getConfig();
 		
 		if (!config.isForceCli() && (hasArgument(args, "gui", "g") || !Console.exists())) {

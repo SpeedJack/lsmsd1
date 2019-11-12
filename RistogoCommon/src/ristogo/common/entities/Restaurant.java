@@ -141,6 +141,7 @@ public class Restaurant extends Entity
 			"City: " + fieldToString(getCity()) + "\n" +
 			"Address: " + fieldToString(getAddress()) + "\n" +
 			"Description: " + fieldToString(getDescription()) + "\n" +
+			"Seats: " + getSeats() + "\n" +
 			"Opening hours: " + getOpeningHours().toString() + "\n";
 	}
 	
