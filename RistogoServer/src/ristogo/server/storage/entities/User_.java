@@ -5,15 +5,18 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.FilterJoinTable;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.Where;
 
 import ristogo.common.entities.Customer;
 import ristogo.common.entities.Owner;
@@ -24,7 +27,6 @@ import ristogo.common.entities.enums.UserType;
 
 @javax.persistence.Entity
 @Table(name="users")
-@FilterDef(name="activeReservations", parameters=@ParamDef(name="currentDate", type="date"))
 public class User_ extends Entity_
 {
 	@Column(name="username")
@@ -35,7 +37,7 @@ public class User_ extends Entity_
 	
 	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
 	@LazyCollection(LazyCollectionOption.EXTRA)
-	@Filter(name="activeReservations", condition="date >= :currentDate")
+	@Where(clause="date >= CURRENT_DATE()")
 	protected List<Reservation_> activeReservations = new ArrayList<>();
 	
 	@OneToMany(mappedBy="owner", fetch=FetchType.LAZY)

@@ -18,6 +18,7 @@ import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.Where;
 
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.enums.Genre;
@@ -26,7 +27,6 @@ import ristogo.common.entities.enums.Price;
 
 @javax.persistence.Entity
 @Table(name="restaurants")
-@FilterDef(name="activeReservations", parameters=@ParamDef(name="currentDate", type="date"))
 @DynamicUpdate
 public class Restaurant_ extends Entity_
 {
@@ -63,7 +63,7 @@ public class Restaurant_ extends Entity_
 	
 	@OneToMany(mappedBy="restaurant", fetch=FetchType.LAZY)
 	@LazyCollection(LazyCollectionOption.EXTRA)
-	@Filter(name="activeReservations", condition="date >= :currentDate")
+	@Where(clause="date >= CURRENT_DATE()")
 	protected List<Reservation_> activeReservations = new ArrayList<>();
 	
 	public Restaurant_()
