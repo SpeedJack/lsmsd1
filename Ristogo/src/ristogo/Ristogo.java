@@ -3,6 +3,7 @@ package ristogo;
 import java.util.TimeZone;
 
 import ristogo.config.Configuration;
+import ristogo.config.InterfaceMode;
 import ristogo.ui.Console;
 import ristogo.ui.menus.LoginMenu;
 
@@ -13,15 +14,36 @@ public class Ristogo
 	{
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		Configuration config = Configuration.getConfig();
+
+		if (hasArgument(args, "gui", "g"))
+			launchGUI(args);
+		else if (hasArgument(args, "cli", "c"))
+			launchCLI(args);
 		
-		if (!config.isForceCli() && (hasArgument(args, "gui", "g") || !Console.exists())) {
-			ristogo.ui.graphics.RistogoGUI.launch(args);
-			return;
+		switch (config.getInterfaceMode()) {
+		case FORCE_CLI:
+			launchCLI(args);
+		case FORCE_GUI:
+			launchGUI(args);
+		case AUTO:
+			if (Console.exists())
+				launchCLI(args);
+			else
+				launchGUI(args);
 		}
-		
+	}
+	
+	private static void launchCLI(String[] args)
+	{
 		Console.println("WELCOME TO RISTOGO!");
 		
 		new LoginMenu().show();
+		close();
+	}
+	
+	private static void launchGUI(String[] args)
+	{
+		ristogo.ui.graphics.RistogoGUI.launch(args);
 		close();
 	}
 	
