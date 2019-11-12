@@ -5,17 +5,12 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.FilterJoinTable;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.Where;
 
 import ristogo.common.entities.Customer;

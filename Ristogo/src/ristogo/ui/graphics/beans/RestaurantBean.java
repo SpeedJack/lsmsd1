@@ -1,39 +1,43 @@
 package ristogo.ui.graphics.beans;
 
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import ristogo.common.entities.enums.Genre;
+import ristogo.common.entities.enums.OpeningHours;
+import ristogo.common.entities.enums.Price;
 
 public class RestaurantBean extends EntityBean
 {
-	private final SimpleIntegerProperty idUser;
+	private final SimpleStringProperty ownerName;
 	private final SimpleStringProperty name;
-	private final SimpleStringProperty type;
-	private final SimpleIntegerProperty price;
+	private final SimpleObjectProperty<Genre> genre;
+	private final SimpleObjectProperty<Price> price;
 	private final SimpleStringProperty city;
 	private final SimpleStringProperty address;
 	private final SimpleStringProperty description;
 	private final SimpleIntegerProperty seats;
-	private final SimpleStringProperty opening;
-
-	public RestaurantBean(int idR, int idU, String n, String t, int p,
-		String c, String a, String d, int s, String oa)
+	private final SimpleObjectProperty<OpeningHours> openingHours;
+	
+	public RestaurantBean(int id, String ownerName, String name, Genre genre,
+		Price price, String city, String address, String description,
+		int seats, OpeningHours openingHours)
 	{
-		super(idR);
-		idUser = new SimpleIntegerProperty(idU);
-
-		name = new SimpleStringProperty(n);
-		type = new SimpleStringProperty(t);
-		seats = new SimpleIntegerProperty(s);
-		city = new SimpleStringProperty(c);
-		address = new SimpleStringProperty(a);
-		description = new SimpleStringProperty(d);
-		price = new SimpleIntegerProperty(p);
-		opening = new SimpleStringProperty(oa);
+		super(id);
+		this.ownerName = new SimpleStringProperty(ownerName);
+		this.name = new SimpleStringProperty(name);
+		this.genre = new SimpleObjectProperty<Genre>(genre);
+		this.price = new SimpleObjectProperty<Price>(price);
+		this.city = new SimpleStringProperty(city);
+		this.address = new SimpleStringProperty(address);
+		this.description = new SimpleStringProperty(description);
+		this.seats = new SimpleIntegerProperty(seats);
+		this.openingHours = new SimpleObjectProperty<OpeningHours>(openingHours);
 	}
 
-	public int getIdUser()
+	public String getOwnerName()
 	{
-		return idUser.get();
+		return ownerName.get();
 	}
 
 	public String getName()
@@ -41,9 +45,9 @@ public class RestaurantBean extends EntityBean
 		return name.get();
 	}
 
-	public String getType()
+	public Genre getGenre()
 	{
-		return type.get();
+		return genre.get();
 	}
 
 	public int getSeats()
@@ -66,59 +70,59 @@ public class RestaurantBean extends EntityBean
 		return description.get();
 	}
 
-	public int getPrice()
+	public Price getPrice()
 	{
 		return price.get();
 	}
 
-	public String getOpening()
+	public OpeningHours getOpeningHours()
 	{
-		return opening.get();
+		return openingHours.get();
 	}
 
-	public void setIdUser(int i)
+	public void setOwnerName(String ownerName)
 	{
-		idUser.set(i);
+		this.ownerName.set(ownerName);
 	}
 
-	public void setName(String n)
+	public void setName(String name)
 	{
-		name.set(n);
+		this.name.set(name);
 	}
 
-	public void setType(String t)
+	public void setGenre(Genre genre)
 	{
-		type.set(t);
+		this.genre.set(genre);
 	}
 
-	public void setSeats(int s)
+	public void setSeats(int seats)
 	{
-		seats.set(s);
+		this.seats.set(seats);
 	}
 
-	public void setCity(String c)
+	public void setCity(String city)
 	{
-		city.set(c);
+		this.city.set(city);
 	}
 
-	public void setAddress(String a)
+	public void setAddress(String address)
 	{
-		address.set(a);
+		this.address.set(address);
 	}
 
-	public void setDescription(String d)
+	public void setDescription(String description)
 	{
-		description.set(d);
+		this.description.set(description);
 	}
 
-	public void setPrice(int p)
+	public void setPrice(Price price)
 	{
-		price.set(p);
+		this.price.set(price);
 	}
 
-	public void setOpening(String oa)
+	public void setOpeningHours(OpeningHours openingHours)
 	{
-		opening.set(oa);
+		this.openingHours.set(openingHours);
 	}
 
 }

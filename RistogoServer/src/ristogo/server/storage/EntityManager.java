@@ -1,13 +1,8 @@
 package ristogo.server.storage;
 
-import java.time.LocalDate;
-import java.sql.Date;
-
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
-
-import org.hibernate.Session;
 
 import ristogo.server.storage.entities.Entity_;
 

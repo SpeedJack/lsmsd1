@@ -2,10 +2,8 @@ package ristogo.ui.menus.forms;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 
-import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.enums.ReservationTime;
 import ristogo.ui.Console;

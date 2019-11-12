@@ -6,15 +6,13 @@ import javafx.beans.property.SimpleStringProperty;
 public class UserBean extends EntityBean
 {
 	private final SimpleStringProperty username;
-	private final SimpleStringProperty password;
-	private final SimpleBooleanProperty restaurateur;
+	private final SimpleBooleanProperty owner;
 
-	public UserBean(int i, String u, String p, boolean r)
+	public UserBean(int id, String username, boolean owner)
 	{
-		super(i);
-		username = new SimpleStringProperty(u);
-		password = new SimpleStringProperty(p);
-		restaurateur = new SimpleBooleanProperty(r);
+		super(id);
+		this.username = new SimpleStringProperty(username);
+		this.owner = new SimpleBooleanProperty(owner);
 	}
 
 	public String getUsername()
@@ -22,28 +20,18 @@ public class UserBean extends EntityBean
 		return username.get();
 	}
 
-	public String getPassword()
+	public boolean isOwner()
 	{
-		return password.get();
+		return owner.get();
 	}
 
-	public boolean isRestaurateur()
+	public void setUsername(String username)
 	{
-		return restaurateur.get();
+		this.username.set(username);
 	}
 
-	public void setUsername(String u)
+	public void setRestaurateur(boolean owner)
 	{
-		username.set(u);
-	}
-
-	public void setPassword(String p)
-	{
-		password.set(p);
-	}
-
-	public void setRestaurateur(boolean r)
-	{
-		restaurateur.set(r);
+		this.owner.set(owner);
 	}
 }

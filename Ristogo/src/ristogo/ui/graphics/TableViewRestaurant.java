@@ -85,7 +85,7 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
  	}
  	
  	public String getSelectionHours() {
- 		return this.getSelectionModel().getSelectedItem().getOpening();
+ 		return this.getSelectionModel().getSelectedItem().getOpeningHours().toString();
  	}
  	
 	   public void listRestaurants(){

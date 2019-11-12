@@ -1,43 +1,33 @@
 package ristogo.ui.graphics.beans;
 
+import java.time.LocalDate;
+
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import ristogo.common.entities.enums.ReservationTime;
 
 public class ReservationBean extends EntityBean
 {
-	private final SimpleIntegerProperty idClient;
-	private final SimpleIntegerProperty idRestaurant;
-	private final SimpleStringProperty date;
-	private final SimpleStringProperty hour;
-	private final SimpleIntegerProperty seats;
-	private final SimpleStringProperty clientName;
+	private final SimpleStringProperty userName;
 	private final SimpleStringProperty restaurantName;
+	private final SimpleObjectProperty<LocalDate> date;
+	private final SimpleObjectProperty<ReservationTime> time;
+	private final SimpleIntegerProperty seats;
 
-	public ReservationBean(int reservation, int client, int resturant,
-		String d, String h, int s, String cn, String rn)
+	public ReservationBean(int id, String userName, String restaurantName,
+		LocalDate date, ReservationTime time, int seats)
 	{
-		super(reservation);
-		clientName = new SimpleStringProperty(cn);
-		restaurantName = new SimpleStringProperty(rn);
-		idClient = new SimpleIntegerProperty(client);
-		idRestaurant = new SimpleIntegerProperty(resturant);
-		date = new SimpleStringProperty(d);
-		seats = new SimpleIntegerProperty(s);
-		hour = new SimpleStringProperty(h);
+		super(id);
+		this.userName = new SimpleStringProperty(userName);
+		this.restaurantName = new SimpleStringProperty(restaurantName);
+		this.date = new SimpleObjectProperty<LocalDate>(date);
+		this.time = new SimpleObjectProperty<ReservationTime>(time);
+		this.seats = new SimpleIntegerProperty(seats);
 
 	}
 
-	public int getUser()
-	{
-		return idClient.get();
-	}
-
-	public int getRestaurant()
-	{
-		return idRestaurant.get();
-	}
-
-	public String getDate()
+	public LocalDate getDate()
 	{
 		return date.get();
 	}
@@ -47,14 +37,14 @@ public class ReservationBean extends EntityBean
 		return seats.get();
 	}
 
-	public String getHour()
+	public ReservationTime getTime()
 	{
-		return hour.get();
+		return time.get();
 	}
 
-	public String getClientName()
+	public String getUserName()
 	{
-		return clientName.get();
+		return userName.get();
 	}
 
 	public String getRestaurantName()
@@ -62,29 +52,29 @@ public class ReservationBean extends EntityBean
 		return restaurantName.get();
 	}
 
-	public void setUser(int client)
+	public void setDate(LocalDate date)
 	{
-		idClient.set(client);
+		this.date.set(date);
 	}
 
-	public void setRestaurant(int resturant)
+	public void setSeats(int seats)
 	{
-		idRestaurant.set(resturant);
+		this.seats.set(seats);
 	}
 
-	public void setDate(String d)
+	public void setTime(ReservationTime time)
 	{
-		date.set(d);
+		this.time.set(time);
 	}
-
-	public void setSeats(int s)
+	
+	public void setUserName(String userName)
 	{
-		seats.set(s);
+		this.userName.set(userName);
 	}
-
-	public void setHour(String h)
+	
+	public void setRestaurantName(String restaurantName)
 	{
-		hour.set(h);
+		this.restaurantName.set(restaurantName);
 	}
 
 }
