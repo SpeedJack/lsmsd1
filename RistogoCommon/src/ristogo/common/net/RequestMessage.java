@@ -45,6 +45,7 @@ public class RequestMessage extends Message
 			return hasOwner && hasRestaurant;
 				
 		case EDIT_RESTAURANT:
+		case DELETE_RESTAURANT:
 			return getEntityCount() == 1 && getEntity() instanceof Restaurant;
 		case EDIT_RESERVATION:
 		case DELETE_RESERVATION:

@@ -24,7 +24,7 @@ public class RestaurantMenu extends Menu
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		menu.add(new MenuEntry(1, "View details", this::handleViewRestaurant));
 		menu.add(new MenuEntry(2, "Edit restaurant", true, this::handleEditRestaurant));
-		//menu.add(new MenuEntry(3, "Delete restaurant", this::handleDeleteRestaurant));
+		menu.add(new MenuEntry(3, "Delete restaurant", true, this::handleDeleteRestaurant));
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
@@ -50,7 +50,7 @@ public class RestaurantMenu extends Menu
 		Console.newLine();
 	}
 
-	/*private void handleDeleteRestaurant(MenuEntry entry)
+	private void handleDeleteRestaurant(MenuEntry entry)
 	{
 		boolean confirm = Console.askConfirm();
 		if (confirm) {
@@ -60,5 +60,6 @@ public class RestaurantMenu extends Menu
 			else
 				Console.println(resMsg.getErrorMsg());
 		}
-	}*/
+		Console.newLine();
+	}
 }

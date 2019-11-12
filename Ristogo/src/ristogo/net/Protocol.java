@@ -43,7 +43,10 @@ public class Protocol implements AutoCloseable
 	public ResponseMessage performLogout()
 	{
 		new RequestMessage(ActionRequest.LOGOUT).send(outputStream);
-		return (ResponseMessage)Message.receive(inputStream);
+		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
+		if (resMsg.isSuccess() && resMsg.getEntityCount() != 0)
+			return getProtocolErrorMessage();
+		return resMsg;
 	}
 	
 	public ResponseMessage registerUser(Customer customer)
@@ -92,7 +95,10 @@ public class Protocol implements AutoCloseable
 	public ResponseMessage deleteRestaurant(Restaurant restaurant)
 	{
 		new RequestMessage(ActionRequest.DELETE_RESTAURANT, restaurant).send(outputStream);
-		return (ResponseMessage)Message.receive(inputStream);
+		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
+		if (resMsg.isSuccess() && resMsg.getEntityCount() != 0)
+			return getProtocolErrorMessage();
+		return resMsg;
 	}
 	
 	public ResponseMessage getOwnActiveReservations()

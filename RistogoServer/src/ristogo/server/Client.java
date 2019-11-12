@@ -110,9 +110,9 @@ public class Client extends Thread
 		case DELETE_RESERVATION:
 			resMsg = handleDeleteReservation(reqMsg);
 			break;
-		/*case DELETE_RESTAURANT:
+		case DELETE_RESTAURANT:
 			resMsg = handleDeleteRestaurantRequest(reqMsg);
-			break;*/
+			break;
 		default:
 			resMsg = new ResponseMessage("Invalid request.");
 		}
@@ -300,22 +300,16 @@ public class Client extends Thread
 		return new ResponseMessage();
 	}
 	
-	/*private void handleDeleteRestaurantRequest(RequestMessage reqMsg)
+	private ResponseMessage handleDeleteRestaurantRequest(RequestMessage reqMsg)
 	{
-		if (loggedUser == null) {
-			new ResponseMessage("You must be logged in to perform this action.").send(outputStream);
-			return;
-		}
+		if (loggedUser == null)
+			return new ResponseMessage("You must be logged in to perform this action.");
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
-		if (restaurant == null) {
-			new ResponseMessage("Invalid request.").send(outputStream);
-			return;
-		}
-		if (!loggedUser.hasRestaurant(restaurant)) {
-			new ResponseMessage("You can only delete restaurants that you own.").send(outputStream);
-			return;
-		}
+		if (!loggedUser.hasRestaurant(restaurant.getId()))
+			return new ResponseMessage("You can only delete restaurants that you own.");
+		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
 		restaurantManager.delete(restaurant.getId());
-		new ResponseMessage().send(outputStream);
-	}*/
+		userManager.refresh(restaurant_.getOwner());
+		return new ResponseMessage();
+	}
 }
