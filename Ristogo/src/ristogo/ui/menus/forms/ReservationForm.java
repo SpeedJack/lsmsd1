@@ -23,7 +23,7 @@ public class ReservationForm extends TextForm
 	{
 		LinkedHashSet<FormField> fields = new LinkedHashSet<FormField>();
 		fields.add(new FormField("Date", LocalDate.now().toString(), this::validateFutureDate));
-		fields.add(new ChoiceFormField<ReservationTime>("Time", ReservationTime.class));
+		fields.add(new ChoiceFormField<ReservationTime>("Time", ReservationTime.class)); // TODO: check reservation time against restaurant's opening hours
 		fields.add(new FormField("Seats", this::validateSeats));
 		return fields;
 	}

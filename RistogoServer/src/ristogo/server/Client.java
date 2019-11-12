@@ -16,6 +16,7 @@ import ristogo.common.entities.Entity;
 import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
+import ristogo.common.entities.enums.ReservationTime;
 import ristogo.common.net.Message;
 import ristogo.common.net.RequestMessage;
 import ristogo.common.net.ResponseMessage;
@@ -112,6 +113,9 @@ public class Client extends Thread
 			break;
 		case DELETE_RESTAURANT:
 			resMsg = handleDeleteRestaurantRequest(reqMsg);
+			break;
+		case LIST_RESERVATIONS:
+			resMsg = handleListReservations(reqMsg);
 			break;
 		default:
 			resMsg = new ResponseMessage("Invalid request.");
@@ -218,6 +222,15 @@ public class Client extends Thread
 			return new ResponseMessage("You can only edit your own reservations.");
 		Reservation_ reservation_ = reservationManager.get(reservation.getId());
 		Restaurant_ restaurant_ = reservation_.getRestaurant();
+		switch(restaurant_.getOpeningHours()) {
+		case LUNCH:
+			if (reservation.getTime() == ReservationTime.DINNER)
+				return new ResponseMessage("The restaurant does not allow reservations for dinner.");
+		case DINNER:
+			if (reservation.getTime() == ReservationTime.LUNCH)
+				return new ResponseMessage("The restaurant does not allow reservations for lunch.");
+		case BOTH:
+		}
 		int availSeats = restaurant_.getSeats();
 		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), reservation.getTime());
 		if (reservations != null)
@@ -263,6 +276,15 @@ public class Client extends Thread
 		if (reservation.getDate().isBefore(LocalDate.now()))
 			return new ResponseMessage("The reservation date must be a date in future.");
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		switch(restaurant_.getOpeningHours()) {
+		case LUNCH:
+			if (reservation.getTime() == ReservationTime.DINNER)
+				return new ResponseMessage("The restaurant does not allow reservations for dinner.");
+		case DINNER:
+			if (reservation.getTime() == ReservationTime.LUNCH)
+				return new ResponseMessage("The restaurant does not allow reservations for lunch.");
+		case BOTH:
+		}
 		int availSeats = restaurant_.getSeats();
 		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), reservation.getTime());
 		if (reservations != null)
@@ -311,5 +333,20 @@ public class Client extends Thread
 		restaurantManager.delete(restaurant.getId());
 		userManager.refresh(restaurant_.getOwner());
 		return new ResponseMessage();
+	}
+	
+	private ResponseMessage handleListReservations(RequestMessage reqMsg)
+	{
+		if (loggedUser == null)
+			return new ResponseMessage("You must be logged in to perform this action.");
+		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
+		if (!loggedUser.hasRestaurant(restaurant.getId()))
+			return new ResponseMessage("You can only view reservations for restaurants that you own.");
+		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		List<Reservation_> reservations = restaurant_.getActiveReservations();
+		ResponseMessage resMsg = new ResponseMessage();
+		for (Reservation_ reservation: reservations)
+			resMsg.addEntity(reservation.toCommonEntity());
+		return resMsg;
 	}
 }

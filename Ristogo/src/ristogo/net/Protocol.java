@@ -150,6 +150,17 @@ public class Protocol implements AutoCloseable
 		return resMsg;
 	}
 	
+	public ResponseMessage getReservations(Restaurant restaurant)
+	{
+		new RequestMessage(ActionRequest.LIST_RESERVATIONS, restaurant).send(outputStream);
+		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
+		if (resMsg.isSuccess() && resMsg.getEntityCount() > 0)
+			for (Entity entity: resMsg.getEntities())
+				if (!(entity instanceof Reservation))
+					return getProtocolErrorMessage();
+		return resMsg;
+	}
+	
 	private ResponseMessage getProtocolErrorMessage()
 	{
 		return new ResponseMessage("Invalid response from server.");

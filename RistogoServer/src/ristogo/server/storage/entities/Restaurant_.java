@@ -193,6 +193,11 @@ public class Restaurant_ extends Entity_
 		return owner.getId() == user.getId();
 	}
 	
+	public List<Reservation_> getActiveReservations()
+	{
+		return activeReservations;
+	}
+	
 	@Override
 	public String toString()
 	{
