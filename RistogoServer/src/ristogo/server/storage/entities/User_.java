@@ -2,6 +2,7 @@ package ristogo.server.storage.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -17,6 +18,7 @@ import ristogo.common.entities.Customer;
 import ristogo.common.entities.Owner;
 import ristogo.common.entities.User;
 import ristogo.common.entities.enums.UserType;
+import ristogo.server.storage.UserManager;
 
 
 
@@ -73,6 +75,7 @@ public class User_ extends Entity_
 		case CUSTOMER:
 			return new Customer(getId(), getUsername());
 		default:
+			Logger.getLogger(User_.class.getName()).warning("Invalid UserType " + type + ".");
 			return null;
 		}
 		
@@ -91,8 +94,10 @@ public class User_ extends Entity_
 	
 	public boolean setPasswordHash(String passwordHash)
 	{
-		if (!User.validatePassword(passwordHash))
+		if (!User.validatePasswordHash(passwordHash)) {
+			Logger.getLogger(User_.class.getName()).warning("User " + username + " has an invalid password hash.");
 			return false;
+		}
 		this.password = passwordHash;
 		return true;
 	}

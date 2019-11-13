@@ -12,6 +12,7 @@ public class RistogoServer
 
 	public static void main(String[] args)
 	{
+		Logger.getLogger(RistogoServer.class.getName()).entering(RistogoServer.class.getName(), "main", args);
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		ClientPool pool = null;
 		try {
@@ -27,6 +28,7 @@ public class RistogoServer
 			EntityManager.closeFactory();
 			if (pool != null)
 				pool.shutdown();
+			Logger.getLogger(RistogoServer.class.getName()).exiting(RistogoServer.class.getName(), "main", args);
 		}
 	}
 

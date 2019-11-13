@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -70,9 +72,9 @@ public class Configuration implements Serializable
 				singletonObj = loadConfiguration();
 			} catch (FileNotFoundException | InvalidConfigurationException ex) {
 				if (ex instanceof FileNotFoundException)
-					System.out.println("Can not find configuration file. Loading defaults...");
+					Logger.getLogger(Configuration.class.getName()).config("Can not find configuration file. Loading defaults...");
 				else if (ex instanceof InvalidConfigurationException)
-					System.out.println("Invalid configuration file. Loading defaults...");
+					Logger.getLogger(Configuration.class.getName()).config("Invalid configuration file. Loading defaults...");
 				singletonObj = new Configuration();
 			}
 		return singletonObj;
@@ -80,8 +82,11 @@ public class Configuration implements Serializable
 	
 	private static Configuration loadConfiguration() throws FileNotFoundException, InvalidConfigurationException
 	{
-		if (!validateConfiguration())
-			throw new InvalidConfigurationException();
+		if (!validateConfiguration()) {
+			InvalidConfigurationException ex = new InvalidConfigurationException();
+			Logger.getLogger(Configuration.class.getName()).throwing(Configuration.class.getName(), "loadConfiguration", ex);
+			throw ex;
+		}
 		XStream xs = new XStream();
 		FileReader fr = new FileReader("config.xml");
 		xs.alias("Configuration", Configuration.class);
@@ -99,7 +104,7 @@ public class Configuration implements Serializable
 			Schema s = sf.newSchema(new StreamSource(Configuration.class.getResourceAsStream("/resources/config.xsd")));
 			s.newValidator().validate(new DOMSource(d));
 		} catch (SAXException | ParserConfigurationException | IOException ex) {
-			System.out.println(ex.getMessage());
+			Logger.getLogger(Configuration.class.getName()).log(Level.CONFIG, "Error during config file validation.", ex);
 			return false;
 		}
 		return true;

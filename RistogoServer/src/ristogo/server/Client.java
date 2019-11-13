@@ -39,6 +39,9 @@ public class Client extends Thread
 	
 	public Client(Socket clientSocket)
 	{
+		Logger.getLogger(Client.class.getName()).info("New incoming connection from " +
+			clientSocket.getRemoteSocketAddress() + ":" + clientSocket.getPort() +
+			"." + "Request handled by " + this.getName() + ".");
 		socket = clientSocket;
 		userManager = new UserManager();
 		restaurantManager = new RestaurantManager();
@@ -56,6 +59,7 @@ public class Client extends Thread
 	{
 		while (!Thread.currentThread().isInterrupted())
 			process();
+		Logger.getLogger(Client.class.getName()).warning(getName() + ": interrupted. Exiting...");
 		userManager.close();
 		restaurantManager.close();
 		reservationManager.close();
@@ -72,13 +76,20 @@ public class Client extends Thread
 	{
 		RequestMessage reqMsg = (RequestMessage)Message.receive(inputStream);
 		if (reqMsg == null) {
+			Logger.getLogger(Client.class.getName()).warning(getName() + ": failure in receiving message. Client probably terminated.");
 			Thread.currentThread().interrupt();
 			return;
 		}
 		if (!reqMsg.isValid()) {
+			Logger.getLogger(Client.class.getName()).warning(getName() +
+				": received an invalid request" +
+				(loggedUser != null ? " (User: " + loggedUser.getUsername() + ")" : "") + ".");
 			new ResponseMessage("Invalid request.").send(outputStream);
 			return;
 		}
+		Logger.getLogger(Client.class.getName()).info(getName() +
+			": received " + reqMsg.getAction() + " request." +
+			(loggedUser != null ? " (User: " + loggedUser.getUsername() + ")" : "") + ".");
 		ResponseMessage resMsg;
 		switch (reqMsg.getAction()) {
 		case LOGIN:
@@ -123,6 +134,9 @@ public class Client extends Thread
 		default:
 			resMsg = new ResponseMessage("Invalid request.");
 		}
+		Logger.getLogger(Client.class.getName()).info(getName() +
+			": sending response." +
+			(loggedUser != null ? " (User: " + loggedUser.getUsername() + ")" : "") + ".");
 		resMsg.send(outputStream);
 	}
 	

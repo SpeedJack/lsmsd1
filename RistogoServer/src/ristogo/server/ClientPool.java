@@ -17,6 +17,7 @@ public class ClientPool implements Runnable
 	{
 		pool = Executors.newCachedThreadPool();
 		serverSocket = new ServerSocket(port);
+		Logger.getLogger(ClientPool.class.getName()).info("Server listening on port " + port + ".");
 	}
 
 	@Override
@@ -33,6 +34,7 @@ public class ClientPool implements Runnable
 	
 	public void shutdown()
 	{
+		Logger.getLogger(ClientPool.class.getName()).info("Shutting down...");
 		pool.shutdown();
 		try {
 			pool.awaitTermination(3, TimeUnit.SECONDS);

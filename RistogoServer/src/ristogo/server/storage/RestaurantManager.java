@@ -2,6 +2,7 @@ package ristogo.server.storage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -35,15 +36,18 @@ public class RestaurantManager extends EntityManager
 	
 	public List<Restaurant_> getAll()
 	{
+		Logger.getLogger(RestaurantManager.class.getName()).entering(RestaurantManager.class.getName(), "getAll");
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Restaurant_> cq = cb.createQuery(Restaurant_.class);
 		Root<Restaurant_> from = cq.from(Restaurant_.class);
 		cq.select(from);
 		TypedQuery<Restaurant_> query = em.createQuery(cq);
+		Logger.getLogger(RestaurantManager.class.getName()).exiting(RestaurantManager.class.getName(), "getAll");
 		try {
 			return query.getResultList();
 		} catch (NoResultException ex) {
+			Logger.getLogger(RestaurantManager.class.getName()).info("getResultList() returned no result.");
 			return new ArrayList<Restaurant_>();
 		}
 	}
