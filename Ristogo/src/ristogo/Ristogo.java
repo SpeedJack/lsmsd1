@@ -3,7 +3,6 @@ package ristogo;
 import java.util.TimeZone;
 
 import ristogo.config.Configuration;
-import ristogo.config.InterfaceMode;
 import ristogo.ui.Console;
 import ristogo.ui.menus.LoginMenu;
 

@@ -6,7 +6,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
-import ristogo.common.entities.enums.Genre;
 import ristogo.server.storage.entities.Entity_;
 
 public class EntityManager implements AutoCloseable

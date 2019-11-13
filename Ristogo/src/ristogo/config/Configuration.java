@@ -3,7 +3,6 @@ package ristogo.config;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -22,8 +21,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import com.thoughtworks.xstream.XStream;
-
-import ristogo.ui.Console;
 
 public class Configuration implements Serializable
 {
