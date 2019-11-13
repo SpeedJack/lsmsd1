@@ -117,6 +117,9 @@ public class Client extends Thread
 		case LIST_RESERVATIONS:
 			resMsg = handleListReservations(reqMsg);
 			break;
+		case CHECK_SEATS:
+			resMsg = handleCheckSeats(reqMsg);
+			break;
 		default:
 			resMsg = new ResponseMessage("Invalid request.");
 		}
@@ -348,5 +351,37 @@ public class Client extends Thread
 		for (Reservation_ reservation: reservations)
 			resMsg.addEntity(reservation.toCommonEntity());
 		return resMsg;
+	}
+	
+	private ResponseMessage handleCheckSeats(RequestMessage reqMsg)
+	{
+		if (loggedUser == null)
+			return new ResponseMessage("You must be logged in to perform this action.");
+		Reservation reservation = null;
+		Restaurant restaurant = null;
+		for (Entity entity: reqMsg.getEntities())
+			if (entity instanceof Reservation)
+				reservation = (Reservation)entity;
+			else if (entity instanceof Restaurant)
+				restaurant = (Restaurant)entity;
+		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		switch(restaurant_.getOpeningHours()) {
+		case LUNCH:
+			if (reservation.getTime() == ReservationTime.DINNER)
+				return new ResponseMessage("The restaurant does not allow reservations for dinner.");
+		case DINNER:
+			if (reservation.getTime() == ReservationTime.LUNCH)
+				return new ResponseMessage("The restaurant does not allow reservations for lunch.");
+		case BOTH:
+		}
+		int availSeats = restaurant_.getSeats();
+		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), reservation.getTime());
+		if (reservations != null)
+			for (Reservation_ r: reservations)
+				if (r.getId() != reservation.getId())
+					availSeats -= r.getSeats();
+		Restaurant toReturn = restaurant_.toCommonEntity();
+		toReturn.setSeats(availSeats);
+		return new ResponseMessage(toReturn);
 	}
 }

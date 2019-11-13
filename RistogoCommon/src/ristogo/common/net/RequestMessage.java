@@ -52,6 +52,7 @@ public class RequestMessage extends Message
 		case DELETE_RESERVATION:
 			return getEntityCount() == 1 && getEntity() instanceof Reservation;
 		case RESERVE:
+		case CHECK_SEATS:
 			if (getEntityCount() != 2)
 				return false;
 			for (Entity entity: getEntities())

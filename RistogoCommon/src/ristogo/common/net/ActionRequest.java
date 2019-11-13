@@ -15,5 +15,6 @@ public enum ActionRequest implements Serializable
 	RESERVE,
 	DELETE_RESERVATION,
 	EDIT_RESTAURANT,
-	DELETE_RESTAURANT
+	DELETE_RESTAURANT,
+	CHECK_SEATS
 }
