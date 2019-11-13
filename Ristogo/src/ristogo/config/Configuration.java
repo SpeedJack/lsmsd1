@@ -23,10 +23,9 @@ import com.thoughtworks.xstream.XStream;
 
 import ristogo.ui.Console;
 
-// TODO: use an XML file for configuration
 public class Configuration implements Serializable
 {
-	//private static final long serialVersionUID = 3785622852095732177L;
+	private static final long serialVersionUID = 3785622852095732177L;
 
 	private static Configuration singletonObj;
 	
