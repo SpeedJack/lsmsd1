@@ -53,7 +53,7 @@ public class RestaurantMenu extends Menu
 
 	private void handleDeleteRestaurant(MenuEntry entry)
 	{
-		boolean confirm = Console.askConfirm();
+		boolean confirm = Console.askConfirm("This will demote your OWNER account to CUSTOMER. Are you sure?");
 		if (confirm) {
 			ResponseMessage resMsg = protocol.deleteRestaurant(restaurant);
 			if (resMsg.isSuccess())
