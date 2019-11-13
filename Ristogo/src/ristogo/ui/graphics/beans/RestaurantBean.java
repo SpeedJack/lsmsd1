@@ -3,6 +3,7 @@ package ristogo.ui.graphics.beans;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.enums.Genre;
 import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.Price;
@@ -33,6 +34,15 @@ public class RestaurantBean extends EntityBean
 		this.description = new SimpleStringProperty(description);
 		this.seats = new SimpleIntegerProperty(seats);
 		this.openingHours = new SimpleObjectProperty<OpeningHours>(openingHours);
+	}
+	
+	public static RestaurantBean fromEntity(Restaurant restaurant)
+	{
+		return new RestaurantBean(restaurant.getId(), restaurant.getOwnerName(),
+			restaurant.getName(), restaurant.getGenre(), restaurant.getPrice(),
+			restaurant.getCity(), restaurant.getAddress(),
+			restaurant.getDescription(), restaurant.getSeats(),
+			restaurant.getOpeningHours());
 	}
 
 	public String getOwnerName()

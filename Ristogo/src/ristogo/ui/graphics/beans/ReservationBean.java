@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import ristogo.common.entities.Reservation;
 import ristogo.common.entities.enums.ReservationTime;
 
 public class ReservationBean extends EntityBean
@@ -25,6 +26,13 @@ public class ReservationBean extends EntityBean
 		this.time = new SimpleObjectProperty<ReservationTime>(time);
 		this.seats = new SimpleIntegerProperty(seats);
 
+	}
+	
+	public static ReservationBean fromEntity(Reservation reservation)
+	{
+		return new ReservationBean(reservation.getId(), reservation.getUserName(),
+			reservation.getRestaurantName(), reservation.getDate(),
+			reservation.getTime(), reservation.getSeats());
 	}
 
 	public LocalDate getDate()
