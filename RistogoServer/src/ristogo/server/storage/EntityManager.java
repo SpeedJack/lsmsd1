@@ -3,8 +3,10 @@ package ristogo.server.storage;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
 
 import ristogo.server.storage.entities.Entity_;
 
@@ -46,10 +48,15 @@ public class EntityManager implements AutoCloseable
 	public void insert(Entity_ entity)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "insert", entity);
-		javax.persistence.EntityManager em = getEM();
-		em.getTransaction().begin();
-		em.persist(entity);
-		em.getTransaction().commit();
+		try {
+			beginTransaction();
+			persist(entity);
+			commitTransaction();
+		} catch (PersistenceException ex) {
+			Logger.getLogger(EntityManager.class.getName()).throwing(EntityManager.class.getName(), "insert", ex);
+			rollbackTransaction();
+			throw ex;
+		}
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "insert", entity);
 	}
 	
@@ -62,21 +69,31 @@ public class EntityManager implements AutoCloseable
 	public void update(Entity_ entity)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "update", entity);
-		javax.persistence.EntityManager em = getEM();
-		em.getTransaction().begin();
-		em.merge(entity);
-		em.getTransaction().commit();
+		try {
+			beginTransaction();
+			merge(entity);
+			commitTransaction();
+		} catch (PersistenceException ex) {
+			Logger.getLogger(EntityManager.class.getName()).throwing(EntityManager.class.getName(), "update", ex);
+			rollbackTransaction();
+			throw ex;
+		}
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "update", entity);
 	}
 	
 	public void delete(Class<? extends Entity_> entityClass, int entityId)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "delete", new Object[]{entityClass, entityId});
-		javax.persistence.EntityManager em = getEM();
-		em.getTransaction().begin();
-		Entity_ entity = (Entity_)em.getReference(entityClass, entityId);
-		em.remove(entity);
-		em.getTransaction().commit();
+		try {
+			beginTransaction();
+			Entity_ entity = (Entity_)getEM().getReference(entityClass, entityId);
+			remove(entity);
+			commitTransaction();
+		} catch (PersistenceException ex) {
+			Logger.getLogger(EntityManager.class.getName()).throwing(EntityManager.class.getName(), "delete", ex);
+			rollbackTransaction();
+			throw ex;
+		}
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "delete", new Object[]{entityClass, entityId});
 	}
 	
@@ -85,5 +102,50 @@ public class EntityManager implements AutoCloseable
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "refresh", entity);
 		getEM().refresh(entity);
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "refresh", entity);
+	}
+	
+	public static void beginTransaction()
+	{
+		Logger.getLogger(EntityManager.class.getName()).finer("Transaction: begin.");
+		EntityTransaction tx = getEM().getTransaction();
+		if (tx != null && !tx.isActive())
+			getEM().getTransaction().begin();
+	}
+	
+	public static void commitTransaction()
+	{
+		Logger.getLogger(EntityManager.class.getName()).finer("Transaction: commit.");
+		EntityTransaction tx = getEM().getTransaction();
+		if (tx != null && tx.isActive())
+			getEM().getTransaction().commit();
+	}
+	
+	public static void rollbackTransaction()
+	{
+		Logger.getLogger(EntityManager.class.getName()).finer("Transaction: rollback");
+		EntityTransaction tx = getEM().getTransaction();
+		if (tx != null && tx.isActive())
+			tx.rollback();
+	}
+	
+	public void persist(Entity_ entity)
+	{
+		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "persist", entity);
+		getEM().persist(entity);
+		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "persist", entity);
+	}
+	
+	public void merge(Entity_ entity)
+	{
+		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "merge", entity);
+		getEM().merge(entity);
+		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "merge", entity);
+	}
+	
+	public void remove(Entity_ entity)
+	{
+		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "remove", entity);
+		getEM().remove(entity);
+		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "remove", entity);
 	}
 }
