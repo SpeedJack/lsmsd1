@@ -7,7 +7,7 @@
 				<xs:element name="serverPort" minOccurs="0" maxOccurs="1">
 					<xs:simpleType>
 						<xs:restriction base="xs:integer">
-							<xs:minInclusive value="1" />
+							<xs:minInclusive value="0" />
 							<xs:maxInclusive value="65535" />
 						</xs:restriction>
 					</xs:simpleType>
@@ -37,6 +37,21 @@
 						<xs:restriction base="xs:integer">
 							<xs:minInclusive value="1" />
 							<xs:maxInclusive value="100" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="logLevel" minOccurs="0" maxOccurs="1">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="ALL"/>
+							<xs:enumeration value="FINEST"/>
+							<xs:enumeration value="FINER"/>
+							<xs:enumeration value="FINE"/>
+							<xs:enumeration value="CONFIG"/>
+							<xs:enumeration value="INFO"/>
+							<xs:enumeration value="WARNING"/>
+							<xs:enumeration value="SEVERE"/>
+							<xs:enumeration value="OFF"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>

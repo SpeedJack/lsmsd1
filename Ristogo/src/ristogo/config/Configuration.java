@@ -36,6 +36,7 @@ public class Configuration implements Serializable
 	public String bgColorName;
 	public String fgColorName;
 	public int numberRowsDisplayable;
+	public Level logLevel;
 	
 	private Configuration()
 	{
@@ -60,6 +61,8 @@ public class Configuration implements Serializable
 			fgColorName = "D9561D";
 		if (numberRowsDisplayable == 0)
 			numberRowsDisplayable = 7;
+		if (logLevel == null)
+			logLevel = Level.WARNING;
 	}
 	
 	public static Configuration getConfig()
@@ -88,6 +91,7 @@ public class Configuration implements Serializable
 		FileReader fr = new FileReader("config.xml");
 		xs.alias("Configuration", Configuration.class);
 		Configuration config = (Configuration)xs.fromXML(fr);
+		Logger.getLogger(Configuration.class.getName()).config("Configuration loaded from config.xml");
 		config.mergeDefaults();
 		return config;
 	}
@@ -145,5 +149,10 @@ public class Configuration implements Serializable
 	public String getFgColorName()
 	{
 		return fgColorName;
+	}
+	
+	public Level getLogLevel()
+	{
+		return logLevel;
 	}
 }

@@ -28,13 +28,13 @@ public abstract class TextForm
 			Console.println(prompt + ":");
 		Console.newLine();
 		fields = createFields();
-		HashMap<Integer, String> ht = new HashMap<Integer, String>();
+		HashMap<Integer, String> hm = new HashMap<Integer, String>();
 		int i = 0;
 		for (FormField field: fields) {
 			field.show();
-			ht.put(i, field.getValue());
+			hm.put(i, field.getValue());
 			i++;
 		}
-		return ht;
+		return hm;
 	}
 }
