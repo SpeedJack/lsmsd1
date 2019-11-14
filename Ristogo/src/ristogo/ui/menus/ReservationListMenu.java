@@ -15,7 +15,7 @@ public class ReservationListMenu extends Menu
 	
 	public ReservationListMenu(Restaurant restaurant)
 	{
-		super("Select reservation");
+		super("Select reservation to view");
 		this.restaurant = restaurant;
 	}
 
