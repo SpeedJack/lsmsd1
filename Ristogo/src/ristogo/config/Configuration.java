@@ -28,15 +28,15 @@ public class Configuration implements Serializable
 
 	private static Configuration singletonObj;
 	
-	public String serverIp;
-	public int serverPort;
-	public InterfaceMode interfaceMode;
-	public String fontName;
-	public int fontSize;
-	public String bgColorName;
-	public String fgColorName;
-	public int numberRowsDisplayable;
-	public Level logLevel;
+	private String serverIp;
+	private int serverPort;
+	private InterfaceMode interfaceMode;
+	private String fontName;
+	private int fontSize;
+	private String bgColorName;
+	private String fgColorName;
+	private int numberRowsDisplayable;
+	private Level logLevel;
 	
 	private Configuration()
 	{

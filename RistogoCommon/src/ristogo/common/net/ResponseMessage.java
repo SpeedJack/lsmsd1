@@ -9,8 +9,8 @@ public class ResponseMessage extends Message
 {
 	private static final long serialVersionUID = -4469582259015203553L;
 
-	private final boolean success;
-	private final String errorMsg;
+	protected final boolean success;
+	protected final String errorMsg;
 	
 	public ResponseMessage(boolean success)
 	{
@@ -32,7 +32,7 @@ public class ResponseMessage extends Message
 		this(success, null, entities);
 	}
 	
-	public ResponseMessage(boolean success, String errorMsg, Entity... entities)
+	private ResponseMessage(boolean success, String errorMsg, Entity... entities)
 	{
 		super(entities);
 		this.success = success;

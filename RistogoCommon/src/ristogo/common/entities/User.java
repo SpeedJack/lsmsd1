@@ -69,7 +69,7 @@ public abstract class User extends Entity
 		return this.password;
 	}
 	
-	public final static String hashPassword(String password)
+	protected final static String hashPassword(String password)
 	{
 		String passwordHash;
 		try {

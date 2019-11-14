@@ -30,11 +30,6 @@ public class ReservationListMenu extends Menu
 		return menu;
 	}
 	
-	private static String getReservationMenuName(Reservation reservation)
-	{
-		return reservation.getRestaurantName() + " " + reservation.getDate() + " " + reservation.getTime() + " x" + reservation.getSeats();
-	}
-	
 	private void handleReservationSelection(MenuEntry entry)
 	{
 		new ReservationManageMenu((Reservation)entry.getHandlerData()).show();

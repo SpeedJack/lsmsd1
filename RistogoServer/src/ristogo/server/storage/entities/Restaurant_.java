@@ -29,34 +29,34 @@ public class Restaurant_ extends Entity_
 {
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="ownerId")
-	private User_ owner;
+	protected User_ owner;
 	
 	@Column(name="name")
-	private String name;
+	protected String name;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="genre")
-	private Genre genre;
+	protected Genre genre;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="price")
-	private Price price;
+	protected Price price;
 	
 	@Column(name="city")
-	private String city;
+	protected String city;
 	
 	@Column(name="address")
-	private String address;
+	protected String address;
 	
 	@Column(name="description")
-	private String description;
+	protected String description;
 	
 	@Column(name="seats")
-	private int seats;
+	protected int seats;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="openingHours")
-	private OpeningHours openingHours;
+	protected OpeningHours openingHours;
 	
 	@OneToMany(mappedBy="restaurant", fetch=FetchType.LAZY)
 	@LazyCollection(LazyCollectionOption.EXTRA)

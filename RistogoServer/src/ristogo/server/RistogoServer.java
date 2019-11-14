@@ -99,29 +99,4 @@ public class RistogoServer
 				return arg;
 		return null;
 	}
-	
-	public static boolean hasArgument(String[] args, String longArg, String shortArg)
-	{
-		return hasLongArgument(args, longArg) || hasShortArgument(args, shortArg);
-	}
-	
-	public static boolean hasArgument(String[] args, String rawArgument)
-	{
-		return getArgument(args, rawArgument) != null;
-	}
-	
-	public static boolean hasLongArgument(String[] args, String argument)
-	{
-		if (argument == null || argument.isEmpty())
-			return false;
-		return hasArgument(args, "--" + argument);
-	}
-	
-	public static boolean hasShortArgument(String[] args, String argument)
-	{
-		if (argument == null || argument.isEmpty())
-			return false;
-		return hasArgument(args, "-" + argument);
-	}
-
 }

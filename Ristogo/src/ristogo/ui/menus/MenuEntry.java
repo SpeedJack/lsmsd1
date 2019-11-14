@@ -4,12 +4,12 @@ import java.util.function.Consumer;
 
 public class MenuEntry implements Comparable<MenuEntry>
 {
-	private int key;
-	private String text;
-	private boolean exit;
-	private Object handlerData;
+	protected int key;
+	protected String text;
+	protected boolean exit;
+	protected Object handlerData;
 	
-	private Consumer<MenuEntry> handler;
+	protected Consumer<MenuEntry> handler;
 	
 	public MenuEntry(int key, String text, boolean exit, Consumer<MenuEntry> handler, Object handlerData)
 	{

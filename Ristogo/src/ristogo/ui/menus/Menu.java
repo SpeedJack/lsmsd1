@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ristogo.Ristogo;
+import ristogo.common.entities.Reservation;
 import ristogo.common.entities.User;
 import ristogo.config.Configuration;
 import ristogo.net.Protocol;
@@ -54,5 +55,10 @@ public abstract class Menu
 	public void setPrompt(String prompt)
 	{
 		this.prompt = prompt;
+	}
+	
+	protected static String getReservationMenuName(Reservation reservation)
+	{
+		return reservation.getRestaurantName() + " " + reservation.getDate() + " " + reservation.getTime() + " x" + reservation.getSeats();
 	}
 }

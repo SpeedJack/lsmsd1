@@ -64,9 +64,9 @@ public class FormField
 	
 	protected boolean isValid()
 	{
-		if (this.validator == null)
+		if (validator == null)
 			return true;
-		return this.validator.test(getValue());
+		return validator.test(getValue());
 	}
 	
 	public void show()

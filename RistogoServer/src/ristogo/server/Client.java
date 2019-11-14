@@ -16,6 +16,7 @@ import ristogo.common.entities.Entity;
 import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
+import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.ReservationTime;
 import ristogo.common.net.Message;
 import ristogo.common.net.RequestMessage;
@@ -37,7 +38,7 @@ public class Client extends Thread
 	private RestaurantManager restaurantManager;
 	private ReservationManager reservationManager;
 	
-	public Client(Socket clientSocket)
+	Client(Socket clientSocket)
 	{
 		Logger.getLogger(Client.class.getName()).info("New incoming connection from " +
 			clientSocket.getRemoteSocketAddress() + "." +
@@ -244,14 +245,14 @@ public class Client extends Thread
 			return new ResponseMessage("You can only edit your own reservations.");
 		Reservation_ reservation_ = reservationManager.get(reservation.getId());
 		Restaurant_ restaurant_ = reservation_.getRestaurant();
+		OpeningHours oh = restaurant_.getOpeningHours();
+		ReservationTime rt = reservation.getTime();
 		switch(restaurant_.getOpeningHours()) {
 		case LUNCH:
-			if (reservation.getTime() == ReservationTime.DINNER)
-				return new ResponseMessage("The restaurant does not allow reservations for dinner.");
 		case DINNER:
-			if (reservation.getTime() == ReservationTime.LUNCH)
-				return new ResponseMessage("The restaurant does not allow reservations for lunch.");
-		case BOTH:
+			if (rt.toOpeningHours() != oh)
+				return new ResponseMessage("The restaurant does not allow reservations for" + rt + ".");
+		default:
 		}
 		int availSeats = restaurant_.getSeats();
 		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), reservation.getTime());
@@ -294,14 +295,14 @@ public class Client extends Thread
 		if (reservation.getDate().isBefore(LocalDate.now()))
 			return new ResponseMessage("The reservation date must be a date in future.");
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		OpeningHours oh = restaurant_.getOpeningHours();
+		ReservationTime rt = reservation.getTime();
 		switch(restaurant_.getOpeningHours()) {
 		case LUNCH:
-			if (reservation.getTime() == ReservationTime.DINNER)
-				return new ResponseMessage("The restaurant does not allow reservations for dinner.");
 		case DINNER:
-			if (reservation.getTime() == ReservationTime.LUNCH)
-				return new ResponseMessage("The restaurant does not allow reservations for lunch.");
-		case BOTH:
+			if (rt.toOpeningHours() != oh)
+				return new ResponseMessage("The restaurant does not allow reservations for" + rt + ".");
+		default:
 		}
 		int availSeats = restaurant_.getSeats();
 		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), reservation.getTime());
@@ -372,14 +373,14 @@ public class Client extends Thread
 			else if (entity instanceof Restaurant)
 				restaurant = (Restaurant)entity;
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		OpeningHours oh = restaurant_.getOpeningHours();
+		ReservationTime rt = reservation.getTime();
 		switch(restaurant_.getOpeningHours()) {
 		case LUNCH:
-			if (reservation.getTime() == ReservationTime.DINNER)
-				return new ResponseMessage("The restaurant does not allow reservations for dinner.");
 		case DINNER:
-			if (reservation.getTime() == ReservationTime.LUNCH)
-				return new ResponseMessage("The restaurant does not allow reservations for lunch.");
-		case BOTH:
+			if (rt.toOpeningHours() != oh)
+				return new ResponseMessage("The restaurant does not allow reservations for" + rt + ".");
+		default:
 		}
 		int availSeats = restaurant_.getSeats();
 		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), reservation.getTime());

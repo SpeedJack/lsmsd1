@@ -30,13 +30,13 @@ public class Message implements Serializable
 				this.entities.add(entity);
 	}
 
-	public String toXML()
+	protected String toXML()
 	{
 		XStream xs = new XStream();
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + xs.toXML(this);
 	}
 	
-	public static Message fromXML(String xml)
+	protected static Message fromXML(String xml)
 	{
 		XStream xs = new XStream();
 		xs.addPermission(NoTypePermission.NONE);
