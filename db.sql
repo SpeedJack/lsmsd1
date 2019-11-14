@@ -69,9 +69,9 @@ CREATE TABLE reservations (
 		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO reservations VALUES (1, 1, '2', '2018-06-18', 'DINNER', '5');
-INSERT INTO reservations VALUES (2, 2, '2', '2018-06-26', 'DINNER', '6');
-INSERT INTO reservations VALUES (3, 3, '1', '2018-06-19', 'DINNER', '2');
-INSERT INTO reservations VALUES (4, 4, '2', '2018-06-26', 'DINNER', '3');
-INSERT INTO reservations VALUES (5, 5, '5', '2018-06-16', 'DINNER', '6');
+INSERT INTO reservations VALUES (1, 1, 2, '2018-06-18', 'DINNER', '5');
+INSERT INTO reservations VALUES (2, 2, 2, '2018-06-26', 'DINNER', '6');
+INSERT INTO reservations VALUES (3, 3, 1, '2018-06-19', 'DINNER', '2');
+INSERT INTO reservations VALUES (4, 4, 2, '2018-06-26', 'DINNER', '3');
+INSERT INTO reservations VALUES (5, 5, 5, '2018-06-16', 'DINNER', '6');
 
