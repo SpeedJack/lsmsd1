@@ -8,20 +8,20 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users (
 	id INT NOT NULL AUTO_INCREMENT,
 	username VARCHAR(32) NOT NULL UNIQUE,
-	password VARCHAR(64) NOT NULL,
+	password CHAR(64) NOT NULL,
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO users VALUES (1, 'simone', 'simone');
-INSERT INTO users VALUES (2, 'luca', 'luca');
-INSERT INTO users VALUES (3, 'gino', 'gino');
-INSERT INTO users VALUES (4, 'carlotta', 'carlotta');
-INSERT INTO users VALUES (5, 'gianluca', 'gianluca');
-INSERT INTO users VALUES (6, 'lorenzo21', '15041997');
-INSERT INTO users VALUES (7, 'mark', 'mark');
-INSERT INTO users VALUES (8, 'lorenzo1', '66155');
-INSERT INTO users VALUES (9, 'gianni', 'gianni');
-INSERT INTO users VALUES (10, 'gabriele97', 'gabriele97');
+INSERT INTO users VALUES (1, 'simone', '19a0098e641d4bee278bb5d470d06679ffc5fdc818c3a1c52bfb7f8cde3752d3');
+INSERT INTO users VALUES (2, 'luca', 'd70f47790f689414789eeff231703429c7f88a10210775906460edbf38589d90');
+INSERT INTO users VALUES (3, 'gino', '1bdc6c65b0b55f11f4a9c541fc9467677a9936e0b962276ee1878531af03e8b6');
+INSERT INTO users VALUES (4, 'carlotta', '7a25faacaf8ea321215bc6c116ed40b971dee103c23bf573f8603a369a90c689');
+INSERT INTO users VALUES (5, 'gianluca', 'ec27c5dcb1aba241730da0ab0e695920ac927de0399226d226b82b0e8b01103f');
+INSERT INTO users VALUES (6, 'lorenzo21', 'd1346bca5cc285441eb3ae13293996b12323553e313fafc3f4efb5831fb09136');
+INSERT INTO users VALUES (7, 'mark', '6201eb4dccc956cc4fa3a78dca0c2888177ec52efd48f125df214f046eb43138');
+INSERT INTO users VALUES (8, 'lorenzo1', 'd24a882974a30ae3bc3a6c5f816007c9a52399aca1d60abfeb5665f4c4c9893e');
+INSERT INTO users VALUES (9, 'gianni', '771795917a4700741d27b968cf422b0985ba45e1d45937413135f579cb6aff02');
+INSERT INTO users VALUES (10, 'gabriele97', '29ee85bfd8675bd48268bd4460c30cc3b1b939213080b7714ddb988680d5745c');
 
 
 CREATE TABLE restaurants (
