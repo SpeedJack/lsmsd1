@@ -20,23 +20,5 @@ public class LoginForm extends TextForm
 		fields.add(new FormField("PASSWORD", true, this::validatePassword));
 		return fields;
 	}
-	
-	private boolean validateUsername(String username)
-	{
-		if (!User.validateUsername(username)) {
-			Console.println("Invalid username.");
-			return false;
-		}
-		return true;
-	}
-	
-	private boolean validatePassword(String password)
-	{
-		if (!User.validatePassword(password)) {
-			Console.println("Invalid password.");
-			return false;
-		}
-		return true;
-	}
 
 }

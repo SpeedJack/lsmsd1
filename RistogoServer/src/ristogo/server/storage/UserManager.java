@@ -1,5 +1,7 @@
 package ristogo.server.storage;
 
+import java.util.logging.Logger;
+
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -13,6 +15,7 @@ public class UserManager extends EntityManager
 {
 	public User_ getUserByUsername(String username)
 	{
+		Logger.getLogger(UserManager.class.getName()).entering(UserManager.class.getName(), "getUserByUsername", username);
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User_> cq = cb.createQuery(User_.class);
@@ -22,9 +25,11 @@ public class UserManager extends EntityManager
 		select.where(cb.equal(from.get("username"), usernamePar));
 		TypedQuery<User_> query = em.createQuery(cq);
 		query.setParameter(usernamePar, username);
+		Logger.getLogger(UserManager.class.getName()).exiting(UserManager.class.getName(), "getUserByUsername", username);
 		try {
 			return query.getSingleResult();
 		} catch (NoResultException ex) {
+			Logger.getLogger(UserManager.class.getName()).info("getSingleResult() returned no result.");
 			return null;
 		}
 	}

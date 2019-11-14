@@ -2,6 +2,7 @@ package ristogo.server.storage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -37,6 +38,7 @@ public class ReservationManager extends EntityManager
 	
 	public List<Reservation_> getReservationsByDateTime(int restaurantId, LocalDate date, ReservationTime time)
 	{
+		Logger.getLogger(ReservationManager.class.getName()).entering(ReservationManager.class.getName(), "getReservationsByDateTime", new Object[]{restaurantId, date, time});
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Reservation_> cq = cb.createQuery(Reservation_.class);
@@ -54,9 +56,11 @@ public class ReservationManager extends EntityManager
 		query.setParameter(idPar, restaurantId);
 		query.setParameter(datePar, date);
 		query.setParameter(timePar, time);
+		Logger.getLogger(ReservationManager.class.getName()).exiting(ReservationManager.class.getName(), "getReservationsByDateTime", new Object[]{restaurantId, date, time});
 		try {
 			return query.getResultList();
 		} catch (NoResultException ex) {
+			Logger.getLogger(ReservationManager.class.getName()).info("getResultList() returned no result.");
 			return null;
 		}
 	}

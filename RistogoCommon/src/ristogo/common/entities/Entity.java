@@ -8,12 +8,12 @@ public abstract class Entity implements Serializable
 
 	protected int id;
 	
-	public Entity(int id)
+	Entity(int id)
 	{
 		setId(id);
 	}
 	
-	public Entity()
+	Entity()
 	{
 		this(0);
 	}

@@ -54,38 +54,5 @@ public class RestaurantForm extends TextForm
 		restaurant.setOpeningHours(OpeningHours.valueOf(response.get(7)));
 		return response;
 	}
-	
-	private boolean validatePositiveInteger(String value)
-	{
-		try {
-			int converted = Integer.parseInt(value);
-			if (converted <= 0)
-				return false;
-		} catch (NumberFormatException ex) {
-			Console.println("Invalid number.");
-			return false;
-		}
-		return true;
-	}
-	
-	/*private boolean validatePrice(String price)
-	{
-		try {
-			Price.valueOf(price);
-		} catch (IllegalArgumentException ex) {
-			return false;
-		}
-		return true;
-	}
-	
-	private boolean validateOpeningHours(String openingHours)
-	{
-		try {
-			OpeningHours.valueOf(openingHours);
-		} catch (IllegalArgumentException ex) {
-			return false;
-		}
-		return true;
-	}*/
 
 }

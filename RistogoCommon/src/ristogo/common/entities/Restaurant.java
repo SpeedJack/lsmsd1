@@ -11,15 +11,15 @@ public class Restaurant extends Entity
 {
 	private static final long serialVersionUID = -2839130753004235292L;
 	
-	private String ownerName;
-	private String name;
-	private Genre genre;
-	private Price price;
-	private String city;
-	private String address;
-	private String description;
-	private int seats;
-	private OpeningHours openingHours;
+	protected String ownerName;
+	protected String name;
+	protected Genre genre;
+	protected Price price;
+	protected String city;
+	protected String address;
+	protected String description;
+	protected int seats;
+	protected OpeningHours openingHours;
 	protected List<Reservation> activeReservations = new ArrayList<>();
 	
 	public Restaurant(String ownerName)

@@ -16,6 +16,8 @@ import ristogo.common.entities.Entity;
 import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
+import ristogo.common.entities.enums.OpeningHours;
+import ristogo.common.entities.enums.ReservationTime;
 import ristogo.common.net.Message;
 import ristogo.common.net.RequestMessage;
 import ristogo.common.net.ResponseMessage;
@@ -36,8 +38,11 @@ public class Client extends Thread
 	private RestaurantManager restaurantManager;
 	private ReservationManager reservationManager;
 	
-	public Client(Socket clientSocket)
+	Client(Socket clientSocket)
 	{
+		Logger.getLogger(Client.class.getName()).info("New incoming connection from " +
+			clientSocket.getRemoteSocketAddress() + "." +
+			"Request handled by " + this.getName() + ".");
 		socket = clientSocket;
 		userManager = new UserManager();
 		restaurantManager = new RestaurantManager();
@@ -55,6 +60,7 @@ public class Client extends Thread
 	{
 		while (!Thread.currentThread().isInterrupted())
 			process();
+		Logger.getLogger(Client.class.getName()).warning(getName() + ": interrupted. Exiting...");
 		userManager.close();
 		restaurantManager.close();
 		reservationManager.close();
@@ -71,58 +77,89 @@ public class Client extends Thread
 	{
 		RequestMessage reqMsg = (RequestMessage)Message.receive(inputStream);
 		if (reqMsg == null) {
+			Logger.getLogger(Client.class.getName()).warning(getName() + ": failure in receiving message. Client probably terminated.");
 			Thread.currentThread().interrupt();
 			return;
 		}
 		if (!reqMsg.isValid()) {
+			Logger.getLogger(Client.class.getName()).warning(getName() +
+				": received an invalid request" +
+				(loggedUser != null ? " (User: " + loggedUser.getUsername() + ")" : "") + ".");
 			new ResponseMessage("Invalid request.").send(outputStream);
 			return;
 		}
-		ResponseMessage resMsg;
-		switch (reqMsg.getAction()) {
+		Logger.getLogger(Client.class.getName()).info(getName() +
+			": received " + reqMsg.getAction() + " request." +
+			(loggedUser != null ? " (User: " + loggedUser.getUsername() + ")" : "") + ".");
+		
+		ResponseMessage resMsg = null;
+		switch(reqMsg.getAction()) {
 		case LOGIN:
-			resMsg = handleLoginRequest(reqMsg);
+		case REGISTER:
+			if (loggedUser != null)
+				resMsg = new ResponseMessage("You are already logged in.");
 			break;
 		case LOGOUT:
-			resMsg = handleLogoutRequest(reqMsg);
-			break;
-		case REGISTER:
-			resMsg = handleRegisterRequest(reqMsg);
-			break;
-		case LIST_OWN_RESTAURANTS:
-			resMsg = handleListOwnRestaurantsRequest(reqMsg);
-			break;
-		case EDIT_RESTAURANT:
-			resMsg = handleEditRestaurantRequest(reqMsg);
-			break;
-		case LIST_OWN_RESERVATIONS:
-			resMsg = handleListOwnReservationsRequest(reqMsg);
-			break;
-		case EDIT_RESERVATION:
-			resMsg = handleEditReservation(reqMsg);
-			break;
-		case LIST_RESTAURANTS:
-			resMsg = handleListRestaurants(reqMsg);
-			break;
-		case RESERVE:
-			resMsg = handleReserve(reqMsg);
-			break;
-		case DELETE_RESERVATION:
-			resMsg = handleDeleteReservation(reqMsg);
-			break;
-		case DELETE_RESTAURANT:
-			resMsg = handleDeleteRestaurantRequest(reqMsg);
+			if (loggedUser == null)
+				resMsg = new ResponseMessage("You are not logged in.");
 			break;
 		default:
-			resMsg = new ResponseMessage("Invalid request.");
+			if (loggedUser == null)
+				resMsg = new ResponseMessage("You must be logged in to perform this action.");
 		}
+		
+		if (resMsg == null)
+			switch (reqMsg.getAction()) {
+			case LOGIN:
+				resMsg = handleLoginRequest(reqMsg);
+				break;
+			case LOGOUT:
+				resMsg = handleLogoutRequest(reqMsg);
+				break;
+			case REGISTER:
+				resMsg = handleRegisterRequest(reqMsg);
+				break;
+			case LIST_OWN_RESTAURANTS:
+				resMsg = handleListOwnRestaurantsRequest(reqMsg);
+				break;
+			case EDIT_RESTAURANT:
+				resMsg = handleEditRestaurantRequest(reqMsg);
+				break;
+			case LIST_OWN_RESERVATIONS:
+				resMsg = handleListOwnReservationsRequest(reqMsg);
+				break;
+			case EDIT_RESERVATION:
+				resMsg = handleEditReservation(reqMsg);
+				break;
+			case LIST_RESTAURANTS:
+				resMsg = handleListRestaurants(reqMsg);
+				break;
+			case RESERVE:
+				resMsg = handleReserve(reqMsg);
+				break;
+			case DELETE_RESERVATION:
+				resMsg = handleDeleteReservation(reqMsg);
+				break;
+			case DELETE_RESTAURANT:
+				resMsg = handleDeleteRestaurantRequest(reqMsg);
+				break;
+			case LIST_RESERVATIONS:
+				resMsg = handleListReservations(reqMsg);
+				break;
+			case CHECK_SEATS:
+				resMsg = handleCheckSeats(reqMsg);
+				break;
+			default:
+				resMsg = new ResponseMessage("Invalid request.");
+			}
+		Logger.getLogger(Client.class.getName()).info(getName() +
+			": sending response." +
+			(loggedUser != null ? " (User: " + loggedUser.getUsername() + ")" : "") + ".");
 		resMsg.send(outputStream);
 	}
 	
 	private ResponseMessage handleLoginRequest(RequestMessage reqMsg)
 	{
-		if (loggedUser != null)
-			return new ResponseMessage("You are already logged in.");
 		User user = (User)reqMsg.getEntity();
 		User_ savedUser = userManager.getUserByUsername(user.getUsername());
 		if (savedUser != null && user.checkPasswordHash(savedUser.getPasswordHash())) {
@@ -140,8 +177,6 @@ public class Client extends Thread
 	
 	private ResponseMessage handleRegisterRequest(RequestMessage reqMsg)
 	{
-		if (loggedUser != null)
-			return new ResponseMessage("You are already logged in.");
 		User user = null;
 		Restaurant restaurant = null;
 		for (Entity entity: reqMsg.getEntities())
@@ -172,8 +207,6 @@ public class Client extends Thread
 	
 	private ResponseMessage handleListOwnRestaurantsRequest(RequestMessage reqMsg)
 	{
-		if (loggedUser == null)
-			return new ResponseMessage("You must be logged in to perform this action.");
 		ResponseMessage resMsg = new ResponseMessage();
 		List<Restaurant_> restaurants = loggedUser.getRestaurants();
 		for (Restaurant_ restaurant: restaurants)
@@ -183,8 +216,6 @@ public class Client extends Thread
 	
 	private ResponseMessage handleEditRestaurantRequest(RequestMessage reqMsg)
 	{
-		if (loggedUser == null)
-			return new ResponseMessage("You must be logged in to perform this action.");
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
 		if (!loggedUser.hasRestaurant(restaurant.getId()))
 			return new ResponseMessage("You can only edit restaurants that you own.");
@@ -198,8 +229,6 @@ public class Client extends Thread
 	
 	private ResponseMessage handleListOwnReservationsRequest(RequestMessage reqMsg)
 	{
-		if (loggedUser == null)
-			return new ResponseMessage("You must be logged in to perform this action.");
 		ResponseMessage resMsg = new ResponseMessage();
 		List<Reservation_> reservations = loggedUser.getActiveReservations();
 		for (Reservation_ reservation: reservations)
@@ -209,8 +238,6 @@ public class Client extends Thread
 	
 	private ResponseMessage handleEditReservation(RequestMessage reqMsg)
 	{
-		if (loggedUser == null)
-			return new ResponseMessage("You must be logged in to perform this action.");
 		Reservation reservation = (Reservation)reqMsg.getEntity();
 		if (reservation.getDate().isBefore(LocalDate.now()))
 			return new ResponseMessage("The reservation date must be a date in future.");
@@ -218,6 +245,15 @@ public class Client extends Thread
 			return new ResponseMessage("You can only edit your own reservations.");
 		Reservation_ reservation_ = reservationManager.get(reservation.getId());
 		Restaurant_ restaurant_ = reservation_.getRestaurant();
+		OpeningHours oh = restaurant_.getOpeningHours();
+		ReservationTime rt = reservation.getTime();
+		switch(restaurant_.getOpeningHours()) {
+		case LUNCH:
+		case DINNER:
+			if (rt.toOpeningHours() != oh)
+				return new ResponseMessage("The restaurant does not allow reservations for" + rt + ".");
+		default:
+		}
 		int availSeats = restaurant_.getSeats();
 		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), reservation.getTime());
 		if (reservations != null)
@@ -240,8 +276,6 @@ public class Client extends Thread
 	
 	private ResponseMessage handleListRestaurants(RequestMessage reqMsg)
 	{
-		if (loggedUser == null)
-			return new ResponseMessage("You must be logged in to perform this action.");
 		List<Restaurant_> restaurants = restaurantManager.getAll();
 		ResponseMessage resMsg = new ResponseMessage();
 		for (Restaurant_ restaurant: restaurants)
@@ -251,8 +285,6 @@ public class Client extends Thread
 	
 	private ResponseMessage handleReserve(RequestMessage reqMsg)
 	{
-		if (loggedUser == null)
-			return new ResponseMessage("You must be logged in to perform this action.");
 		Reservation reservation = null;
 		Restaurant restaurant = null;
 		for (Entity entity: reqMsg.getEntities())
@@ -263,6 +295,15 @@ public class Client extends Thread
 		if (reservation.getDate().isBefore(LocalDate.now()))
 			return new ResponseMessage("The reservation date must be a date in future.");
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		OpeningHours oh = restaurant_.getOpeningHours();
+		ReservationTime rt = reservation.getTime();
+		switch(restaurant_.getOpeningHours()) {
+		case LUNCH:
+		case DINNER:
+			if (rt.toOpeningHours() != oh)
+				return new ResponseMessage("The restaurant does not allow reservations for" + rt + ".");
+		default:
+		}
 		int availSeats = restaurant_.getSeats();
 		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), reservation.getTime());
 		if (reservations != null)
@@ -288,11 +329,9 @@ public class Client extends Thread
 	
 	private ResponseMessage handleDeleteReservation(RequestMessage reqMsg)
 	{
-		if (loggedUser == null)
-			return new ResponseMessage("You must be logged in to perform this action.");
 		Reservation reservation = (Reservation)reqMsg.getEntity();
 		if (!loggedUser.hasReservation(reservation.getId()))
-			return new ResponseMessage("You can only edit your own reservations.");
+			return new ResponseMessage("You can only delete your own reservations.");
 		Reservation_ reservation_ = reservationManager.get(reservation.getId());
 		reservationManager.delete(reservation.getId());
 		userManager.refresh(reservation_.getUser());
@@ -302,8 +341,6 @@ public class Client extends Thread
 	
 	private ResponseMessage handleDeleteRestaurantRequest(RequestMessage reqMsg)
 	{
-		if (loggedUser == null)
-			return new ResponseMessage("You must be logged in to perform this action.");
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
 		if (!loggedUser.hasRestaurant(restaurant.getId()))
 			return new ResponseMessage("You can only delete restaurants that you own.");
@@ -311,5 +348,48 @@ public class Client extends Thread
 		restaurantManager.delete(restaurant.getId());
 		userManager.refresh(restaurant_.getOwner());
 		return new ResponseMessage();
+	}
+	
+	private ResponseMessage handleListReservations(RequestMessage reqMsg)
+	{
+		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
+		if (!loggedUser.hasRestaurant(restaurant.getId()))
+			return new ResponseMessage("You can only view reservations for restaurants that you own.");
+		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		List<Reservation_> reservations = restaurant_.getActiveReservations();
+		ResponseMessage resMsg = new ResponseMessage();
+		for (Reservation_ reservation: reservations)
+			resMsg.addEntity(reservation.toCommonEntity());
+		return resMsg;
+	}
+	
+	private ResponseMessage handleCheckSeats(RequestMessage reqMsg)
+	{
+		Reservation reservation = null;
+		Restaurant restaurant = null;
+		for (Entity entity: reqMsg.getEntities())
+			if (entity instanceof Reservation)
+				reservation = (Reservation)entity;
+			else if (entity instanceof Restaurant)
+				restaurant = (Restaurant)entity;
+		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		OpeningHours oh = restaurant_.getOpeningHours();
+		ReservationTime rt = reservation.getTime();
+		switch(restaurant_.getOpeningHours()) {
+		case LUNCH:
+		case DINNER:
+			if (rt.toOpeningHours() != oh)
+				return new ResponseMessage("The restaurant does not allow reservations for" + rt + ".");
+		default:
+		}
+		int availSeats = restaurant_.getSeats();
+		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), reservation.getTime());
+		if (reservations != null)
+			for (Reservation_ r: reservations)
+				if (r.getId() != reservation.getId())
+					availSeats -= r.getSeats();
+		Restaurant toReturn = restaurant_.toCommonEntity();
+		toReturn.setSeats(availSeats);
+		return new ResponseMessage(toReturn);
 	}
 }

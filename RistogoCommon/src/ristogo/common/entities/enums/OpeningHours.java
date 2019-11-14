@@ -1,5 +1,7 @@
 package ristogo.common.entities.enums;
 
+import java.util.logging.Logger;
+
 public enum OpeningHours
 {
 	LUNCH,
@@ -16,6 +18,7 @@ public enum OpeningHours
 		case BOTH:
 			return "Both";
 		default:
+			Logger.getLogger(OpeningHours.class.getName()).severe("Invalid enum value.");
 			return "Unknown";
 		}
 	}

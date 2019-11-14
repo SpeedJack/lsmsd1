@@ -29,34 +29,6 @@ public class ReservationEditForm extends TextForm
 		return fields;
 	}
 	
-	private boolean validateFutureDate(String date)
-	{
-		try {
-			LocalDate converted = LocalDate.parse(date);
-			if (converted.compareTo(LocalDate.now()) < 0) {
-				Console.println("Invalid date. Must be a date placed in future.");
-				return false;
-			}
-		} catch (DateTimeParseException ex) {
-			Console.println("Invalid date (use format YYYY-MM-DD).");
-			return false;
-		}
-		return true;
-	}
-	
-	private boolean validatePositiveInteger(String value)
-	{
-		try {
-			int converted = Integer.parseInt(value);
-			if (converted <= 0)
-				return false;
-		} catch (NumberFormatException ex) {
-			Console.println("Invalid number.");
-			return false;
-		}
-		return true;
-	}
-	
 	@Override
 	public HashMap<Integer, String> show()
 	{

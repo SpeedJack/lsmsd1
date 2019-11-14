@@ -5,6 +5,7 @@ import java.time.format.DateTimeParseException;
 import java.util.LinkedHashSet;
 
 import ristogo.common.entities.Restaurant;
+import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.ReservationTime;
 import ristogo.ui.Console;
 
@@ -23,37 +24,9 @@ public class ReservationForm extends TextForm
 	{
 		LinkedHashSet<FormField> fields = new LinkedHashSet<FormField>();
 		fields.add(new FormField("Date", LocalDate.now().toString(), this::validateFutureDate));
-		fields.add(new ChoiceFormField<ReservationTime>("Time", ReservationTime.class));
+		fields.add(new ChoiceFormField<ReservationTime>("Time", ReservationTime.class, this::validateReservationTime));
 		fields.add(new FormField("Seats", this::validateSeats));
 		return fields;
-	}
-	
-	private boolean validateFutureDate(String date)
-	{
-		try {
-			LocalDate converted = LocalDate.parse(date);
-			if (converted.compareTo(LocalDate.now()) < 0) {
-				Console.println("Invalid date. Must be a date placed in future.");
-				return false;
-			}
-		} catch (DateTimeParseException ex) {
-			Console.println("Invalid date (use format YYYY-MM-DD).");
-			return false;
-		}
-		return true;
-	}
-	
-	private boolean validatePositiveInteger(String value)
-	{
-		try {
-			int converted = Integer.parseInt(value);
-			if (converted <= 0)
-				return false;
-		} catch (NumberFormatException ex) {
-			Console.println("Invalid number.");
-			return false;
-		}
-		return true;
 	}
 	
 	private boolean validateSeats(String value)
@@ -66,5 +39,19 @@ public class ReservationForm extends TextForm
 			return false;
 		}
 		return true;
+	}
+	
+	private boolean validateReservationTime(ReservationTime reservationTime)
+	{
+		OpeningHours oh = restaurant.getOpeningHours();
+		switch (oh) {
+		case DINNER:
+		case LUNCH:
+			if (reservationTime.toOpeningHours() != oh)
+				Console.println("The selected restaurant does not allow reservations for " + reservationTime + ".");
+		default:
+			return true;
+		
+		}
 	}
 }

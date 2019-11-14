@@ -30,13 +30,13 @@ public class Message implements Serializable
 				this.entities.add(entity);
 	}
 
-	public String toXML()
+	protected String toXML()
 	{
 		XStream xs = new XStream();
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + xs.toXML(this);
 	}
 	
-	public static Message fromXML(String xml)
+	protected static Message fromXML(String xml)
 	{
 		XStream xs = new XStream();
 		xs.addPermission(NoTypePermission.NONE);
@@ -44,8 +44,8 @@ public class Message implements Serializable
 		xs.addPermission(PrimitiveTypePermission.PRIMITIVES);
 		xs.allowTypeHierarchy(Collection.class);
 		xs.allowTypesByWildcard(new String[] {
-		    "ristogo.common.entities.**",
-		    "ristogo.common.net.**"
+			"ristogo.common.entities.**",
+			"ristogo.common.net.**"
 		});
 		return (Message)xs.fromXML(xml);
 	}
@@ -53,11 +53,11 @@ public class Message implements Serializable
 	public void send(DataOutputStream output)
 	{
 		String xml = this.toXML();
-		System.err.println("SENDING:\n" + xml);
+		Logger.getLogger(Message.class.getName()).fine(Thread.currentThread().getName() + ": SENDING\n" + xml);
 		try {
 			output.writeUTF(xml);
 		} catch (IOException ex) {
-			Logger.getLogger(Message.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Message.class.getName()).log(Level.SEVERE, "Failure in sending message.", ex);
 		}
 	}
 	
@@ -66,10 +66,10 @@ public class Message implements Serializable
 		String xml;
 		try {
 			xml = input.readUTF();
-			System.err.println("RECEIVED:\n" + xml);
+			Logger.getLogger(Message.class.getName()).fine(Thread.currentThread().getName() + ": RECEIVED\n" + xml);
 			return fromXML(xml);
 		} catch (IOException ex) {
-			Logger.getLogger(Message.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Message.class.getName()).log(Level.INFO, "Failure in receiving message. Probably counterpart terminated.", ex);
 			return null;
 		}
 	}

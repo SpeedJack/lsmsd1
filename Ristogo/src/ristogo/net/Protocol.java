@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 import ristogo.common.entities.Customer;
 import ristogo.common.entities.Entity;
@@ -27,131 +28,97 @@ public class Protocol implements AutoCloseable
 		this.socket = new Socket(serverIp, serverPort);
 		inputStream = new DataInputStream(socket.getInputStream());
 		outputStream = new DataOutputStream(socket.getOutputStream());
+		Logger.getLogger(Protocol.class.getName()).info("Connected to " + serverIp + ":" + serverPort + ".");
 	}
 	
 	public ResponseMessage performLogin(User user)
 	{
-		RequestMessage reqMsg = new RequestMessage(ActionRequest.LOGIN);
-		reqMsg.addEntity(user);
-		reqMsg.send(outputStream);
-		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && (resMsg.getEntityCount() != 1 || !(resMsg.getEntity() instanceof User)))
-			return getProtocolErrorMessage();
-		return resMsg;
+		return sendRequest(ActionRequest.LOGIN, user);
 	}
 	
 	public ResponseMessage performLogout()
 	{
-		new RequestMessage(ActionRequest.LOGOUT).send(outputStream);
-		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && resMsg.getEntityCount() != 0)
-			return getProtocolErrorMessage();
-		return resMsg;
+		return sendRequest(ActionRequest.LOGOUT);
 	}
 	
 	public ResponseMessage registerUser(Customer customer)
 	{
-		RequestMessage reqMsg = new RequestMessage(ActionRequest.REGISTER);
-		reqMsg.addEntity(customer);
-		reqMsg.send(outputStream);
-		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && (resMsg.getEntityCount() != 1 || !(resMsg.getEntity() instanceof Customer)))
+		ResponseMessage resMsg = sendRequest(ActionRequest.REGISTER, customer);
+		if (!(resMsg.getEntity() instanceof Customer))
 			return getProtocolErrorMessage();
 		return resMsg;
 	}
 	
 	public ResponseMessage registerUser(Owner owner, Restaurant restaurant)
 	{
-		RequestMessage reqMsg = new RequestMessage(ActionRequest.REGISTER);
-		reqMsg.addEntity(owner);
-		reqMsg.addEntity(restaurant);
-		reqMsg.send(outputStream);
-		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && (resMsg.getEntityCount() != 1 || !(resMsg.getEntity() instanceof Owner)))
+		ResponseMessage resMsg = sendRequest(ActionRequest.REGISTER, owner, restaurant);
+		if (!(resMsg.getEntity() instanceof Owner))
 			return getProtocolErrorMessage();
 		return resMsg;
 	}
 	
 	public ResponseMessage getOwnRestaurants()
 	{
-		new RequestMessage(ActionRequest.LIST_OWN_RESTAURANTS).send(outputStream);
-		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && resMsg.getEntityCount() > 0)
-			for (Entity entity: resMsg.getEntities())
-				if (!(entity instanceof Restaurant))
-					return getProtocolErrorMessage();
-		return resMsg;
+		return sendRequest(ActionRequest.LIST_OWN_RESTAURANTS);
 	}
 	
 	public ResponseMessage editRestaurant(Restaurant restaurant)
 	{
-		new RequestMessage(ActionRequest.EDIT_RESTAURANT, restaurant).send(outputStream);
-		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && (resMsg.getEntityCount() != 1 || !(resMsg.getEntity() instanceof Restaurant)))
-			return getProtocolErrorMessage();
-		return resMsg;
+		return sendRequest(ActionRequest.EDIT_RESTAURANT, restaurant);
 	}
 	
 	public ResponseMessage deleteRestaurant(Restaurant restaurant)
 	{
-		new RequestMessage(ActionRequest.DELETE_RESTAURANT, restaurant).send(outputStream);
-		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && resMsg.getEntityCount() != 0)
-			return getProtocolErrorMessage();
-		return resMsg;
+		return sendRequest(ActionRequest.DELETE_RESTAURANT, restaurant);
 	}
 	
 	public ResponseMessage getOwnActiveReservations()
 	{
-		new RequestMessage(ActionRequest.LIST_OWN_RESERVATIONS).send(outputStream);
-		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && resMsg.getEntityCount() > 0)
-			for (Entity entity: resMsg.getEntities())
-				if (!(entity instanceof Reservation))
-					return getProtocolErrorMessage();
-		return resMsg;
+		return sendRequest(ActionRequest.LIST_OWN_RESERVATIONS);
 	}
 	
 	public ResponseMessage editReservation(Reservation reservation)
 	{
-		new RequestMessage(ActionRequest.EDIT_RESERVATION, reservation).send(outputStream);
-		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && (resMsg.getEntityCount() != 1 || !(resMsg.getEntity() instanceof Reservation)))
-			return getProtocolErrorMessage();
-		return resMsg;
+		return sendRequest(ActionRequest.EDIT_RESERVATION, reservation);
 	}
 	
 	public ResponseMessage getRestaurants()
 	{
-		new RequestMessage(ActionRequest.LIST_RESTAURANTS).send(outputStream);
-		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && resMsg.getEntityCount() > 0)
-			for (Entity entity: resMsg.getEntities())
-				if (!(entity instanceof Restaurant))
-					return getProtocolErrorMessage();
-		return resMsg;
+		return sendRequest(ActionRequest.LIST_RESTAURANTS);
 	}
 	
 	public ResponseMessage reserve(Reservation reservation, Restaurant restaurant)
 	{
-		new RequestMessage(ActionRequest.RESERVE, reservation, restaurant).send(outputStream);
-		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && (resMsg.getEntityCount() != 1 || !(resMsg.getEntity() instanceof Reservation)))
-			return getProtocolErrorMessage();
-		return resMsg;
+		return sendRequest(ActionRequest.RESERVE, reservation, restaurant);
 	}
 	
 	public ResponseMessage deleteReservation(Reservation reservation)
 	{
-		new RequestMessage(ActionRequest.DELETE_RESERVATION, reservation).send(outputStream);
+		return sendRequest(ActionRequest.DELETE_RESERVATION, reservation);
+	}
+	
+	public ResponseMessage getReservations(Restaurant restaurant)
+	{
+		return sendRequest(ActionRequest.LIST_RESERVATIONS, restaurant);
+	}
+	
+	public ResponseMessage checkSeats(Restaurant restaurant, Reservation reservation)
+	{
+		return sendRequest(ActionRequest.CHECK_SEATS, restaurant, reservation);
+	}
+	
+	private ResponseMessage sendRequest(ActionRequest actionRequest, Entity... entities)
+	{
+		Logger.getLogger(Protocol.class.getName()).entering(Protocol.class.getName(), "sendRequest", entities);
+		new RequestMessage(actionRequest, entities).send(outputStream);
 		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
-		if (resMsg.isSuccess() && resMsg.getEntityCount() > 0)
-			return getProtocolErrorMessage();
-		return resMsg;
+		Logger.getLogger(Protocol.class.getName()).exiting(Protocol.class.getName(), "sendRequest", entities);
+		return resMsg.isValid(actionRequest) ? resMsg : getProtocolErrorMessage();
 	}
 	
 	private ResponseMessage getProtocolErrorMessage()
 	{
+		Logger.getLogger(Protocol.class.getName()).warning("Received an invalid response from server.");
 		return new ResponseMessage("Invalid response from server.");
 	}
 	

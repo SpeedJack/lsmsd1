@@ -2,6 +2,7 @@ package ristogo.ui.graphics.beans;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import ristogo.common.entities.User;
 
 public class UserBean extends EntityBean
 {
@@ -13,6 +14,11 @@ public class UserBean extends EntityBean
 		super(id);
 		this.username = new SimpleStringProperty(username);
 		this.owner = new SimpleBooleanProperty(owner);
+	}
+	
+	public static UserBean fromEntity(User user)
+	{
+		return new UserBean(user.getId(), user.getUsername(), user.isOwner());
 	}
 
 	public String getUsername()

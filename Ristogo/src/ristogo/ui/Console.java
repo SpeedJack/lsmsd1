@@ -3,6 +3,7 @@ package ristogo.ui;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.SortedSet;
+import java.util.logging.Logger;
 
 import ristogo.ui.menus.MenuEntry;
 
@@ -24,6 +25,7 @@ public class Console
 			printPrompt(prompt);
 			return new String(System.console().readPassword());
 		}
+		Logger.getLogger(Console.class.getName()).warning("Can not hide console input buffer for password submission: System.console() returned null.");
 		return askString(prompt);
 	}
 	

@@ -23,8 +23,9 @@ public class RestaurantMenu extends Menu
 	{
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		menu.add(new MenuEntry(1, "View details", this::handleViewRestaurant));
-		menu.add(new MenuEntry(2, "Edit restaurant", true, this::handleEditRestaurant));
-		menu.add(new MenuEntry(3, "Delete restaurant", true, this::handleDeleteRestaurant));
+		menu.add(new MenuEntry(2, "View reservations", this::handleViewReservations));
+		menu.add(new MenuEntry(3, "Edit restaurant", true, this::handleEditRestaurant));
+		menu.add(new MenuEntry(4, "Delete restaurant", true, this::handleDeleteRestaurant));
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
@@ -52,7 +53,7 @@ public class RestaurantMenu extends Menu
 
 	private void handleDeleteRestaurant(MenuEntry entry)
 	{
-		boolean confirm = Console.askConfirm();
+		boolean confirm = Console.askConfirm("This will demote your OWNER account to CUSTOMER. Are you sure?");
 		if (confirm) {
 			ResponseMessage resMsg = protocol.deleteRestaurant(restaurant);
 			if (resMsg.isSuccess())
@@ -61,5 +62,10 @@ public class RestaurantMenu extends Menu
 				Console.println(resMsg.getErrorMsg());
 		}
 		Console.newLine();
+	}
+	
+	private void handleViewReservations(MenuEntry entry)
+	{
+		new RestaurantReservationListMenu(restaurant).show();
 	}
 }

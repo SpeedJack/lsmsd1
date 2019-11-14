@@ -69,7 +69,7 @@ public abstract class User extends Entity
 		return this.password;
 	}
 	
-	public final static String hashPassword(String password)
+	protected final static String hashPassword(String password)
 	{
 		String passwordHash;
 		try {
@@ -80,7 +80,7 @@ public abstract class User extends Entity
 				sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
 			passwordHash = sb.toString();
 		} catch (NoSuchAlgorithmException ex) {
-			Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(User.class.getName()).log(Level.SEVERE, "This Java installation does not support SHA-256 hashing algorithm (required for password hashing).", ex);
 			passwordHash = "";
 		}
 		return passwordHash;
@@ -108,7 +108,12 @@ public abstract class User extends Entity
 	
 	public boolean hasValidPassword()
 	{
-		return password.matches("^[a-fA-F0-9]{64}$");
+		return validatePasswordHash(password);
+	}
+	
+	public static boolean validatePasswordHash(String passwordHash)
+	{
+		return passwordHash.matches("^[a-fA-F0-9]{64}$");
 	}
 	
 	public boolean isOwner()

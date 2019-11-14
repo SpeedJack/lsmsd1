@@ -2,12 +2,14 @@ package ristogo.ui.menus.forms;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.function.Predicate;
 
 public class ChoiceFormField<T extends Enum<T>> extends FormField
 {
 	protected LinkedHashMap<Integer, String> values = new LinkedHashMap<>();
 	protected int defaultSelection;
 	protected Class<T> enumClass;
+	protected Predicate<T> validator;
 	
 	public ChoiceFormField(String name, Class<T> e)
 	{
@@ -19,6 +21,12 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 			this.values.put(i, value);
 			i++;
 		}
+	}
+	
+	public ChoiceFormField(String name, Class<T> e, Predicate<T> validator)
+	{
+		this(name, e);
+		this.validator = validator;
 	}
 	
 	public ChoiceFormField(String name, T defaultValue, Class<T> e)
@@ -35,10 +43,20 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 		}
 	}
 	
+	public ChoiceFormField(String name, T defaultValue, Class<T> e, Predicate<T> validator)
+	{
+		this(name, defaultValue, e);
+		this.validator = validator;
+	}
+	
 	@Override
 	protected boolean isValid()
 	{
-		return values.containsValue(value);
+		if (!values.containsValue(value))
+			return false;
+		if (validator == null)
+			return true;
+		return validator.test(Enum.valueOf(enumClass, value));
 	}
 	
 	@Override
@@ -60,7 +78,7 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 		return sb.toString();
 	}
 	
-	private static String[] getEnumNames(Class<? extends Enum<?>> e)
+	protected static String[] getEnumNames(Class<? extends Enum<?>> e)
 	{
 		return Arrays.stream(e.getEnumConstants()).map(Enum::name).toArray(String[]::new);
 	}

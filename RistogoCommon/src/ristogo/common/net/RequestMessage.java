@@ -11,7 +11,7 @@ public class RequestMessage extends Message
 {
 	private static final long serialVersionUID = 6989601732466426604L;
 
-	private final ActionRequest action;
+	protected final ActionRequest action;
 	
 	public RequestMessage(ActionRequest action, Entity... entities)
 	{
@@ -46,11 +46,13 @@ public class RequestMessage extends Message
 				
 		case EDIT_RESTAURANT:
 		case DELETE_RESTAURANT:
+		case LIST_RESERVATIONS:
 			return getEntityCount() == 1 && getEntity() instanceof Restaurant;
 		case EDIT_RESERVATION:
 		case DELETE_RESERVATION:
 			return getEntityCount() == 1 && getEntity() instanceof Reservation;
 		case RESERVE:
+		case CHECK_SEATS:
 			if (getEntityCount() != 2)
 				return false;
 			for (Entity entity: getEntities())

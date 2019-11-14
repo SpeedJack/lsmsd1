@@ -1,5 +1,7 @@
 package ristogo.common.entities.enums;
 
+import java.util.logging.Logger;
+
 public enum ReservationTime
 {
 	LUNCH,
@@ -13,6 +15,7 @@ public enum ReservationTime
 		case DINNER:
 			return "Dinner";
 		default:
+			Logger.getLogger(ReservationTime.class.getName()).severe("Invalid enum value.");
 			return "Unknown";
 		}
 	}

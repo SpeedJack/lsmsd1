@@ -1,5 +1,7 @@
 package ristogo.common.entities.enums;
 
+import java.util.logging.Logger;
+
 public enum Price
 {
 	ECONOMIC,
@@ -22,6 +24,7 @@ public enum Price
 		case LUXURY:
 			return "Luxury";
 		default:
+			Logger.getLogger(Price.class.getName()).severe("Invalid enum value.");
 			return "Unknown";
 		}
 	}

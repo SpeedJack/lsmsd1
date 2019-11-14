@@ -2,6 +2,7 @@ package ristogo.server.storage.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -73,6 +74,7 @@ public class User_ extends Entity_
 		case CUSTOMER:
 			return new Customer(getId(), getUsername());
 		default:
+			Logger.getLogger(User_.class.getName()).warning("Invalid UserType " + type + ".");
 			return null;
 		}
 		
@@ -91,8 +93,13 @@ public class User_ extends Entity_
 	
 	public boolean setPasswordHash(String passwordHash)
 	{
-		if (!User.validatePassword(passwordHash))
+		if (!User.validatePasswordHash(passwordHash)) {
+			// FIXME: hibernate calls this function with empty
+			// passwordHash during initialization, so the following
+			// warning is wrongly displayed.
+			Logger.getLogger(User_.class.getName()).warning("User " + username + " has an invalid password hash.");
 			return false;
+		}
 		this.password = passwordHash;
 		return true;
 	}
