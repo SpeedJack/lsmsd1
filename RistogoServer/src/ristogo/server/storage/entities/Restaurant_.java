@@ -28,34 +28,34 @@ import ristogo.common.entities.enums.Price;
 public class Restaurant_ extends Entity_
 {
 	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="ownerId")
+	@JoinColumn(name="ownerId", nullable=false)
 	protected User_ owner;
 	
-	@Column(name="name")
+	@Column(name="name", length=45, nullable=false)
 	protected String name;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name="genre")
+	@Column(name="genre", nullable=true)
 	protected Genre genre;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name="price")
+	@Column(name="price", nullable=true)
 	protected Price price;
 	
-	@Column(name="city")
+	@Column(name="city", length=32, nullable=true)
 	protected String city;
 	
-	@Column(name="address")
+	@Column(name="address", length=32, nullable=true)
 	protected String address;
 	
-	@Column(name="description")
+	@Column(name="description", nullable=true)
 	protected String description;
 	
-	@Column(name="seats")
+	@Column(name="seats", nullable=false)
 	protected int seats;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name="openingHours")
+	@Column(name="openingHours", nullable=false)
 	protected OpeningHours openingHours;
 	
 	@OneToMany(mappedBy="restaurant", fetch=FetchType.LAZY)

@@ -25,10 +25,10 @@ import ristogo.common.entities.enums.UserType;
 @Table(name="users")
 public class User_ extends Entity_
 {
-	@Column(name="username")
+	@Column(name="username", length=32, nullable=false, unique=true)
 	protected String username;
 	
-	@Column(name="password")
+	@Column(name="password", length=32, nullable=false)
 	protected String password;
 	
 	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
