@@ -2,9 +2,6 @@ package ristogo.ui.menus.forms;
 
 import java.util.LinkedHashSet;
 
-import ristogo.common.entities.User;
-import ristogo.ui.Console;
-
 public class LoginForm extends TextForm
 {
 	public LoginForm()

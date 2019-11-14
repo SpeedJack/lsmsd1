@@ -2,7 +2,6 @@ package ristogo.ui.menus.forms;
 
 import java.util.LinkedHashSet;
 
-import ristogo.common.entities.User;
 import ristogo.common.entities.enums.UserType;
 import ristogo.ui.Console;
 

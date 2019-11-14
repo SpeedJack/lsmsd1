@@ -7,7 +7,6 @@ import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.enums.Genre;
 import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.Price;
-import ristogo.ui.Console;
 
 public class RestaurantForm extends TextForm
 {
