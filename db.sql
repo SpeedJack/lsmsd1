@@ -12,16 +12,16 @@ CREATE TABLE users (
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO users VALUES ('1', 'simone', 'simone');
-INSERT INTO users VALUES ('2', 'luca', 'luca');
-INSERT INTO users VALUES ('3', 'gino', 'gino');
-INSERT INTO users VALUES ('4', 'carlotta', 'carlotta');
-INSERT INTO users VALUES ('5', 'gianluca', 'gianluca');
-INSERT INTO users VALUES ('6', 'lorenzo21', '15041997');
-INSERT INTO users VALUES ('7', 'mark', 'mark');
-INSERT INTO users VALUES ('8', 'lorenzo1', '66155');
-INSERT INTO users VALUES ('9', 'gianni', 'gianni');
-INSERT INTO users VALUES ('10', 'gabriele97', 'gabriele97');
+INSERT INTO users VALUES (1, 'simone', 'simone');
+INSERT INTO users VALUES (2, 'luca', 'luca');
+INSERT INTO users VALUES (3, 'gino', 'gino');
+INSERT INTO users VALUES (4, 'carlotta', 'carlotta');
+INSERT INTO users VALUES (5, 'gianluca', 'gianluca');
+INSERT INTO users VALUES (6, 'lorenzo21', '15041997');
+INSERT INTO users VALUES (7, 'mark', 'mark');
+INSERT INTO users VALUES (8, 'lorenzo1', '66155');
+INSERT INTO users VALUES (9, 'gianni', 'gianni');
+INSERT INTO users VALUES (10, 'gabriele97', 'gabriele97');
 
 
 CREATE TABLE restaurants (
