@@ -119,8 +119,8 @@ public class Client extends Thread
 			case REGISTER:
 				resMsg = handleRegisterRequest(reqMsg);
 				break;
-			case LIST_OWN_RESTAURANTS:
-				resMsg = handleListOwnRestaurantsRequest(reqMsg);
+			case GET_OWN_RESTAURANT:
+				resMsg = handleGetOwnRestaurantRequest(reqMsg);
 				break;
 			case EDIT_RESTAURANT:
 				resMsg = handleEditRestaurantRequest(reqMsg);
@@ -212,13 +212,12 @@ public class Client extends Thread
 		return new ResponseMessage(savedUser.toCommonEntity());
 	}
 	
-	private ResponseMessage handleListOwnRestaurantsRequest(RequestMessage reqMsg)
+	private ResponseMessage handleGetOwnRestaurantRequest(RequestMessage reqMsg)
 	{
-		ResponseMessage resMsg = new ResponseMessage();
-		List<Restaurant_> restaurants = loggedUser.getRestaurants();
-		for (Restaurant_ restaurant: restaurants)
-			resMsg.addEntity(restaurant.toCommonEntity());
-		return resMsg;
+		Restaurant_ restaurant = loggedUser.getRestaurant();
+		if (restaurant == null)
+			return new ResponseMessage("You do not have any restaurant.");
+		return new ResponseMessage(restaurant.toCommonEntity());
 	}
 	
 	private ResponseMessage handleEditRestaurantRequest(RequestMessage reqMsg)

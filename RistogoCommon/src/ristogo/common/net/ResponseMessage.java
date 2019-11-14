@@ -53,6 +53,7 @@ public class ResponseMessage extends Message
 		case EDIT_RESERVATION:
 		case RESERVE:
 			return getEntityCount() == 1 && getEntity() instanceof Reservation;
+		case GET_OWN_RESTAURANT:
 		case EDIT_RESTAURANT:
 		case CHECK_SEATS:
 			return getEntityCount() == 1 && getEntity() instanceof Restaurant;
@@ -64,7 +65,6 @@ public class ResponseMessage extends Message
 						return false;
 			return true;
 		case LIST_RESTAURANTS:
-		case LIST_OWN_RESTAURANTS:
 			if (getEntityCount() > 0)
 				for (Entity entity: getEntities())
 					if (!(entity instanceof Restaurant))

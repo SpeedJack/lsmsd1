@@ -7,9 +7,9 @@ import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Where;
@@ -36,12 +36,9 @@ public class User_ extends Entity_
 	@Where(clause="date >= CURRENT_DATE()")
 	protected List<Reservation_> activeReservations = new ArrayList<>();
 	
-	@OneToMany(mappedBy="owner", fetch=FetchType.LAZY)
+	@OneToOne(mappedBy="owner", fetch=FetchType.LAZY)
 	@LazyCollection(LazyCollectionOption.EXTRA)
-	protected List<Restaurant_> restaurants = new ArrayList<>();
-	
-	@Formula(value="(SELECT COUNT(*) FROM restaurants r WHERE r.ownerId = id)")
-	protected int restaurantCount;
+	protected Restaurant_ restaurant;
 	
 	public User_()
 	{
@@ -119,7 +116,7 @@ public class User_ extends Entity_
 
 	public boolean isOwner()
 	{
-		return hasRestaurants();
+		return restaurant != null;
 	}
 	
 	public List<Reservation_> getActiveReservations()
@@ -127,39 +124,14 @@ public class User_ extends Entity_
 		return activeReservations;
 	}
 	
-	public List<Restaurant_> getRestaurants()
+	public Restaurant_ getRestaurant()
 	{
-		return restaurants;
-	}
-	
-	public boolean hasRestaurants()
-	{
-		return getRestaurantCount() > 0;
-	}
-	
-	public int getRestaurantCount()
-	{
-		return restaurantCount;
-	}
-	
-	public void addRestaurants(Restaurant_... restaurants)
-	{
-		if (restaurants != null)
-			for (Restaurant_ restaurant: restaurants)
-				this.restaurants.add(restaurant);
-	}
-	
-	public void setRestaurants(List<Restaurant_> restaurants)
-	{
-		this.restaurants = restaurants;
+		return restaurant;
 	}
 	
 	public boolean hasRestaurant(int restaurantId)
 	{
-		for (Restaurant_ restaurant: restaurants)
-			if (restaurant.getId() == restaurantId)
-				return true;
-		return false;
+		return (restaurant == null) ? false : restaurant.getId() == restaurantId;
 	}
 	
 	public boolean hasRestaurant(Restaurant_ restaurant)

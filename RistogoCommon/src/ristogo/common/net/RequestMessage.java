@@ -63,7 +63,7 @@ public class RequestMessage extends Message
 			return hasReservation & hasRestaurant;
 		case LOGOUT:
 		case LIST_RESTAURANTS:
-		case LIST_OWN_RESTAURANTS:
+		case GET_OWN_RESTAURANT:
 		case LIST_OWN_RESERVATIONS:
 			return getEntityCount() == 0;
 		default:
