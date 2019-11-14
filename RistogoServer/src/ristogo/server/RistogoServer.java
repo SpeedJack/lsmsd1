@@ -59,7 +59,7 @@ public class RistogoServer
 		logLevel = Level.parse(logLevelName);
 		} catch (IllegalArgumentException ex) {
 			Logger.getLogger(RistogoServer.class.getName()).warning("Invalid log level specified (" + logLevelName + "). Using default: INFO.");
-			logLevel = Level.WARNING;
+			logLevel = Level.INFO;
 		}
 		setLogLevel(logLevel);
 	}
@@ -76,8 +76,20 @@ public class RistogoServer
 	
 	private static String getArgumentValue(String[] args, String argName, String defaultValue)
 	{
-		String argValue = getArgument(args, "--" + argName);
-		return argValue == null || argValue.isBlank() ? defaultValue : argValue;
+		String arg = getArgument(args, "--" + argName);
+		if (arg == null)
+			return defaultValue;
+		String[] argComponents = arg.split("=");
+		String argValue = null;
+		if (argComponents.length == 2)
+			argValue = argComponents[1];
+		
+		if (argValue == null || argValue.isBlank()) {
+			Logger.getLogger(RistogoServer.class.getName()).warning("Invalid argument passed (" + arg +
+				"). Using default value for " + argName + ": " + defaultValue + ".");
+			return defaultValue;
+		}
+		return argValue;
 	}
 	
 	private static String getArgument(String[] haystack, String needle)

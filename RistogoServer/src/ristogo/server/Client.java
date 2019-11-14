@@ -40,8 +40,8 @@ public class Client extends Thread
 	public Client(Socket clientSocket)
 	{
 		Logger.getLogger(Client.class.getName()).info("New incoming connection from " +
-			clientSocket.getRemoteSocketAddress() + ":" + clientSocket.getPort() +
-			"." + "Request handled by " + this.getName() + ".");
+			clientSocket.getRemoteSocketAddress() + "." +
+			"Request handled by " + this.getName() + ".");
 		socket = clientSocket;
 		userManager = new UserManager();
 		restaurantManager = new RestaurantManager();

@@ -94,6 +94,9 @@ public class User_ extends Entity_
 	public boolean setPasswordHash(String passwordHash)
 	{
 		if (!User.validatePasswordHash(passwordHash)) {
+			// FIXME: hibernate calls this function with empty
+			// passwordHash during initialization, so the following
+			// warning is wrongly displayed.
 			Logger.getLogger(User_.class.getName()).warning("User " + username + " has an invalid password hash.");
 			return false;
 		}
