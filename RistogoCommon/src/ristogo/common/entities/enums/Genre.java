@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 public enum Genre
 {
 	PIZZA,
-	CHINESE,
+	JAPANESE,
 	MEXICAN,
 	ITALIAN,
 	STEAKHOUSE;
@@ -16,8 +16,8 @@ public enum Genre
 		switch (this) {
 		case PIZZA:
 			return "Pizza";
-		case CHINESE:
-			return "Chinese";
+		case JAPANESE:
+			return "Japanese";
 		case MEXICAN:
 			return "Mexican";
 		case ITALIAN:
