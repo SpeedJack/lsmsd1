@@ -45,24 +45,42 @@ public class Configuration implements Serializable
 	
 	private void mergeDefaults()
 	{
-		if (serverIp == null || serverIp.isBlank())
+		if (serverIp == null || serverIp.isBlank()) {
 			serverIp = "127.0.0.1";
-		if (serverPort == 0)
+			Logger.getLogger(Configuration.class.getName()).config("serverIp not set. Using default value: " + serverIp + ".");
+		}
+		if (serverPort == 0) {
 			serverPort = 8888;
-		if (interfaceMode == null)
+			Logger.getLogger(Configuration.class.getName()).config("serverPort not set. Using default value: " + serverPort + ".");
+		}
+		if (interfaceMode == null) {
 			interfaceMode = InterfaceMode.AUTO;
-		if (fontName == null || fontName.isBlank())
+			Logger.getLogger(Configuration.class.getName()).config("interfaceMode not set. Using default value: " + interfaceMode + ".");
+		}
+		if (fontName == null || fontName.isBlank()) {
 			fontName = "Open Sans";
-		if (fontSize == 0)
+			Logger.getLogger(Configuration.class.getName()).config("fontName not set. Using default value: " + fontName + ".");
+		}
+		if (fontSize == 0) {
 			fontSize = 14;
-		if (bgColorName == null || bgColorName.isBlank())
+			Logger.getLogger(Configuration.class.getName()).config("fontSize not set. Using default value: " + fontSize + ".");
+		}
+		if (bgColorName == null || bgColorName.isBlank()) {
 			bgColorName = "FFFFFF";
-		if (fgColorName == null || fgColorName.isBlank())
+			Logger.getLogger(Configuration.class.getName()).config("bgColorName not set. Using default value: " + bgColorName + ".");
+		}
+		if (fgColorName == null || fgColorName.isBlank()) {
 			fgColorName = "D9561D";
-		if (numberRowsDisplayable == 0)
+			Logger.getLogger(Configuration.class.getName()).config("fgColorName not set. Using default value: " + fgColorName + ".");
+		}
+		if (numberRowsDisplayable == 0) {
 			numberRowsDisplayable = 7;
-		if (logLevel == null)
+			Logger.getLogger(Configuration.class.getName()).config("numberRowsDisplayable not set. Using default value: " + numberRowsDisplayable + ".");
+		}
+		if (logLevel == null) {
 			logLevel = Level.WARNING;
+			Logger.getLogger(Configuration.class.getName()).config("logLevel not set. Using default value: " + logLevel + ".");
+		}
 	}
 	
 	public static Configuration getConfig()
