@@ -5,24 +5,35 @@ import java.util.TreeSet;
 
 import ristogo.common.entities.Entity;
 import ristogo.common.entities.Reservation;
+import ristogo.common.entities.Restaurant;
 import ristogo.common.net.ResponseMessage;
 import ristogo.ui.Console;
 
 public class ReservationListMenu extends Menu
 {
+	protected Restaurant restaurant;
+	
+	public ReservationListMenu(Restaurant restaurant)
+	{
+		super("Select reservation");
+		this.restaurant = restaurant;
+	}
+
 	@Override
 	protected SortedSet<MenuEntry> getMenu()
 	{
-		ResponseMessage resMsg = protocol.getOwnActiveReservations();
+		ResponseMessage resMsg = protocol.getReservations(restaurant);
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i = 1;
-		if (resMsg.getEntityCount() < 1) {
-			Console.println("No active reservations to show.");
+		if (!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+		} else if (resMsg.getEntityCount() < 1) {
+			Console.println("No reservation to show.");
 			Console.newLine();
 		} else {
 			for (Entity entity: resMsg.getEntities()) {
 				Reservation reservation = (Reservation)entity;
-				menu.add(new MenuEntry(i, getReservationMenuName(reservation), this::handleReservationSelection, reservation));
+				menu.add(new MenuEntry(i, getReservationMenuName(reservation), this::handleViewReservation, reservation));
 				i++;
 			}
 		}
@@ -30,8 +41,11 @@ public class ReservationListMenu extends Menu
 		return menu;
 	}
 	
-	private void handleReservationSelection(MenuEntry entry)
+	private void handleViewReservation(MenuEntry entry)
 	{
-		new ReservationManageMenu((Reservation)entry.getHandlerData()).show();
+		Reservation reservation = (Reservation)entry.getHandlerData();
+		Console.println("Reservation details:");
+		Console.println(reservation.toString());
 	}
+
 }

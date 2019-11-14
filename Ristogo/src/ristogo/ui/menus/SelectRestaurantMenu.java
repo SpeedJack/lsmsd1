@@ -13,9 +13,9 @@ import ristogo.common.net.ResponseMessage;
 import ristogo.ui.Console;
 import ristogo.ui.menus.forms.ReservationForm;
 
-public class ReservationMenu extends Menu
+public class SelectRestaurantMenu extends Menu
 {
-	public ReservationMenu()
+	public SelectRestaurantMenu()
 	{
 		super("Select the restaurant");
 	}

@@ -33,7 +33,7 @@ public class UserMenu extends Menu
 	
 	private void handleViewOwnReservations(MenuEntry entry)
 	{
-		new ReservationListMenu().show();
+		new OwnReservationListMenu().show();
 	}
 	
 	private void handleManageRestaurants(MenuEntry entry)
@@ -43,7 +43,7 @@ public class UserMenu extends Menu
 	
 	private void handleReserve(MenuEntry entry)
 	{
-		new ReservationMenu().show();
+		new SelectRestaurantMenu().show();
 	}
 
 }

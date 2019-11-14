@@ -66,6 +66,6 @@ public class RestaurantMenu extends Menu
 	
 	private void handleViewReservations(MenuEntry entry)
 	{
-		new RestaurantReservationListMenu(restaurant).show();
+		new ReservationListMenu(restaurant).show();
 	}
 }
