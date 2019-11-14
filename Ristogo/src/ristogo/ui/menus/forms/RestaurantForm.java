@@ -23,7 +23,7 @@ public class RestaurantForm extends TextForm
 	protected LinkedHashSet<FormField> createFields()
 	{
 		LinkedHashSet<FormField> fields = new LinkedHashSet<FormField>();
-		fields.add(new FormField("Name", restaurant.getName(), (s) -> { return s != null && s.length() < 33; }));
+		fields.add(new FormField("Name", restaurant.getName(), (s) -> { return s != null && s.length() < 46; }));
 		if (restaurant.getGenre() != null)
 			fields.add(new ChoiceFormField<Genre>("Genre", restaurant.getGenre(), Genre.class));
 		else
