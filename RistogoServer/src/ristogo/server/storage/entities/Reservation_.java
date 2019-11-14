@@ -53,11 +53,11 @@ public class Reservation_ extends Entity_
 		return new Reservation(getId(), getUser().getUsername(), getRestaurant().getName(), getDate(), getTime(), getSeats());
 	}
 	
-	public void merge(Reservation r)
+	public boolean merge(Reservation r)
 	{
-		setDate(r.getDate());
 		setTime(r.getTime());
-		setSeats(r.getSeats());
+		setDate(r.getDate());
+		return setSeats(r.getSeats());
 	}
 
 	public void setUser(User_ user)
@@ -100,9 +100,12 @@ public class Reservation_ extends Entity_
 		return time;
 	}
 
-	public void setSeats(int seats)
+	public boolean setSeats(int seats)
 	{
+		if (seats < 1)
+			return false;
 		this.seats = seats;
+		return true;
 	}
 
 	public int getSeats()

@@ -80,15 +80,18 @@ public class User_ extends Entity_
 		
 	}
 	
-	public void merge(User user)
+	public boolean merge(User user)
 	{
-		setUsername(user.getUsername());
-		setPasswordHash(user.getPasswordHash());
+		return setUsername(user.getUsername()) &&
+			setPasswordHash(user.getPasswordHash());
 	}
 	
-	public void setUsername(String username)
+	public boolean setUsername(String username)
 	{
+		if (!User.validateUsername(username))
+			return false;
 		this.username = username;
+		return true;
 	}
 	
 	public boolean setPasswordHash(String passwordHash)

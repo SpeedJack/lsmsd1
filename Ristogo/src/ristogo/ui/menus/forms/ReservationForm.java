@@ -46,8 +46,10 @@ public class ReservationForm extends TextForm
 		switch (oh) {
 		case DINNER:
 		case LUNCH:
-			if (reservationTime.toOpeningHours() != oh)
+			if (reservationTime.toOpeningHours() != oh) {
 				Console.println("The selected restaurant does not allow reservations for " + reservationTime + ".");
+				return false;
+			}
 		default:
 			return true;
 		

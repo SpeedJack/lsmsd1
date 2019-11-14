@@ -161,6 +161,8 @@ public class Client extends Thread
 	private ResponseMessage handleLoginRequest(RequestMessage reqMsg)
 	{
 		User user = (User)reqMsg.getEntity();
+		if (!user.hasValidUsername() || !user.hasValidPassword())
+			return new ResponseMessage("Invalid username or password.");
 		User_ savedUser = userManager.getUserByUsername(user.getUsername());
 		if (savedUser != null && user.checkPasswordHash(savedUser.getPasswordHash())) {
 			loggedUser = savedUser;
@@ -184,8 +186,8 @@ public class Client extends Thread
 				user = (User)entity;
 			else if (entity instanceof Restaurant)
 				restaurant = (Restaurant)entity;
-		if (user.getUsername().length() < 3)
-			return new ResponseMessage("Username must be at least 3 characters long.");
+		if (!user.hasValidUsername())
+			return new ResponseMessage("Username must be at least 3 characters long and no more than 32 characters long.");
 		if (!user.hasValidPassword())
 			new ResponseMessage("Invalid password.");
 		User_ savedUser = new User_();
@@ -195,9 +197,14 @@ public class Client extends Thread
 		} catch (PersistenceException ex) {
 			return new ResponseMessage("Username already in use.");
 		}
+		// FIXME: if restaurant insert fails the user insert should be rolled back.
+		// Possible easy fix: use a column in users to represent owners. Do
+		// not create a restaurant during registration but allow owners to
+		// add new restaurants.
 		if (restaurant != null) {
 			Restaurant_ savedRestaurant = new Restaurant_();
-			savedRestaurant.merge(restaurant);
+			if (!savedRestaurant.merge(restaurant))
+				return new ResponseMessage("Some restaurant's fields are invalid.");
 			savedRestaurant.setOwner(savedUser);
 			restaurantManager.insert(savedRestaurant);
 		}
@@ -220,7 +227,8 @@ public class Client extends Thread
 		if (!loggedUser.hasRestaurant(restaurant.getId()))
 			return new ResponseMessage("You can only edit restaurants that you own.");
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
-		restaurant_.merge(restaurant);
+		if (!restaurant_.merge(restaurant))
+			return new ResponseMessage("Some restaurant's fields are invalid.");
 		restaurant_.setOwner(loggedUser);
 		restaurantManager.update(restaurant_);
 		restaurantManager.refresh(restaurant_);
@@ -247,28 +255,33 @@ public class Client extends Thread
 		Restaurant_ restaurant_ = reservation_.getRestaurant();
 		OpeningHours oh = restaurant_.getOpeningHours();
 		ReservationTime rt = reservation.getTime();
+		if (rt == null)
+			return new ResponseMessage("Invalid reservation time.");
 		switch(restaurant_.getOpeningHours()) {
 		case LUNCH:
 		case DINNER:
 			if (rt.toOpeningHours() != oh)
-				return new ResponseMessage("The restaurant does not allow reservations for" + rt + ".");
+				return new ResponseMessage("The restaurant does not allow reservations for " + rt + ".");
 		default:
 		}
 		int availSeats = restaurant_.getSeats();
-		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), reservation.getTime());
+		if (reservation.getDate() == null || reservation.getDate().compareTo(LocalDate.now()) < 0)
+			return new ResponseMessage("Invalid date.");
+		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), rt);
 		if (reservations != null)
 			for (Reservation_ r: reservations)
 				if (r.getId() != reservation.getId())
 					availSeats -= r.getSeats();
 		if (reservation.getSeats() > availSeats)
 			return new ResponseMessage("Not enough seats for this date and time (available seats: " + availSeats + ").");
-		reservation_.merge(reservation);
+		if (!reservation_.merge(reservation))
+			return new ResponseMessage("Some reservation's fields are invalid.");
 		reservation_.setUser(loggedUser);
 		reservation_.setRestaurant(restaurant_);
 		try {
 			reservationManager.update(reservation_);
 		} catch (RollbackException ex) {
-			return new ResponseMessage("You already have a reservation for " + reservation.getDate() + " at " + reservation.getTime() + ".");
+			return new ResponseMessage("You already have a reservation for " + reservation.getDate() + " at " + rt + ".");
 		}
 		reservationManager.refresh(reservation_);
 		return new ResponseMessage(reservation_.toCommonEntity());
@@ -297,29 +310,33 @@ public class Client extends Thread
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
 		OpeningHours oh = restaurant_.getOpeningHours();
 		ReservationTime rt = reservation.getTime();
+		if (rt == null)
+			return new ResponseMessage("Invalid reservation time.");
 		switch(restaurant_.getOpeningHours()) {
 		case LUNCH:
 		case DINNER:
 			if (rt.toOpeningHours() != oh)
-				return new ResponseMessage("The restaurant does not allow reservations for" + rt + ".");
+				return new ResponseMessage("The restaurant does not allow reservations for " + rt + ".");
 		default:
 		}
 		int availSeats = restaurant_.getSeats();
-		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), reservation.getTime());
+		if (reservation.getDate() == null || reservation.getDate().compareTo(LocalDate.now()) < 0)
+			return new ResponseMessage("Invalid date.");
+		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), rt);
 		if (reservations != null)
 			for (Reservation_ r: reservations)
-				if (r.getId() != reservation.getId())
-					availSeats -= r.getSeats();
+				availSeats -= r.getSeats();
 		if (reservation.getSeats() > availSeats)
 			return new ResponseMessage("Not enough seats for this date and time (available seats: " + availSeats + ").");
 		Reservation_ reservation_ = new Reservation_();
-		reservation_.merge(reservation);
+		if (!reservation_.merge(reservation))
+			return new ResponseMessage("Some reservation's fields are invalid.");
 		reservation_.setRestaurant(restaurant_);
 		reservation_.setUser(loggedUser);
 		try {
 			reservationManager.insert(reservation_);
 		} catch (PersistenceException ex) {
-			return new ResponseMessage("You already have a reservation for " + reservation.getDate() + " at " + reservation.getTime() + ".");
+			return new ResponseMessage("You already have a reservation for " + reservation.getDate() + " at " + rt + ".");
 		}
 		userManager.refresh(reservation_.getUser());
 		restaurantManager.refresh(reservation_.getRestaurant());
@@ -333,6 +350,8 @@ public class Client extends Thread
 		if (!loggedUser.hasReservation(reservation.getId()))
 			return new ResponseMessage("You can only delete your own reservations.");
 		Reservation_ reservation_ = reservationManager.get(reservation.getId());
+		if (reservation_ == null)
+			return new ResponseMessage("Can not find the specified reservation.");
 		reservationManager.delete(reservation.getId());
 		userManager.refresh(reservation_.getUser());
 		restaurantManager.refresh(reservation_.getRestaurant());
@@ -345,6 +364,8 @@ public class Client extends Thread
 		if (!loggedUser.hasRestaurant(restaurant.getId()))
 			return new ResponseMessage("You can only delete restaurants that you own.");
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		if (restaurant_ == null)
+			return new ResponseMessage("Can not find the specified restaurant.");
 		restaurantManager.delete(restaurant.getId());
 		userManager.refresh(restaurant_.getOwner());
 		return new ResponseMessage();
@@ -356,6 +377,8 @@ public class Client extends Thread
 		if (!loggedUser.hasRestaurant(restaurant.getId()))
 			return new ResponseMessage("You can only view reservations for restaurants that you own.");
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		if (restaurant_ == null)
+			return new ResponseMessage("Can not find the specified restaurant.");
 		List<Reservation_> reservations = restaurant_.getActiveReservations();
 		ResponseMessage resMsg = new ResponseMessage();
 		for (Reservation_ reservation: reservations)
@@ -373,17 +396,23 @@ public class Client extends Thread
 			else if (entity instanceof Restaurant)
 				restaurant = (Restaurant)entity;
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		if (restaurant_ == null)
+			return new ResponseMessage("Can not find the specified restaurant.");
 		OpeningHours oh = restaurant_.getOpeningHours();
 		ReservationTime rt = reservation.getTime();
+		if (rt == null)
+			return new ResponseMessage("Invalid reservation time.");
 		switch(restaurant_.getOpeningHours()) {
 		case LUNCH:
 		case DINNER:
 			if (rt.toOpeningHours() != oh)
-				return new ResponseMessage("The restaurant does not allow reservations for" + rt + ".");
+				return new ResponseMessage("The restaurant does not allow reservations for " + rt + ".");
 		default:
 		}
 		int availSeats = restaurant_.getSeats();
-		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), reservation.getTime());
+		if (reservation.getDate() == null)
+			return new ResponseMessage("Invalid date.");
+		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), rt);
 		if (reservations != null)
 			for (Reservation_ r: reservations)
 				if (r.getId() != reservation.getId())

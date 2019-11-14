@@ -86,16 +86,14 @@ public class Restaurant_ extends Entity_
 		return new Restaurant(getId(), getName(), getOwner().getUsername(), getGenre(), getPrice(), getCity(), getAddress(), getDescription(), getSeats(), getOpeningHours());
 	}
 	
-	public void merge(Restaurant r)
+	public boolean merge(Restaurant r)
 	{
-		setName(r.getName());
 		setGenre(r.getGenre());
 		setPrice(r.getPrice());
-		setCity(r.getCity());
-		setAddress(r.getAddress());
 		setDescription(r.getDescription());
-		setSeats(r.getSeats());
 		setOpeningHours(r.getOpeningHours());
+		return setName(r.getName()) && setCity(r.getCity()) &&
+			setAddress(r.getAddress()) && setSeats(r.getSeats());
 	}
 	
 	public void setOwner(User_ owner)
@@ -108,9 +106,12 @@ public class Restaurant_ extends Entity_
 		return owner;
 	}
 	
-	public void setName(String name)
+	public boolean setName(String name)
 	{
+		if (name == null || name.isBlank() || name.length() > 45)
+			return false;
 		this.name = name;
+		return true;
 	}
 	
 	public String getName()
@@ -143,9 +144,12 @@ public class Restaurant_ extends Entity_
 		return city;
 	}
 
-	public void setCity(String city)
+	public boolean setCity(String city)
 	{
+		if (city != null && city.length() > 32)
+			return false;
 		this.city = city;
+		return true;
 	}
 
 	public String getAddress()
@@ -153,9 +157,12 @@ public class Restaurant_ extends Entity_
 		return address;
 	}
 
-	public void setAddress(String address)
+	public boolean setAddress(String address)
 	{
+		if (address != null && address.length() > 32)
+			return false;
 		this.address = address;
+		return true;
 	}
 
 	public String getDescription()
@@ -173,9 +180,12 @@ public class Restaurant_ extends Entity_
 		return seats;
 	}
 	
-	public void setSeats(int seats)
+	public boolean setSeats(int seats)
 	{
+		if (seats < 0)
+			return false;
 		this.seats = seats;
+		return true;
 	}
 
 	public OpeningHours getOpeningHours()

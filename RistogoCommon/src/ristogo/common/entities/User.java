@@ -41,9 +41,12 @@ public abstract class User extends Entity
 			setPassword(password);
 	}
 	
-	public void setUsername(String username)
+	public boolean setUsername(String username)
 	{
+		if (!validateUsername(username))
+			return false;
 		this.username = username;
+		return true;
 	}
 	
 	public boolean setPassword(String password)
@@ -94,6 +97,11 @@ public abstract class User extends Entity
 	public static boolean validateUsername(String username)
 	{
 		return username != null && username.matches("^[A-Za-z0-9]{3,32}$");
+	}
+	
+	public boolean hasValidUsername()
+	{
+		return validateUsername(username);
 	}
 	
 	public boolean checkPassword(String password)
