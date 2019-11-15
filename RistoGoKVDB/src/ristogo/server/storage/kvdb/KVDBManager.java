@@ -7,11 +7,16 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 import ristogo.common.entities.Entity;
 import ristogo.common.entities.Reservation;
-import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
+
+import ristogo.server.storage.entities.Restaurant_;
+import ristogo.server.storage.entities.Reservation_;
+import ristogo.server.storage.entities.Entity_;
+import ristogo.server.storage.entities.User_;
 import ristogo.server.storage.kvdb.adapter.EntityAdapter;
 import ristogo.server.storage.kvdb.config.Configuration;
 
@@ -21,7 +26,7 @@ public class KVDBManager {
 	private static DB db = null;
 	//currentSnaphsot;
 
-	private KVDBManager() {} 
+	private KVDBManager() {};
 
 	public static  KVDBManager get() {
 		if(istance==null)
@@ -33,6 +38,7 @@ public class KVDBManager {
 		
 		try {
 			if(db == null)
+				Configuration.getConfig().setLogger(Logger.getLogger(KVDBManager.class.getName()));
 				db = factory.open(new File(Configuration.getConfig().getPath()), 
 						Configuration.getConfig().getOptions());
 			return true;
@@ -44,12 +50,12 @@ public class KVDBManager {
 
 	
 	//RestaurantList should work
-	public List<Restaurant> getRestaurantList(){
+	public List<Restaurant_> getRestaurantList(){
 		if(open()) {
 			
 			try (DBIterator iteratorRest = db.iterator();
 					){
-				List<Restaurant> lr = new ArrayList<>();
+				List<Restaurant_> lr = new ArrayList<>();
 				HashMap<String,String> kv = new HashMap<String,String>();
 				//Start from the first occurency of restaurant:$rest_id:...:
 				for(iteratorRest.seek(bytes("restaurant")); iteratorRest.hasNext(); iteratorRest.next()) {
@@ -82,7 +88,7 @@ public class KVDBManager {
 	   	                	//e ricomincio a costruire un nuovo risto da zero)
 	                		break;
 	                	};
-	                	lr.add((Restaurant)EntityAdapter.buildEntity(EntityAdapter.RESTAURANT, kv));
+	                	lr.add((Restaurant_)EntityAdapter.buildEntity(EntityAdapter.RESTAURANT, kv));
 	                };
 				} 
 				return lr;
@@ -96,11 +102,11 @@ public class KVDBManager {
 	};
 	
 	
-	public List<Restaurant> getOwnerRestaurantList(int id) {
+	public List<Restaurant_> getOwnerRestaurantList(int id) {
 		if(open()) {
 		try (DBIterator iteratorRest = db.iterator();
 				){
-			List<Restaurant> lr = new ArrayList<>();
+			List<Restaurant_> lr = new ArrayList<>();
 			HashMap<String,String> kv = new HashMap<String,String>();
 			//Start from the first occurency of restaurant:$rest_id:...:
 			for(iteratorRest.seek(bytes("restaurant")); iteratorRest.hasNext(); iteratorRest.next()) {
@@ -135,7 +141,7 @@ public class KVDBManager {
                 	};
                 	
                 	if (kv.get("owner_id").equals(Integer.toString(id))){
-                		lr.add((Restaurant)EntityAdapter.buildEntity(EntityAdapter.RESTAURANT, kv));
+                		lr.add((Restaurant_)EntityAdapter.buildEntity(EntityAdapter.RESTAURANT, kv));
                 	}
                 };
 			} 
@@ -149,7 +155,7 @@ public class KVDBManager {
 	};
 
 	
-	public List<Reservation> getOwnerReservationList(int id){ 
+	public List<Reservation_> getOwnerReservationList(int id){ 
 		
 
 		//reservation:$id:$attribute = $value
@@ -157,7 +163,7 @@ public class KVDBManager {
 		if(open()) {
 			
 			try(DBIterator iter = db.iterator()){
-				List<Reservation> lr = new ArrayList<>();
+				List<Reservation_> lr = new ArrayList<>();
 				HashMap<String,String> kv = new HashMap<String,String>();
 				String key = null;
 				String value = null;
@@ -236,7 +242,7 @@ public class KVDBManager {
 						kv.put("date", date);
 						
 						//creo l'entità e l'aggiungo alla lista 
-						lr.add((Reservation)EntityAdapter.buildEntity(EntityAdapter.RESERVATION,kv));
+						lr.add((Reservation_)EntityAdapter.buildEntity(EntityAdapter.RESERVATION,kv));
 						kv.clear();
 						
 					};
@@ -253,9 +259,9 @@ public class KVDBManager {
 	};
 		
 	
-	private List<Reservation> getReservationListCustomer(int id){
+	private List<Reservation_> getReservationListCustomer(int id){
 		if(open()) {
-			List<Reservation> lr = null;
+			List<Reservation_> lr = null;
 			try(DBIterator iter = db.iterator()){
 				lr = new ArrayList<>();
 				HashMap<String,String> kv = new HashMap<String,String>();
@@ -322,7 +328,7 @@ public class KVDBManager {
 						
 						
 						//creo l'entità e l'aggiungo alla lista 
-						lr.add((Reservation)EntityAdapter.buildEntity(EntityAdapter.RESERVATION,kv));
+						lr.add((Reservation_)EntityAdapter.buildEntity(EntityAdapter.RESERVATION,kv));
 						kv.clear();
 					};
 					
@@ -338,19 +344,19 @@ public class KVDBManager {
 		return null;
 	}
 		
-	public boolean insert(Entity entity){
+	public boolean insert(Entity_ entity){
 		if(entity == null) return false;
 		
-		if(entity instanceof Restaurant) {
-			Restaurant r = ((Restaurant) entity);
+		if(entity instanceof Restaurant_) {
+			Restaurant_ r = ((Restaurant_) entity);
 			return insertRestaurant(r);
 		};
-		if(entity instanceof User) {
-			User u = ((User) entity);
+		if(entity instanceof User_) {
+			User_ u = ((User_) entity);
 			return insertUser(u);
 		};
-		if(entity instanceof Reservation) {
-			Reservation r = ((Reservation) entity);
+		if(entity instanceof Reservation_) {
+			Reservation_ r = ((Reservation_) entity);
 			return insertReservation(r);
 		};
 		
@@ -359,7 +365,7 @@ public class KVDBManager {
 		
 	};
 	
-	public boolean insertUser(User u) {
+	public boolean insertUser(User_ u) {
 		if(open()) {
 			String key = EntityAdapter.stringifyKey(u);
 			try(WriteBatch batch = db.createWriteBatch()){
@@ -374,7 +380,7 @@ public class KVDBManager {
 		}
 		return false;
 	};
-	public boolean insertRestaurant(Restaurant r) {
+	public boolean insertRestaurant(Restaurant_ r) {
 		if(open()) {
 			String owner_id = null;
 			String key = EntityAdapter.stringifyKey(r);
@@ -390,7 +396,7 @@ public class KVDBManager {
 					//Se raggiungo la fine degli utenti prima di trovare quello giusto non aggiungo (manca l'utente)
 					if(!iter.peekNext().toString().equals("user")) return false;
 					if(userKeySplit[userKeySplit.length -1] == "username" ) {
-						if(iter.peekNext().getValue().toString().equals(r.getOwnerName()) ) {
+						if(iter.peekNext().getValue().toString().equals(r.getOwner().getUsername()) ) {
 							owner_id = userKeySplit[1];
 							break;
 						};
@@ -410,7 +416,7 @@ public class KVDBManager {
 				batch.put(bytes(key + ":city"), bytes(r.getCity()));
 				batch.put(bytes(key + ":description"), bytes(r.getDescription()));
 				batch.put(bytes(key + ":genre"), bytes(r.getGenre().toString()));
-				batch.put(bytes(key + ":owner_id"), bytes(r.getOwnerName()));
+				batch.put(bytes(key + ":owner_id"), bytes(Integer.toString(r.getOwner().getId())));
 				batch.put(bytes(key + ":opening_hours"), bytes(r.getOpeningHours().toString()));
 				batch.put(bytes(key + ":price"), bytes(r.getPrice().toString()));
 				batch.put(bytes(key + ":seats"), bytes(Integer.toString(r.getSeats())));
@@ -427,7 +433,7 @@ public class KVDBManager {
 	};
 	
 	
-	public boolean insertReservation(Reservation r) {
+	public boolean insertReservation(Reservation_ r) {
 		if(open()) {
 			String restaurant_id = null;
 			String user_id = null;
@@ -445,7 +451,7 @@ public class KVDBManager {
 					//Se raggiungo la fine degli utenti prima di trovare quello giusto non aggiungo (manca l'utente)
 					if(!iter.peekNext().toString().equals("user")) return false;
 					if(userKeySplit[userKeySplit.length -1] == "username" ) {
-						if(iter.peekNext().getValue().toString().equals(r.getUserName()) ) {
+						if(iter.peekNext().getValue().toString().equals(r.getUser().getUsername()) ) {
 							user_id = userKeySplit[1];
 							break;
 						};
@@ -461,7 +467,7 @@ public class KVDBManager {
 					//Se raggiungo la fine degli utenti prima di trovare quello giusto non aggiungo (manca l'utente)
 					if(!iter.peekNext().toString().equals("restaurant")) return false;
 					if(userKeySplit[userKeySplit.length -1] == "name" ) {
-						if(iter.peekNext().getValue().toString().equals(r.getRestaurantName()) ) {
+						if(iter.peekNext().getValue().toString().equals(r.getRestaurant().getName()) ) {
 							restaurant_id = userKeySplit[1];
 							break;
 						};
@@ -493,18 +499,18 @@ public class KVDBManager {
 		return false;
 	};
 	
-	public boolean delete(Entity entity){
+	public boolean delete(Entity_ entity){
 		if(entity == null) return false;
-		if(entity instanceof Restaurant) {
-			Restaurant r = ((Restaurant) entity);
+		if(entity instanceof Restaurant_) {
+			Restaurant_ r = ((Restaurant_) entity);
 			return deleteRestaurant(r);
 		};
-		if(entity instanceof User) {
-			User u = ((User) entity);
+		if(entity instanceof User_) {
+			User_ u = ((User_) entity);
 			return deleteUser(u);
 		};
-		if(entity instanceof Reservation) {
-			Reservation r = ((Reservation) entity);
+		if(entity instanceof Reservation_) {
+			Reservation_ r = ((Reservation_) entity);
 			return deleteReservation(r);
 		};
 		
@@ -513,12 +519,12 @@ public class KVDBManager {
 		return false;};
 	
 		//NON USATA
-	public boolean deleteUser(User u) {
+	public boolean deleteUser(User_ u) {
 		
 		if(open()) {
 			String key = EntityAdapter.stringifyKey(u);
-			List<Reservation> lr = null;
-			List<Restaurant> lrst = null;
+			List<Reservation_> lr = null;
+			List<Restaurant_> lrst = null;
 			
 			if(u.isOwner()) {
 				lr = getOwnerReservationList(u.getId());
@@ -530,11 +536,11 @@ public class KVDBManager {
 					batch.delete(bytes(key + ":username"));
 					batch.delete(bytes(key + ":password"));
 					
-					for(Reservation r: lr) {
+					for(Reservation_ r: lr) {
 						if(!deleteReservation(r)) return false;
 					};
 					
-					for(Restaurant r: lrst) {
+					for(Restaurant_ r: lrst) {
 						if(!deleteRestaurant(r)) return false;
 					};
 					
@@ -553,7 +559,7 @@ public class KVDBManager {
 				batch.delete(bytes(key + ":username"));
 				batch.delete(bytes(key + ":password"));
 				
-				for(Reservation r: lr) {
+				for(Reservation_ r: lr) {
 					if(!deleteReservation(r)) return false;
 				};
 								
@@ -571,7 +577,7 @@ public class KVDBManager {
 		
 		
 		//NON USATA
-	public boolean deleteRestaurant(Restaurant r) {
+	public boolean deleteRestaurant(Restaurant_ r) {
 		if(open()) {
 			String key = EntityAdapter.stringifyKey(r);
 			try(WriteBatch batch = db.createWriteBatch()){
@@ -594,10 +600,9 @@ public class KVDBManager {
 		};
 		return false;
 	};
-		 
-	
 		
-	public boolean deleteReservation(Reservation r) {
+		
+	public boolean deleteReservation(Reservation_ r) {
 		if(open()) {
 			String key = EntityAdapter.stringifyKey(r);
 			try(WriteBatch batch = db.createWriteBatch()){
@@ -620,22 +625,22 @@ public class KVDBManager {
 	
 	
 	//UPDATE e INSERT sono la medesima operazione
-	public boolean update(Entity entity){
+	public boolean update(Entity_ entity){
 		
 		if(entity == null) return false;
 		
-		if(entity instanceof Restaurant) {
-			Restaurant r = ((Restaurant) entity);
+		if(entity instanceof Restaurant_) {
+			Restaurant_ r = ((Restaurant_) entity);
 			return insertRestaurant(r);
 		};
 		
-		if(entity instanceof User) {
-			User u = ((User) entity);
+		if(entity instanceof User_) {
+			User_ u = ((User_) entity);
 			return insertUser(u);
 		};
 		
-		if(entity instanceof Reservation) {
-			Reservation r = ((Reservation) entity);
+		if(entity instanceof Reservation_) {
+			Reservation_ r = ((Reservation_) entity);
 			return insertReservation(r);
 		};
 		
@@ -643,6 +648,14 @@ public class KVDBManager {
 		return false;
 	};	
 	
+//	public Restaurant_ checkSeats(Restaurant_ r) {
+//		if(r != null) {
+//			if(open()) {
+//				//List<Restaurant_> lr = getReservationList()
+//			}
+//		}
+//	}
+//	
 	public boolean close(){
 		try {
 			db.close();
