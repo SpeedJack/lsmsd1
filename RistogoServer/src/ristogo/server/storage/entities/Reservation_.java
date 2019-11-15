@@ -115,12 +115,6 @@ public class Reservation_ extends Entity_
 	
 	public boolean isActive()
 	{
-		return date.compareTo(LocalDate.now()) >= 0;
-	}
-	
-	@Override
-	public String toString()
-	{
-		return "";
+		return date != null && !date.isBefore(LocalDate.now());
 	}
 }

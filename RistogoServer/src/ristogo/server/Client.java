@@ -268,7 +268,7 @@ public class Client extends Thread
 		default:
 		}
 		int availSeats = restaurant_.getSeats();
-		if (reservation.getDate() == null || reservation.getDate().compareTo(LocalDate.now()) < 0)
+		if (!reservation.isActive())
 			return new ResponseMessage("Invalid date.");
 		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), rt);
 		if (reservations != null)
@@ -323,7 +323,7 @@ public class Client extends Thread
 		default:
 		}
 		int availSeats = restaurant_.getSeats();
-		if (reservation.getDate() == null || reservation.getDate().compareTo(LocalDate.now()) < 0)
+		if (!reservation.isActive())
 			return new ResponseMessage("Invalid date.");
 		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), rt);
 		if (reservations != null)
@@ -421,7 +421,7 @@ public class Client extends Thread
 		default:
 		}
 		int availSeats = restaurant_.getSeats();
-		if (reservation.getDate() == null)
+		if (!reservation.isActive())
 			return new ResponseMessage("Invalid date.");
 		List<Reservation_> reservations = reservationManager.getReservationsByDateTime(restaurant_.getId(), reservation.getDate(), rt);
 		if (reservations != null)
