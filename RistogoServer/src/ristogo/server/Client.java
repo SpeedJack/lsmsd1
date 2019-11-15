@@ -111,22 +111,22 @@ public class Client extends Thread
 		if (resMsg == null)
 			switch (reqMsg.getAction()) {
 			case LOGIN:
-				resMsg = handleLoginRequest(reqMsg);
+				resMsg = handleLogin(reqMsg);
 				break;
 			case LOGOUT:
-				resMsg = handleLogoutRequest(reqMsg);
+				resMsg = handleLogout(reqMsg);
 				break;
 			case REGISTER:
-				resMsg = handleRegisterRequest(reqMsg);
+				resMsg = handleRegister(reqMsg);
 				break;
 			case GET_OWN_RESTAURANT:
-				resMsg = handleGetOwnRestaurantRequest(reqMsg);
+				resMsg = handleGetOwnRestaurant(reqMsg);
 				break;
 			case EDIT_RESTAURANT:
-				resMsg = handleEditRestaurantRequest(reqMsg);
+				resMsg = handleEditRestaurant(reqMsg);
 				break;
 			case LIST_OWN_RESERVATIONS:
-				resMsg = handleListOwnReservationsRequest(reqMsg);
+				resMsg = handleListOwnReservations(reqMsg);
 				break;
 			case EDIT_RESERVATION:
 				resMsg = handleEditReservation(reqMsg);
@@ -141,7 +141,7 @@ public class Client extends Thread
 				resMsg = handleDeleteReservation(reqMsg);
 				break;
 			case DELETE_RESTAURANT:
-				resMsg = handleDeleteRestaurantRequest(reqMsg);
+				resMsg = handleDeleteRestaurant(reqMsg);
 				break;
 			case LIST_RESERVATIONS:
 				resMsg = handleListReservations(reqMsg);
@@ -158,7 +158,7 @@ public class Client extends Thread
 		resMsg.send(outputStream);
 	}
 	
-	private ResponseMessage handleLoginRequest(RequestMessage reqMsg)
+	private ResponseMessage handleLogin(RequestMessage reqMsg)
 	{
 		User user = (User)reqMsg.getEntity();
 		if (!user.hasValidUsername() || !user.hasValidPassword())
@@ -171,13 +171,13 @@ public class Client extends Thread
 		return new ResponseMessage("Invalid username or password.");
 	}
 	
-	private ResponseMessage handleLogoutRequest(RequestMessage reqMsg)
+	private ResponseMessage handleLogout(RequestMessage reqMsg)
 	{
 		loggedUser = null;
 		return new ResponseMessage();
 	}
 	
-	private ResponseMessage handleRegisterRequest(RequestMessage reqMsg)
+	private ResponseMessage handleRegister(RequestMessage reqMsg)
 	{
 		User user = null;
 		Restaurant restaurant = null;
@@ -212,7 +212,7 @@ public class Client extends Thread
 		return new ResponseMessage(savedUser.toCommonEntity());
 	}
 	
-	private ResponseMessage handleGetOwnRestaurantRequest(RequestMessage reqMsg)
+	private ResponseMessage handleGetOwnRestaurant(RequestMessage reqMsg)
 	{
 		Restaurant_ restaurant = loggedUser.getRestaurant();
 		if (restaurant == null)
@@ -220,7 +220,7 @@ public class Client extends Thread
 		return new ResponseMessage(restaurant.toCommonEntity());
 	}
 	
-	private ResponseMessage handleEditRestaurantRequest(RequestMessage reqMsg)
+	private ResponseMessage handleEditRestaurant(RequestMessage reqMsg)
 	{
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
 		if (!loggedUser.hasRestaurant(restaurant.getId()))
@@ -238,7 +238,7 @@ public class Client extends Thread
 		return new ResponseMessage(restaurant_.toCommonEntity());
 	}
 	
-	private ResponseMessage handleListOwnReservationsRequest(RequestMessage reqMsg)
+	private ResponseMessage handleListOwnReservations(RequestMessage reqMsg)
 	{
 		ResponseMessage resMsg = new ResponseMessage();
 		List<Reservation_> reservations = loggedUser.getActiveReservations();
@@ -365,7 +365,7 @@ public class Client extends Thread
 		return new ResponseMessage();
 	}
 	
-	private ResponseMessage handleDeleteRestaurantRequest(RequestMessage reqMsg)
+	private ResponseMessage handleDeleteRestaurant(RequestMessage reqMsg)
 	{
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
 		if (!loggedUser.hasRestaurant(restaurant.getId()))
