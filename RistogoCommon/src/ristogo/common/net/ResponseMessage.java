@@ -12,11 +12,6 @@ public class ResponseMessage extends Message
 	protected final boolean success;
 	protected final String errorMsg;
 	
-	public ResponseMessage(boolean success)
-	{
-		this(success, (Entity[])null);
-	}
-	
 	public ResponseMessage(String errorMsg)
 	{
 		this(false, errorMsg, (Entity[])null);
@@ -24,15 +19,10 @@ public class ResponseMessage extends Message
 	
 	public ResponseMessage(Entity... entities)
 	{
-		this(true, entities);
+		this(true, null, entities);
 	}
 	
-	public ResponseMessage(boolean success, Entity... entities)
-	{
-		this(success, null, entities);
-	}
-	
-	private ResponseMessage(boolean success, String errorMsg, Entity... entities)
+	protected ResponseMessage(boolean success, String errorMsg, Entity... entities)
 	{
 		super(entities);
 		this.success = success;

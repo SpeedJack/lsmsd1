@@ -124,7 +124,7 @@ public class Protocol implements AutoCloseable
 		new RequestMessage(actionRequest, entities).send(outputStream);
 		ResponseMessage resMsg = (ResponseMessage)Message.receive(inputStream);
 		Logger.getLogger(Protocol.class.getName()).exiting(Protocol.class.getName(), "sendRequest", entities);
-		return resMsg.isValid(actionRequest) ? resMsg : getProtocolErrorMessage();
+		return resMsg != null && resMsg.isValid(actionRequest) ? resMsg : getProtocolErrorMessage();
 	}
 	
 	private ResponseMessage getProtocolErrorMessage()

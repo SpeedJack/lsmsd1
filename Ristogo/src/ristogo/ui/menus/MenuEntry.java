@@ -43,11 +43,6 @@ public class MenuEntry implements Comparable<MenuEntry>
 		this(key, text, exit, null);
 	}
 	
-	public MenuEntry(int key, String text)
-	{
-		this(key, text, false);
-	}
-	
 	public int getKey()
 	{
 		return this.key;

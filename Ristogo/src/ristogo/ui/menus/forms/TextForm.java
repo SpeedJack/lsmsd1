@@ -15,12 +15,12 @@ public abstract class TextForm
 
 	protected abstract LinkedHashSet<FormField> createFields();
 	
-	public TextForm()
+	protected TextForm()
 	{
 		this("Fill the following form");
 	}
 	
-	public TextForm(String prompt)
+	protected TextForm(String prompt)
 	{
 		this.prompt = prompt;
 	}

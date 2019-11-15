@@ -198,25 +198,8 @@ public class Restaurant_ extends Entity_
 		this.openingHours = openingHours;
 	}
 	
-	public boolean isOwner(User_ user)
-	{
-		return owner.getId() == user.getId();
-	}
-	
 	public List<Reservation_> getActiveReservations()
 	{
 		return activeReservations;
-	}
-	
-	@Override
-	public String toString()
-	{
-		return "Name: " + getName() + "\n" +
-			"Genre: " + getGenre() + "\n" +
-			"Price: " + getPrice().toString() + "\n" +
-			"City: " + getCity() + "\n" +
-			"Address: " + getAddress() + "\n" +
-			"Description: " + getDescription() + "\n" +
-			"Opening hours: " + getOpeningHours().toString() + "\n";
 	}
 }

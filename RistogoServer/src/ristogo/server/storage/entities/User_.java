@@ -42,20 +42,19 @@ public class User_ extends Entity_
 	
 	public User_()
 	{
-		this(0, "", "");
+		this("", "");
 	}
 	
-	public User_(String username, String password)
+	public User_(String username, String passwordHash)
 	{
-		setUsername(username);
-		setPasswordHash(password);
+		this(0, username, passwordHash);
 	}
 	
-	public User_(int id, String username, String password)
+	public User_(int id, String username, String passwordHash)
 	{
 		super(id);
-		setUsername(username);
-		setPasswordHash(password);
+		this.username = username;
+		this.password = passwordHash;
 	}
 	
 	public User toCommonEntity()
@@ -63,7 +62,7 @@ public class User_ extends Entity_
 		return toCommonEntity(isOwner() ? UserType.OWNER : UserType.CUSTOMER);
 	}
 	
-	public User toCommonEntity(UserType type)
+	protected User toCommonEntity(UserType type)
 	{
 		switch (type) {
 		case OWNER:
@@ -85,8 +84,10 @@ public class User_ extends Entity_
 	
 	public boolean setUsername(String username)
 	{
-		if (!User.validateUsername(username))
+		if (!User.validateUsername(username)) {
+			Logger.getLogger(User_.class.getName()).warning("User " + getId() + " has an invalid username.");
 			return false;
+		}
 		this.username = username;
 		return true;
 	}
@@ -94,9 +95,6 @@ public class User_ extends Entity_
 	public boolean setPasswordHash(String passwordHash)
 	{
 		if (!User.validatePasswordHash(passwordHash)) {
-			// FIXME: hibernate calls this function with empty
-			// passwordHash during initialization, so the following
-			// warning is wrongly displayed.
 			Logger.getLogger(User_.class.getName()).warning("User " + username + " has an invalid password hash.");
 			return false;
 		}

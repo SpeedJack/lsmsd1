@@ -48,4 +48,9 @@ public class UserManager extends EntityManager
 	{
 		return get(user.getId());
 	}
+	
+	public void delete(User_ user)
+	{
+		delete(user.getId());
+	}
 }

@@ -35,7 +35,7 @@ public abstract class Menu
 		return selection;
 	}
 	
-	public Menu()
+	protected Menu()
 	{
 		this("Select an action");
 	}
