@@ -135,8 +135,11 @@ public class LoginDialog extends Dialog<User>{
 		Platform.runLater(() -> username.requestFocus());
 		
 		registerButton.setOnAction((ActionEvent ev) -> {
-									RegisterDialog register = new RegisterDialog();
-									register.showAndWait();
+											RegisterDialog register = new RegisterDialog();
+											register.showAndWait();
+											while(register.getResult() != 0) {
+												register.showAndWait();
+											}
 						    		});
 		
 		setResultConverter(dialogButton -> {
@@ -145,17 +148,16 @@ public class LoginDialog extends Dialog<User>{
 					ResponseMessage res = Protocol.getProtocol().performLogin(new Customer(username.getText(), password.getText()));
 					if (!res.isSuccess()) {
 						error.setVisible(true);
+						return new Customer(-1, "");
 					}
-					return (User)res.getEntity();
+					else {
+						return (User)res.getEntity();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 		    }
-		    else if(dialogButton == ButtonType.CLOSE) {
-			    return null; 
-		    }
 			return null;
-
 		});	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}	

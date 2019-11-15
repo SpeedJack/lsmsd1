@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import ristogo.common.entities.Reservation;
+import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.enums.ReservationTime;
 import ristogo.common.net.ResponseMessage;
 import ristogo.net.Protocol;
@@ -130,18 +131,22 @@ public class BookForm extends VBox {
 														String n = nameField.getText();
 														LocalDate d = dateField.getValue();
 														ReservationTime h = ReservationTime.valueOf(hourField.getValue().toUpperCase());
-														ResponseMessage res = Protocol.getProtocol().checkSeats(new Reservation("",n,d,h, 0));
+														ResponseMessage res = Protocol.getProtocol().checkSeats(new Reservation(RistogoGUI.loggedUser.getUsername(), n, d, h, 0));
 														if(res.isSuccess()) {
-															//res.getEntity().
-														}
-														int s = 10;
-														if(s>0) {
-															for(int i=1; i<=s; i++) {
-																seatsField.getItems().add(i);
-																seatsField.setDisable(false);
-																book.setDisable(false);
+															Restaurant r = (Restaurant)res.getEntity();
+															if(r.getSeats()>0) {
+																for(int i=1; i<=r.getSeats(); i++) {
+																	seatsField.getItems().add(i);
+																	seatsField.setDisable(false);
+																	book.setDisable(false);
+																}
+															}
+															else {
+																error.setText("Error: No more seats for this date/hour");
+																error.setVisible(true);
 															}
 														}
+
 													}catch(NullPointerException | IOException e) {
 														e.getMessage();
 													}
@@ -149,12 +154,13 @@ public class BookForm extends VBox {
 			book.setOnAction((ActionEvent ev) -> {
 													try {
 														String n = nameField.getText();
-														String d = dateField.getValue().toString();
-														String h = hourField.getValue();
+														LocalDate d = dateField.getValue();
+														ReservationTime h = ReservationTime.valueOf(hourField.getValue().toUpperCase());
 														int s = seatsField.getValue();
-														//boolean res = MANDARE RICHIESTA RESERVE
-														boolean res = true;
-														if(res) {
+														Reservation reserv = new Reservation(RistogoGUI.loggedUser.getUsername(), n, d, h, s);
+														Restaurant rest = new Restaurant(idRestoReserve);
+														ResponseMessage res = Protocol.getProtocol().reserve(reserv, rest );
+														if(res.isSuccess()) {
 															listReservation.accept(true);
 														}
 														else {
@@ -165,7 +171,7 @@ public class BookForm extends VBox {
 														}
 														book.setDisable(true);
 														
-													}catch(NullPointerException e) {
+													}catch(NullPointerException | IOException e) {
 														e.getMessage();
 														error.setText("Error: fill out the entire form to be able to book");
 														error.setVisible(true);
