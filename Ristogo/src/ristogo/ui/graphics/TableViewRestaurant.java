@@ -1,12 +1,18 @@
 package ristogo.ui.graphics;
 
 
+import java.io.IOException;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import ristogo.common.entities.Entity;
+import ristogo.common.entities.Restaurant;
+import ristogo.common.net.ResponseMessage;
 import ristogo.config.Configuration;
+import ristogo.net.Protocol;
 import ristogo.ui.graphics.beans.RestaurantBean;
 
 
@@ -88,8 +94,19 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
  		return this.getSelectionModel().getSelectedItem().getOpeningHours().toString();
  	}
  	
-	   public void listRestaurants(){
-		   //CHIAMARE LIST RESTAURANT
+   public void listRestaurants(){
+	   restaurantList.clear();
+	   try {
+		ResponseMessage res = Protocol.getProtocol().getRestaurants();
+		if(res.isSuccess()) {
+			for (Entity entity: res.getEntities()) {
+				Restaurant restaurant = (Restaurant)entity;
+				restaurantList.add(RestaurantBean.fromEntity(restaurant));
+			}
+		}
+	   } catch (IOException e) {
+		   e.printStackTrace();
 	   }
+   }
 	  
 }

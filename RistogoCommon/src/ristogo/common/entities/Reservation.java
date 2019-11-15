@@ -14,6 +14,10 @@ public class Reservation extends Entity
 	protected ReservationTime time;
 	protected int seats;
 	
+	public Reservation(int id) {
+		super(id);
+	}
+	
 	public Reservation(int id, String userName, String restaurantName, LocalDate date, ReservationTime time, int seats)
 	{
 		super(id);
@@ -28,6 +32,7 @@ public class Reservation extends Entity
 	{
 		this(0, userName, restaurantName, date, time, seats);
 	}
+
 
 	public void setUserName(String userName)
 	{

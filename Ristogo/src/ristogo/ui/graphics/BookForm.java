@@ -1,5 +1,6 @@
 package ristogo.ui.graphics;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.function.Consumer;
 
@@ -12,6 +13,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import ristogo.common.entities.Reservation;
+import ristogo.common.entities.enums.ReservationTime;
+import ristogo.common.net.ResponseMessage;
+import ristogo.net.Protocol;
 import ristogo.ui.graphics.config.GUIConfig;
 
 
@@ -26,6 +31,7 @@ public class BookForm extends VBox {
 	private Button delRes;
 
 	private int idRestoDelete;
+	private int idRestoReserve;
 	
 	public BookForm (Consumer<Boolean> listReservation) {
 		
@@ -122,9 +128,12 @@ public class BookForm extends VBox {
 	    	check.setOnAction((ActionEvent ev) -> {
 													try {
 														String n = nameField.getText();
-														String d = dateField.getValue().toString();
-														String h = hourField.getValue();
-														//int s = MANDARE RICHIESTA CHECK
+														LocalDate d = dateField.getValue();
+														ReservationTime h = ReservationTime.valueOf(hourField.getValue().toUpperCase());
+														ResponseMessage res = Protocol.getProtocol().checkSeats(new Reservation("",n,d,h, 0));
+														if(res.isSuccess()) {
+															//res.getEntity().
+														}
 														int s = 10;
 														if(s>0) {
 															for(int i=1; i<=s; i++) {
@@ -133,7 +142,7 @@ public class BookForm extends VBox {
 																book.setDisable(false);
 															}
 														}
-													}catch(NullPointerException e) {
+													}catch(NullPointerException | IOException e) {
 														e.getMessage();
 													}
 						    					});
@@ -165,9 +174,9 @@ public class BookForm extends VBox {
 
 			delRes.setOnAction((ActionEvent ev) -> {
 												try {
-													//boolean res = MANDARE RICHIESTA DELETE_RESERVE
-													boolean res = true;
-													if(res) {
+
+													ResponseMessage res = Protocol.getProtocol().deleteReservation(new Reservation(idRestoDelete));
+													if(res.isSuccess()) {
 														listReservation.accept(true);
 														delRes.setDisable(true);
 													}
@@ -176,7 +185,7 @@ public class BookForm extends VBox {
 														error.setVisible(true);
 														
 													}
-												}catch(NullPointerException e) {
+												}catch(NullPointerException | IOException e) {
 													e.getMessage();
 													delRes.setDisable(true);
 												}
@@ -229,6 +238,10 @@ public class BookForm extends VBox {
 	
 	public void setIdResToDelete(int id) {
 		this.idRestoDelete = id;
+	}
+	
+	public void setIdResToReserve(int id) {
+		this.idRestoReserve = id;
 	}
 
 }

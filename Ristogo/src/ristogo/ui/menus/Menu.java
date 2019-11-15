@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import ristogo.Ristogo;
 import ristogo.common.entities.Reservation;
 import ristogo.common.entities.User;
-import ristogo.config.Configuration;
 import ristogo.net.Protocol;
 import ristogo.ui.Console;
 
@@ -20,9 +19,8 @@ public abstract class Menu
 	protected static User loggedUser;
 	
 	static {
-		Configuration config = Configuration.getConfig();
 		try {
-			protocol = new Protocol(config.getServerIp(), config.getServerPort());
+			protocol = Protocol.getProtocol();
 		} catch (IOException ex) {
 			Logger.getLogger(Ristogo.class.getName()).log(Level.SEVERE, null, ex);
 			System.exit(1);

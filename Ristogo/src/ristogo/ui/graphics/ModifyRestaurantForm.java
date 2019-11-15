@@ -1,14 +1,19 @@
 package ristogo.ui.graphics;
 
+import java.io.IOException;
+
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+
+import ristogo.common.entities.*;
+import ristogo.common.entities.enums.*;
+import ristogo.common.entities.enums.OpeningHours;
+import ristogo.common.entities.enums.Price;
+import ristogo.common.net.ResponseMessage;
+import ristogo.net.Protocol;
+import ristogo.ui.graphics.beans.RestaurantBean;
 import ristogo.ui.graphics.config.GUIConfig;
 
 public class ModifyRestaurantForm extends VBox {
@@ -117,64 +122,41 @@ public class ModifyRestaurantForm extends VBox {
     	commit.setStyle(GUIConfig.getInvertedCSSBgColorButton() );
 
     	
-    	/*FILL FORM WITH RESTAURANT
-    	try {
-			RestaurantBean r = (RestaurantBean)MessageHandler.sendRequest(MessageHandler.RESTAURANT_INFO);
-			if(r.getName() != null) {
-				nameField.setText(r.getName());
-				typeField.getSelectionModel().select(r.getType());
-				costField.setValue(r.getPrice());
-				cityField.setText(r.getCity());
-				addressField.setText(r.getAddress());
-				descField.setText(r.getDescription());
-				seatsField.setText(new Integer(r.getSeats()).toString());
-			}
-			if(r.getOpening().equals("LUNCH")) {
-				hourField.getSelectionModel().select("Lunch");
-			}
-			else if(r.getOpening().equals("DINNER")) {
-				hourField.getSelectionModel().select("Dinner");
-			}
-			else {
-				hourField.getSelectionModel().select("Lunch/Dinner");
-			}
-    	}catch(NullPointerException e) {
-    		
-    	}
-    	*/
+    	getOwnRestaurant();
     	
     	commit.setOnAction((ActionEvent ev) -> {
 			error.setVisible(false);
 	    	try {
 				String n = nameField.getText();
-				String t = typeField.getValue().toString();
-				String c = costField.getValue().toString();
+				Genre g = Genre.valueOf(typeField.getValue().toUpperCase());
+				Price p = Price.valueOf(costField.getValue().toString());
 				String ct = cityField.getText();
 				String add = addressField.getText();
 				String d = descField.getText();
-				String s = seatsField.getText();
-				String h;
+				int s = Integer.parseInt(seatsField.getText());
+				OpeningHours h;
 				if(hourField.getValue().equals("Lunch")) {
-					h = "LUNCH";
+					h = OpeningHours.LUNCH;
 				}
 				else if(hourField.getValue().contentEquals("Dinner")) {
-					h="DINNER";
+					h= OpeningHours.DINNER;
 				}
 				else {
-					h = "ALWAYS";
-				}
-				//boolean res = MANDARE COMMIT
-				boolean res = true;
-				if(!res) {
-					error.setText("Error: Commit Failed. Retry");
-					error.setVisible(true);
-					//FILL FORM WITH RESTAURANT ?
+					h = OpeningHours.BOTH;
 				}
 				
-			}catch(NullPointerException e) {
+				ResponseMessage res = Protocol.getProtocol().editRestaurant(new Restaurant(n, g, p, ct, add, d, s, h));
+				if(!res.isSuccess()) {
+					error.setText("Error: Commit Failed. Retry");
+					error.setVisible(true);
+					
+				}
+				
+			}catch(NullPointerException | IOException e) {
 				e.getMessage();
 				error.setText("Error: fill out the entire form to be able to commit");
 				error.setVisible(true);
+				getOwnRestaurant();
 			}
 		});
 		
@@ -195,6 +177,36 @@ public class ModifyRestaurantForm extends VBox {
                 "-fx-border-insets: 3;" + 
                 "-fx-border-radius: 10;" );
 		
+	}
+	
+	public void getOwnRestaurant() {
+		try {
+       		ResponseMessage res = Protocol.getProtocol().getOwnRestaurant();
+       		if(res.isSuccess()) {
+    				Restaurant restaurant = (Restaurant)res.getEntity();
+    				RestaurantBean r = RestaurantBean.fromEntity(restaurant);
+    			if(r.getName() != null) {
+    				nameField.setText(r.getName());
+    				typeField.getSelectionModel().select(r.getGenre().toString());
+    				costField.setValue(r.getPrice().ordinal());
+    				cityField.setText(r.getCity());
+    				addressField.setText(r.getAddress());
+    				descField.setText(r.getDescription());
+    				seatsField.setText(Integer.toString(r.getSeats()));
+    			}
+    			if(r.getOpeningHours().equals(OpeningHours.LUNCH)) {
+    				hourField.getSelectionModel().select("Lunch");
+    			}
+    			else if(r.getOpeningHours().equals(OpeningHours.DINNER)) {
+    				hourField.getSelectionModel().select("Dinner");
+    			}
+    			else {
+    				hourField.getSelectionModel().select("Lunch/Dinner");
+    			}
+       		}
+    	}catch(NullPointerException | IOException e) {
+    		
+    	}	
 	}
 	
 }

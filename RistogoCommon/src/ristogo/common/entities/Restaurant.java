@@ -41,6 +41,21 @@ public class Restaurant extends Entity
 		this.openingHours = openingHours;
 	}
 	
+	public Restaurant(String name, Genre genre, Price c, String city, String address, String description, int seats, OpeningHours h)
+	{
+		super();
+		this.name = name;
+		this.genre = genre;
+		this.price = c;
+		this.city = city;
+		this.address = address;
+		this.description = description;
+		this.seats = seats;
+		this.openingHours = h;
+	}
+	
+
+
 	public void setOwnerName(String ownerName)
 	{
 		this.ownerName = ownerName;

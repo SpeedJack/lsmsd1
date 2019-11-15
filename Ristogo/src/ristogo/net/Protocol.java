@@ -16,20 +16,31 @@ import ristogo.common.net.ActionRequest;
 import ristogo.common.net.Message;
 import ristogo.common.net.RequestMessage;
 import ristogo.common.net.ResponseMessage;
+import ristogo.config.Configuration;
 
 public class Protocol implements AutoCloseable
 {
 	private Socket socket = null;
 	private DataInputStream inputStream = null;
 	private DataOutputStream outputStream = null;
+	private static Protocol protocol = null;
 	
-	public Protocol(String serverIp, int serverPort) throws IOException
+	private Protocol() throws IOException
 	{
-		this.socket = new Socket(serverIp, serverPort);
+		Configuration config = Configuration.getConfig();
+		this.socket = new Socket(config.getServerIp(), config.getServerPort());
 		inputStream = new DataInputStream(socket.getInputStream());
 		outputStream = new DataOutputStream(socket.getOutputStream());
-		Logger.getLogger(Protocol.class.getName()).info("Connected to " + serverIp + ":" + serverPort + ".");
+		Logger.getLogger(Protocol.class.getName()).info("Connected to " + config.getServerIp() + ":" + config.getServerPort() + ".");
 	}
+	
+	public static Protocol getProtocol() throws IOException{
+		if(protocol == null) {
+			protocol = new Protocol();
+		}
+		return protocol;
+	}
+	
 	
 	public ResponseMessage performLogin(User user)
 	{
@@ -102,9 +113,9 @@ public class Protocol implements AutoCloseable
 		return sendRequest(ActionRequest.LIST_RESERVATIONS, restaurant);
 	}
 	
-	public ResponseMessage checkSeats(Restaurant restaurant, Reservation reservation)
+	public ResponseMessage checkSeats(Reservation reservation)
 	{
-		return sendRequest(ActionRequest.CHECK_SEATS, restaurant, reservation);
+		return sendRequest(ActionRequest.CHECK_SEATS, reservation);
 	}
 	
 	private ResponseMessage sendRequest(ActionRequest actionRequest, Entity... entities)

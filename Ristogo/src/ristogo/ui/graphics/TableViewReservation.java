@@ -1,12 +1,19 @@
 package ristogo.ui.graphics;
 
+import java.io.IOException;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import ristogo.common.entities.Entity;
+import ristogo.common.entities.Reservation;
+import ristogo.common.net.ResponseMessage;
 import ristogo.config.Configuration;
+import ristogo.net.Protocol;
 import ristogo.ui.graphics.beans.ReservationBean;
+
 
 public class TableViewReservation extends TableView<ReservationBean>  {
 	
@@ -76,7 +83,18 @@ public class TableViewReservation extends TableView<ReservationBean>  {
 	 
 	  
 	  	public void listReservations(boolean isCostumer) {
-		  //CHIAMARE LIST RESERVATION
+	  		reservationList.clear();
+		   try {
+			ResponseMessage res = Protocol.getProtocol().getOwnActiveReservations();
+			if(res.isSuccess()) {
+				for (Entity entity: res.getEntities()) {
+					Reservation reservation = (Reservation)entity;
+					reservationList.add(ReservationBean.fromEntity(reservation));
+				}
+			}
+		   } catch (IOException e) {
+			   e.printStackTrace();
+		   }
 	  	}
 
 }

@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
 import ristogo.common.entities.User;
 import ristogo.ui.graphics.config.GUIConfig;
 
@@ -25,13 +26,12 @@ public class RistogoGUI extends Application
 {
 
 	private HBox applicationInterface;
-	private User loggedUser;
-
+	public static User loggedUser;
+	
 	@Override
 	public void start(Stage stage) throws Exception
 	{
 		applicationInterface = new HBox(10);
-		
 		LoginDialog login = new LoginDialog();
 		login.showAndWait();
 		
@@ -101,6 +101,7 @@ public class RistogoGUI extends Application
 	    restaurant.setOnMouseClicked((e) -> {
 	    	bookForm.fillOutForm(restaurant.getSelectionName(), restaurant.getSelectionHours());
 	    	descriptionField.setText(restaurant.getSelectionDescription());
+	    	bookForm.setIdResToReserve(restaurant.getSelectionModel().getSelectedItem().getId());
 		});
 	  
 	    reservation.setOnMouseClicked((e) -> {

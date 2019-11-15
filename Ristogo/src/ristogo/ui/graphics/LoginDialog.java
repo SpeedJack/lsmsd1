@@ -1,5 +1,7 @@
 package ristogo.ui.graphics;
 
+import java.io.IOException;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -20,9 +22,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import ristogo.common.entities.Customer;
-import ristogo.common.entities.User;
+
+import ristogo.common.entities.*;
+
+import ristogo.common.net.ResponseMessage;
 import ristogo.config.Configuration;
+import ristogo.net.Protocol;
 import ristogo.ui.graphics.config.GUIConfig;
 
 public class LoginDialog extends Dialog<User>{
@@ -131,18 +136,20 @@ public class LoginDialog extends Dialog<User>{
 		
 		registerButton.setOnAction((ActionEvent ev) -> {
 									RegisterDialog register = new RegisterDialog();
-									hide();
-
 									register.showAndWait();
-									
-									int res = register.getResult();
-									showAndWait();	
 						    		});
 		
 		setResultConverter(dialogButton -> {
 		    if (dialogButton == loginButtonType) {
-		    	//MANDARE COMANDO LOGIN
-		        return new Customer("ciao", "ciao");
+		    	try {
+					ResponseMessage res = Protocol.getProtocol().performLogin(new Customer(username.getText(), password.getText()));
+					if (!res.isSuccess()) {
+						error.setVisible(true);
+					}
+					return (User)res.getEntity();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		    }
 		    else if(dialogButton == ButtonType.CLOSE) {
 			    return null; 

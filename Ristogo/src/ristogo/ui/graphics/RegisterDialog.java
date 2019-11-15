@@ -1,5 +1,7 @@
 package ristogo.ui.graphics;
 
+import java.io.IOException;
+
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -17,7 +19,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import ristogo.common.entities.Customer;
+import ristogo.common.entities.Owner;
+import ristogo.common.entities.Restaurant;
+import ristogo.common.entities.enums.UserType;
+import ristogo.common.net.ResponseMessage;
 import ristogo.config.Configuration;
+import ristogo.net.Protocol;
+import ristogo.ui.Console;
 import ristogo.ui.graphics.config.GUIConfig;
 
 public class RegisterDialog extends Dialog<Integer> {
@@ -59,7 +68,7 @@ public class RegisterDialog extends Dialog<Integer> {
 		password.setPromptText("Password");
 		Label l3 = new Label("Type of User: ");
 		ChoiceBox<String> cb = new ChoiceBox<String>();
-		cb.getItems().addAll("Customer", "Restaurant Owner");
+		cb.getItems().addAll("Customer", "Owner");
 
 		l1.setFont(GUIConfig.getFormTitleFont());
 		l1.setTextFill(GUIConfig.getBgColor());
@@ -114,14 +123,24 @@ public class RegisterDialog extends Dialog<Integer> {
 			registerButton.setDisable(newValue.trim().isEmpty());
 		});
 
+
 		Platform.runLater(() -> username.requestFocus());
 		
 		setResultConverter(dialogButton -> {
 		    if (dialogButton == registerButtonType) {
-		    	//MANDARE COMANDO REGISTER
-		    	//SE OK
-		        return  0;
-		    }
+		    	String us = username.getText();
+				String pswd = password.getText();
+				UserType type = UserType.valueOf(cb.getValue().toUpperCase());
+				ResponseMessage res = null;
+				try {
+				if(type == UserType.CUSTOMER) {
+					res = Protocol.getProtocol().registerUser(new Customer(us, pswd));
+				} else {
+					res = Protocol.getProtocol().registerUser(new Owner(us, pswd), new Restaurant(us));
+				}
+				if (!res.isSuccess()) {
+					error.setVisible(true);
+				}
 		    else {
 		    	return -1;
 		    }
