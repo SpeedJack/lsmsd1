@@ -35,6 +35,9 @@ public class RistogoGUI extends Application
 		LoginDialog login = new LoginDialog();
 		login.showAndWait();
 		
+		while(login.getResult() != null && login.getResult().getId() == -1) {
+			login.showAndWait();
+		}
 		loggedUser = login.getResult();
 		if(loggedUser!= null) {
 			if(loggedUser.isOwner()) {

@@ -3,8 +3,10 @@ package ristogo.ui.graphics;
 import java.io.IOException;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -19,22 +21,27 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+
 import ristogo.common.entities.Customer;
 import ristogo.common.entities.Owner;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.enums.UserType;
 import ristogo.common.net.ResponseMessage;
-import ristogo.config.Configuration;
 import ristogo.net.Protocol;
-import ristogo.ui.Console;
+
 import ristogo.ui.graphics.config.GUIConfig;
 
 public class RegisterDialog extends Dialog<Integer> {
 	
+	private TextField username;
+	private PasswordField password;
+	private ChoiceBox<String> cb;
+	private Label error;
+	
 	public RegisterDialog(){
 
 		
-		Configuration config = Configuration.getConfig();
 		DialogPane dialogPane = getDialogPane();
 		Stage stage = (Stage)dialogPane.getScene().getWindow();
 		stage.getIcons().add(new Image(this.getClass().getResource("/resources/logo.png").toString()));
@@ -61,13 +68,13 @@ public class RegisterDialog extends Dialog<Integer> {
 		
 ////////////////////////////CONTENUTO//////////////////////////////////////////////////////////////////////
 		Label l1 = new Label("Name: ");
-		TextField username = new TextField();
+		username = new TextField();
 		username.setPromptText("Username");
 		Label l2 = new Label("Password: ");
-		PasswordField password = new PasswordField();
+		password = new PasswordField();
 		password.setPromptText("Password");
 		Label l3 = new Label("Type of User: ");
-		ChoiceBox<String> cb = new ChoiceBox<String>();
+		cb = new ChoiceBox<String>();
 		cb.getItems().addAll("Customer", "Owner");
 
 		l1.setFont(GUIConfig.getFormTitleFont());
@@ -83,7 +90,7 @@ public class RegisterDialog extends Dialog<Integer> {
 		l3.setFont(GUIConfig.getFormTitleFont());
 		l3.setTextFill(GUIConfig.getBgColor());
 		
-		Label error = new Label("Error: Login Failed. Retry");
+		error = new Label("Error: Login Failed. Retry");
 		error.setFont(GUIConfig.getFormTitleFont());
 		error.setTextFill(GUIConfig.getBgColor());
 		error.setStyle("-fx-background-color:   red;");
@@ -122,29 +129,32 @@ public class RegisterDialog extends Dialog<Integer> {
 		username.textProperty().addListener((observable, oldValue, newValue) -> {
 			registerButton.setDisable(newValue.trim().isEmpty());
 		});
-
-
-		Platform.runLater(() -> username.requestFocus());
 		
+		Platform.runLater(() -> username.requestFocus());
 		setResultConverter(dialogButton -> {
-		    if (dialogButton == registerButtonType) {
-		    	String us = username.getText();
-				String pswd = password.getText();
-				UserType type = UserType.valueOf(cb.getValue().toUpperCase());
-				ResponseMessage res = null;
-				try {
-				if(type == UserType.CUSTOMER) {
-					res = Protocol.getProtocol().registerUser(new Customer(us, pswd));
-				} else {
-					res = Protocol.getProtocol().registerUser(new Owner(us, pswd), new Restaurant(us));
-				}
-				if (!res.isSuccess()) {
-					error.setVisible(true);
-				}
-		    else {
-		    	return -1;
-		    }
-		    
-		});	
-	}
+			 		if (dialogButton == registerButtonType) {
+			 			try {
+			 				String us = username.getText();
+			 				String pswd = password.getText();
+			 				UserType type = UserType.valueOf(cb.getValue().toUpperCase());
+			 				ResponseMessage res = null;
+			 				if(type == UserType.CUSTOMER) {
+			 						res = Protocol.getProtocol().registerUser(new Customer(us, pswd));
+			 				} else {
+			 					res = Protocol.getProtocol().registerUser(new Owner(us, pswd), new Restaurant(us));
+			 				}
+			 				if (!res.isSuccess()) {
+			 					error.setVisible(true);
+			 					return -1;
+			 				}
+			 				return 0;
+			 			}catch(NullPointerException | IOException e) {
+			 				e.getMessage();
+			 				//GESTIRE MESSAGGIO ERRORE
+			 			}
+			 		}
+					return 0;
+			});		
+}
+	
 }
