@@ -69,7 +69,7 @@ public class Message implements Serializable
 			Logger.getLogger(Message.class.getName()).fine(Thread.currentThread().getName() + ": RECEIVED\n" + xml);
 			return fromXML(xml);
 		} catch (IOException ex) {
-			Logger.getLogger(Message.class.getName()).log(Level.INFO, "Failure in receiving message. Probably counterpart terminated.", ex);
+			Logger.getLogger(Message.class.getName()).log(Level.WARNING, "Failure in receiving message. Probably counterpart terminated.", ex);
 			return null;
 		}
 	}
