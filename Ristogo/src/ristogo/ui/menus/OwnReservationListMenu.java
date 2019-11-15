@@ -16,7 +16,10 @@ public class OwnReservationListMenu extends Menu
 		ResponseMessage resMsg = protocol.getOwnActiveReservations();
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i = 1;
-		if (resMsg.getEntityCount() < 1) {
+		if (!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			Console.newLine();
+		} else if (resMsg.getEntityCount() < 1) {
 			Console.println("No active reservations to show.");
 			Console.newLine();
 		} else {

@@ -20,13 +20,13 @@ public class LoginMenu extends Menu
 	protected SortedSet<MenuEntry> getMenu()
 	{
 		SortedSet<MenuEntry> menu = new TreeSet<>();
-		menu.add(new MenuEntry(1, "Log-In", this::handleLogIn));
+		menu.add(new MenuEntry(1, "Log-In", this::handleLogin));
 		menu.add(new MenuEntry(2, "Register", this::handleRegister));
 		menu.add(new MenuEntry(0, "Exit", true));
 		return menu;
 	}
 	
-	private void handleLogIn(MenuEntry entry)
+	private void handleLogin(MenuEntry entry)
 	{
 		HashMap<Integer, String> response = new LoginForm().show();
 		doLogin(response.get(0), response.get(1));

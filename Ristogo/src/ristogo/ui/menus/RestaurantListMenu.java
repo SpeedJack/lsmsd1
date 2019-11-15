@@ -26,8 +26,12 @@ public class RestaurantListMenu extends Menu
 		ResponseMessage resMsg = protocol.getRestaurants();
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i = 1;
-		if (resMsg.getEntityCount() < 1) {
+		if (!resMsg.isSuccess()) {
+			Console.println(resMsg.getErrorMsg());
+			Console.newLine();
+		} else if (resMsg.getEntityCount() < 1) {
 			Console.println("No restaurants available.");
+			Console.newLine();
 		} else {
 			for (Entity entity: resMsg.getEntities()) {
 				Restaurant restaurant = (Restaurant)entity;

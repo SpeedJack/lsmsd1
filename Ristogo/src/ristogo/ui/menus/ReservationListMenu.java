@@ -27,6 +27,7 @@ public class ReservationListMenu extends Menu
 		int i = 1;
 		if (!resMsg.isSuccess()) {
 			Console.println(resMsg.getErrorMsg());
+			Console.newLine();
 		} else if (resMsg.getEntityCount() < 1) {
 			Console.println("No reservation to show.");
 			Console.newLine();

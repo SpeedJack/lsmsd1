@@ -17,11 +17,11 @@ public class UserMenu extends Menu
 		menu.add(new MenuEntry(2, "Reserve a table", this::handleReserve));
 		if (loggedUser.isOwner())
 			menu.add(new MenuEntry(3, "Manage your restaurant", this::handleEditRestaurant));
-		menu.add(new MenuEntry(0, "Log-Out", true, this::handleLogOut));
+		menu.add(new MenuEntry(0, "Log-Out", true, this::handleLogout));
 		return menu;
 	}
 	
-	private void handleLogOut(MenuEntry entry)
+	private void handleLogout(MenuEntry entry)
 	{
 		ResponseMessage resMsg = protocol.performLogout();
 		loggedUser = null;
