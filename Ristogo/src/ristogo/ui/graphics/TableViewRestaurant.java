@@ -10,6 +10,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import ristogo.common.entities.Entity;
 import ristogo.common.entities.Restaurant;
+import ristogo.common.entities.enums.*;
 import ristogo.common.net.ResponseMessage;
 import ristogo.config.Configuration;
 import ristogo.net.Protocol;
@@ -21,8 +22,8 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
 	
 	final ObservableList<RestaurantBean> restaurantList;
 	private TableColumn<RestaurantBean, String> nameColumn;
-	private TableColumn<RestaurantBean, String> typeColumn;
-	private TableColumn<RestaurantBean, String> priceColumn;
+	private TableColumn<RestaurantBean, Genre> typeColumn;
+	private TableColumn<RestaurantBean, Price> priceColumn;
 	private TableColumn<RestaurantBean, String> cityColumn;
 	private TableColumn<RestaurantBean, String> addressColumn;
 	 
@@ -45,12 +46,12 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
 		nameColumn.setStyle(
 			"-fx-font-family: " + font + "; -fx-font-size: " + dimC + "; -fx-color: " + textColor + ";");
 
-		typeColumn = new TableColumn<RestaurantBean, String>("Type");
-		typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+		typeColumn = new TableColumn<RestaurantBean, Genre>("Type");
+		typeColumn.setCellValueFactory(new PropertyValueFactory<>("genre"));
 		typeColumn.setStyle(" -fx-alignment: CENTER; -fx-font-family: " + font + "; -fx-font-size: " + dimC +
 			"; -fx-color: " + textColor + ";");
 
-		priceColumn = new TableColumn<RestaurantBean, String>("Price");
+		priceColumn = new TableColumn<RestaurantBean, Price>("Price");
 		priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
 		priceColumn.setStyle("-fx-alignment: CENTER; -fx-font-family: " + font + "; -fx-font-size: " + dimC +
 			"; -fx-color: " + textColor + ";");
@@ -69,8 +70,8 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
 		nameColumn.setMaxWidth(150);
 		typeColumn.setMinWidth(100);
 		typeColumn.setMaxWidth(100);
-		priceColumn.setMinWidth(50);
-		priceColumn.setMaxWidth(50);
+		priceColumn.setMinWidth(100);
+		priceColumn.setMaxWidth(100);
 		cityColumn.setMinWidth(100);
 		cityColumn.setMaxWidth(100);
 		addressColumn.setMinWidth(200);
@@ -90,8 +91,8 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
  		return this.getSelectionModel().getSelectedItem().getDescription();
  	}
  	
- 	public String getSelectionHours() {
- 		return this.getSelectionModel().getSelectedItem().getOpeningHours().toString();
+ 	public OpeningHours getSelectionHours() {
+ 		return this.getSelectionModel().getSelectedItem().getOpeningHours();
  	}
  	
    public void listRestaurants(){

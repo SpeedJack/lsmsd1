@@ -56,6 +56,10 @@ public class Restaurant extends Entity
 	
 
 
+	public Restaurant(int id) {
+		super(id);
+	}
+
 	public void setOwnerName(String ownerName)
 	{
 		this.ownerName = ownerName;

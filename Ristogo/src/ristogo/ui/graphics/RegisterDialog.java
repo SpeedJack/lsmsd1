@@ -3,10 +3,8 @@ package ristogo.ui.graphics;
 import java.io.IOException;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -49,7 +47,7 @@ public class RegisterDialog extends Dialog<Integer> {
 		dialogPane.setStyle(GUIConfig.getInvertedCSSBgColor());
 
 		setTitle("RistoGo - Register");
-		setHeaderText("Sign in!");
+		setHeaderText("Sign in!\n the password must contain at least 8 characters");
 
 		dialogPane.getStyleClass().remove("alert");
 
@@ -90,7 +88,7 @@ public class RegisterDialog extends Dialog<Integer> {
 		l3.setFont(GUIConfig.getFormTitleFont());
 		l3.setTextFill(GUIConfig.getBgColor());
 		
-		error = new Label("Error: Login Failed. Retry");
+		error = new Label("Error: Register Failed. Retry with different username");
 		error.setFont(GUIConfig.getFormTitleFont());
 		error.setTextFill(GUIConfig.getBgColor());
 		error.setStyle("-fx-background-color:   red;");
@@ -145,6 +143,7 @@ public class RegisterDialog extends Dialog<Integer> {
 			 				}
 			 				if (!res.isSuccess()) {
 			 					error.setVisible(true);
+			 					error.setText(res.getErrorMsg());
 			 					return -1;
 			 				}
 			 				return 0;
