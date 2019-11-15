@@ -128,6 +128,13 @@ public class EntityManager implements AutoCloseable
 			tx.rollback();
 	}
 	
+	public void detach(Entity_ entity)
+	{
+		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "detach", entity);
+		getEM().detach(entity);
+		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "detach", entity);
+	}
+	
 	public void persist(Entity_ entity)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "persist", entity);
