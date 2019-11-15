@@ -23,7 +23,7 @@ public class Message implements Serializable
 	
 	protected final List<Entity> entities = new ArrayList<>();
 	
-	public Message(Entity... entities)
+	protected Message(Entity... entities)
 	{
 		if (entities != null)
 			for (Entity entity: entities)

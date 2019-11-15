@@ -14,12 +14,12 @@ public abstract class Entity_
 	@Column(name="id", nullable=false)
 	protected int id;
 	
-	public Entity_(int id)
+	protected Entity_(int id)
 	{
 		setId(id);
 	}
 	
-	public Entity_()
+	protected Entity_()
 	{
 		this(0);
 	}
