@@ -106,12 +106,12 @@ public abstract class User extends Entity
 	
 	public boolean checkPassword(String password)
 	{
-		return this.password.equals(hashPassword(password));
+		return this.password != null && this.password.equals(hashPassword(password));
 	}
 	
 	public boolean checkPasswordHash(String passwordHash)
 	{
-		return this.password.equals(passwordHash);
+		return password != null && password.equals(passwordHash);
 	}
 	
 	public boolean hasValidPassword()
