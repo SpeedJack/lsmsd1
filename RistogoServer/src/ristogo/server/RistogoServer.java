@@ -7,32 +7,43 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 import ristogo.server.storage.EntityManager;
 
 public class RistogoServer
 {
+	private static int port;
 
 	public static void main(String[] args)
 	{
-		setLogLevel(args);
-		
 		Logger.getLogger(RistogoServer.class.getName()).entering(RistogoServer.class.getName(), "main", args);
+		
+		Options options = createOptions(args);
+		CommandLineParser parser = new DefaultParser();
+		CommandLine cmd = null;
+		try {
+			cmd = parser.parse(options, args);
+			parseOptions(cmd, options);
+		} catch (ParseException ex) {
+			Logger.getLogger(RistogoServer.class.getName()).warning("Can not parse command line options: " + ex.getMessage());
+		}
 		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		
-		int port;
-		try {
-			port = Integer.parseInt(getArgumentValue(args, "port", "8888"));
-			if (port < 0 || port > 65535) {
-				NumberFormatException ex = new NumberFormatException("The port must be a number between 0 and 65535.");
-				Logger.getLogger(RistogoServer.class.getName()).throwing(RistogoServer.class.getName(), "main", ex);
-				throw ex;
-			}
-		} catch (NumberFormatException ex) {
-			Logger.getLogger(RistogoServer.class.getName()).warning("Invalid port specified. Using default: 8888.");
-			port = 8888;
-		}
-		
+		startServer();
+		Logger.getLogger(RistogoServer.class.getName()).exiting(RistogoServer.class.getName(), "main", args);
+	}
+	
+	private static void startServer()
+	{
+		Logger.getLogger(RistogoServer.class.getName()).entering(RistogoServer.class.getName(), "startServer");
 		ClientPool pool = null;
 		try {
 			Logger.getLogger(RistogoServer.class.getName()).info("Starting server...");
@@ -47,21 +58,68 @@ public class RistogoServer
 			EntityManager.closeFactory();
 			if (pool != null)
 				pool.shutdown();
-			Logger.getLogger(RistogoServer.class.getName()).exiting(RistogoServer.class.getName(), "main", args);
+			Logger.getLogger(RistogoServer.class.getName()).exiting(RistogoServer.class.getName(), "startServer");
 		}
 	}
 	
-	private static void setLogLevel(String[] args)
+	private static Options createOptions(String[] args)
 	{
-		String logLevelName = getArgumentValue(args, "logLevel", "INFO").toUpperCase();
-		Level logLevel;
-		try {
-		logLevel = Level.parse(logLevelName);
-		} catch (IllegalArgumentException ex) {
-			Logger.getLogger(RistogoServer.class.getName()).warning("Invalid log level specified (" + logLevelName + "). Using default: INFO.");
-			logLevel = Level.INFO;
+		Options options = new Options();
+		options.addOption(new Option("h", "help", false, "print this message."));
+		Option portOpt = new Option("p", "port", true, "set listening port.");
+		portOpt.setType(Integer.class);
+		portOpt.setArgName("PORT");
+		options.addOption(portOpt);
+		Option logLevelOpt = new Option("l", "log-level", true, "set log level.");
+		logLevelOpt.setType(Level.class);
+		logLevelOpt.setArgName("LEVEL");
+		options.addOption(logLevelOpt);
+		
+		return options;
+	}
+	
+	private static void parseOptions(CommandLine cmd, Options options)
+	{
+		if (cmd.hasOption("help")) {
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("ristogoserver [-h | --help] [-p <PORT> | --port <PORT>] [-l <LEVEL> | --log-level <LEVEL>]",
+				"", options, "\nLOG LEVELS:\n" +
+				"ALL: print all logs.\n" + 
+				"FINEST: print all tracing logs.\n" +
+				"FINER: print most tracing logs.\n" +
+				"FINE: print some tracing logs.\n" +
+				"CONFIG: print all config logs.\n" +
+				"INFO: print all informational logs.\n" +
+				"WARNING: print all warnings and errors. (default)\n" +
+				"SEVERE: print only errors.\n" +
+				"OFF: disable all logs."
+			);
+			System.exit(0);
 		}
-		setLogLevel(logLevel);
+		if (cmd.hasOption("log-level")) {
+			String logLevelName = cmd.getOptionValue("log-level").toUpperCase();
+			Level logLevel;
+			try {
+				logLevel = Level.parse(logLevelName);
+			} catch (IllegalArgumentException ex) {
+				Logger.getLogger(RistogoServer.class.getName()).warning("Invalid log level specified (" + logLevelName + "). Using default: WARNING.");
+				logLevel = Level.WARNING;
+			}
+			setLogLevel(logLevel);
+		}
+		if (cmd.hasOption("port")) {
+			try {
+				port = Integer.parseInt(cmd.getOptionValue("port", "8888"));
+				if (port < 0 || port > 65535) {
+					NumberFormatException ex = new NumberFormatException("The port must be a number between 0 and 65535.");
+					Logger.getLogger(RistogoServer.class.getName()).throwing(RistogoServer.class.getName(), "main", ex);
+					throw ex;
+				}
+			} catch (NumberFormatException ex) {
+				Logger.getLogger(RistogoServer.class.getName()).warning("Invalid port specified. Using default: 8888.");
+				port = 8888;
+			}
+		}
 	}
 	
 	private static void setLogLevel(Level level)
@@ -72,31 +130,5 @@ public class RistogoServer
 			handler.setLevel(level);
 		
 		Logger.getLogger(RistogoServer.class.getName()).config("Log level set to " + level + ".");
-	}
-	
-	private static String getArgumentValue(String[] args, String argName, String defaultValue)
-	{
-		String arg = getArgument(args, "--" + argName);
-		if (arg == null)
-			return defaultValue;
-		String[] argComponents = arg.split("=");
-		String argValue = null;
-		if (argComponents.length == 2)
-			argValue = argComponents[1];
-		
-		if (argValue == null || argValue.isBlank()) {
-			Logger.getLogger(RistogoServer.class.getName()).warning("Invalid argument passed (" + arg +
-				"). Using default value for " + argName + ": " + defaultValue + ".");
-			return defaultValue;
-		}
-		return argValue;
-	}
-	
-	private static String getArgument(String[] haystack, String needle)
-	{
-		for (String arg: haystack)
-			if (arg.split("=")[0].equalsIgnoreCase(needle))
-				return arg;
-		return null;
 	}
 }

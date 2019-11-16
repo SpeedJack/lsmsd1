@@ -6,6 +6,14 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 import ristogo.config.Configuration;
 import ristogo.ui.Console;
 import ristogo.ui.menus.LoginMenu;
@@ -15,24 +23,23 @@ public class Ristogo
 
 	public static void main(String[] args)
 	{
-		boolean logLevelByParameter = hasLongArgument(args, "logLevel");
-		if (logLevelByParameter)
-			setLogLevel(args);
-		
 		Logger.getLogger(Ristogo.class.getName()).entering(Ristogo.class.getName(), "main", args);
+		
+		Options options = createOptions(args);
+		CommandLineParser parser = new DefaultParser();
+		CommandLine cmd = null;
+		try {
+			cmd = parser.parse(options, args);
+			parseOptions(cmd, options);
+		} catch (ParseException ex) {
+			Logger.getLogger(Ristogo.class.getName()).warning("Can not parse command line options: " + ex.getMessage());
+		}
+
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		Configuration config = Configuration.getConfig();
 		
-		if (!logLevelByParameter)
+		if (cmd == null || !cmd.hasOption("log-level"))
 			setLogLevel(config.getLogLevel());
-
-		if (hasArgument(args, "gui", "g")) {
-			Logger.getLogger(Ristogo.class.getName()).config("Forcing GUI by command line argument.");
-			launchGUI(args);
-		} else if (hasArgument(args, "cli", "c")) {
-			Logger.getLogger(Ristogo.class.getName()).config("Forcing CLI by command line argument.");
-			launchCLI(args);
-		}
 		
 		switch (config.getInterfaceMode()) {
 		case FORCE_CLI:
@@ -49,6 +56,59 @@ public class Ristogo
 				Logger.getLogger(Ristogo.class.getName()).config("Console NOT found. Starting in GUI mode.");
 				launchGUI(args);
 			}
+		}
+	}
+	
+	private static Options createOptions(String[] args)
+	{
+		Options options = new Options();
+		options.addOption(new Option("g", "gui", false, "force load the Graphical User Interface."));
+		options.addOption(new Option("c", "cli", false, "force load the Command Line Interface."));
+		options.addOption(new Option("h", "help", false, "print this message."));
+		Option logLevelOpt = new Option("l", "log-level", true, "set log level.");
+		logLevelOpt.setType(Level.class);
+		logLevelOpt.setArgName("LEVEL");
+		options.addOption(logLevelOpt);
+		
+		return options;
+	}
+	
+	private static void parseOptions(CommandLine cmd, Options options)
+	{
+		if (cmd.hasOption("help")) {
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("ristogo [-h | --help] [-c | --cli] [-g | --gui] [-l <LEVEL> | --log-level <LEVEL>]",
+				"", options, "\nLOG LEVELS:\n" +
+				"ALL: print all logs.\n" + 
+				"FINEST: print all tracing logs.\n" +
+				"FINER: print most tracing logs.\n" +
+				"FINE: print some tracing logs.\n" +
+				"CONFIG: print all config logs.\n" +
+				"INFO: print all informational logs.\n" +
+				"WARNING: print all warnings and errors. (default)\n" +
+				"SEVERE: print only errors.\n" +
+				"OFF: disable all logs."
+			);
+			close();
+		}
+		if (cmd.hasOption("log-level")) {
+			String logLevelName = cmd.getOptionValue("log-level").toUpperCase();
+			Level logLevel;
+			try {
+				logLevel = Level.parse(logLevelName);
+			} catch (IllegalArgumentException ex) {
+				Logger.getLogger(Ristogo.class.getName()).warning("Invalid log level specified (" + logLevelName + "). Using default: WARNING.");
+				logLevel = Level.WARNING;
+			}
+			setLogLevel(logLevel);
+		}
+		if (cmd.hasOption("cli")) {
+			Logger.getLogger(Ristogo.class.getName()).config("Forcing CLI by command line argument.");
+			launchCLI(cmd.getArgs());
+		}
+		if (cmd.hasOption("gui")) {
+			Logger.getLogger(Ristogo.class.getName()).config("Forcing GUI by command line argument.");
+			launchGUI(cmd.getArgs());
 		}
 	}
 	
@@ -78,19 +138,6 @@ public class Ristogo
 		System.exit(0);
 	}
 	
-	private static void setLogLevel(String[] args)
-	{
-		String logLevelName = getArgumentValue(args, "logLevel", "WARNING").toUpperCase();
-		Level logLevel;
-		try {
-		logLevel = Level.parse(logLevelName);
-		} catch (IllegalArgumentException ex) {
-			Logger.getLogger(Ristogo.class.getName()).warning("Invalid log level specified (" + logLevelName + "). Using default: WARNING.");
-			logLevel = Level.WARNING;
-		}
-		setLogLevel(logLevel);
-	}
-	
 	private static void setLogLevel(Level level)
 	{
 		Logger rootLogger = LogManager.getLogManager().getLogger("");
@@ -100,55 +147,4 @@ public class Ristogo
 		
 		Logger.getLogger(Ristogo.class.getName()).config("Log level set to " + level + ".");
 	}
-	
-	private static String getArgumentValue(String[] args, String argName, String defaultValue)
-	{
-		String arg = getArgument(args, "--" + argName);
-		if (arg == null)
-			return defaultValue;
-		String[] argComponents = arg.split("=");
-		String argValue = null;
-		if (argComponents.length == 2)
-			argValue = argComponents[1];
-		
-		if (argValue == null || argValue.isBlank()) {
-			Logger.getLogger(Ristogo.class.getName()).warning("Invalid argument passed (" + arg +
-				"). Using default value for " + argName + ": " + defaultValue + ".");
-			return defaultValue;
-		}
-		return argValue;
-	}
-	
-	private static String getArgument(String[] haystack, String needle)
-	{
-		for (String arg: haystack)
-			if (arg.split("=")[0].equalsIgnoreCase(needle))
-				return arg;
-		return null;
-	}
-	
-	private static boolean hasArgument(String[] args, String longArg, String shortArg)
-	{
-		return hasLongArgument(args, longArg) || hasShortArgument(args, shortArg);
-	}
-	
-	private static boolean hasArgument(String[] args, String rawArgument)
-	{
-		return getArgument(args, rawArgument) != null;
-	}
-	
-	private static boolean hasLongArgument(String[] args, String argument)
-	{
-		if (argument == null || argument.isEmpty())
-			return false;
-		return hasArgument(args, "--" + argument);
-	}
-	
-	private static boolean hasShortArgument(String[] args, String argument)
-	{
-		if (argument == null || argument.isEmpty())
-			return false;
-		return hasArgument(args, "-" + argument);
-	}
-
 }

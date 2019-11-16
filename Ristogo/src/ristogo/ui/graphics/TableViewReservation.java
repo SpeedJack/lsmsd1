@@ -87,7 +87,13 @@ public class TableViewReservation extends TableView<ReservationBean>  {
 	  	public void listReservations(boolean isCostumer) {
 	  		reservationList.clear();
 		   try {
-			ResponseMessage res = Protocol.getProtocol().getOwnActiveReservations();
+			ResponseMessage res;
+			if(isCostumer) {
+				res = Protocol.getProtocol().getOwnActiveReservations();
+			}
+			else {
+				res = Protocol.getProtocol().getReservations(RistogoGUI.getMyRestaurant());
+			}
 			if(res.isSuccess()) {
 				for (Entity entity: res.getEntities()) {
 					Reservation reservation = (Reservation)entity;

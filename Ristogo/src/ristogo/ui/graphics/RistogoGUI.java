@@ -16,7 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
+import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
 import ristogo.ui.graphics.config.GUIConfig;
 
@@ -26,7 +26,8 @@ public class RistogoGUI extends Application
 {
 
 	private HBox applicationInterface;
-	public static User loggedUser;
+	private static User loggedUser;
+	private static Restaurant myRestaurant;
 	
 	@Override
 	public void start(Stage stage) throws Exception
@@ -215,5 +216,20 @@ public class RistogoGUI extends Application
 		
 		return grid;
 	}
+	
+	public static User getLoggedUser() {
+		return loggedUser;
+	}
 
+	public static void setLoggedUser(User loggedUser) {
+		RistogoGUI.loggedUser = loggedUser;
+	}
+
+	public static Restaurant getMyRestaurant() {
+		return myRestaurant;
+	}
+
+	public static void setMyRestaurant(Restaurant myRestaurant) {
+		RistogoGUI.myRestaurant = myRestaurant;
+	}
 }
