@@ -132,7 +132,7 @@ public class BookForm extends VBox {
 														String n = nameField.getText();
 														LocalDate d = dateField.getValue();
 														ReservationTime h = ReservationTime.valueOf(hourField.getValue().toUpperCase());
-														Reservation reserv = new Reservation(RistogoGUI.loggedUser.getUsername(), n, d, h, 0);
+														Reservation reserv = new Reservation(RistogoGUI.getLoggedUser().getUsername(), n, d, h, 0);
 														Restaurant rest = new Restaurant(idRestoReserve);
 														ResponseMessage res = Protocol.getProtocol().checkSeats(reserv,rest);
 														if(res.isSuccess()) {
@@ -163,7 +163,7 @@ public class BookForm extends VBox {
 														LocalDate d = dateField.getValue();
 														ReservationTime h = ReservationTime.valueOf(hourField.getValue().toUpperCase());
 														int s = seatsField.getValue();
-														Reservation reserv = new Reservation(RistogoGUI.loggedUser.getUsername(), n, d, h, s);
+														Reservation reserv = new Reservation(RistogoGUI.getLoggedUser().getUsername(), n, d, h, s);
 														Restaurant rest = new Restaurant(idRestoReserve);
 														ResponseMessage res = Protocol.getProtocol().reserve(reserv, rest );
 														if(res.isSuccess()) {

@@ -13,7 +13,6 @@ import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.Price;
 import ristogo.common.net.ResponseMessage;
 import ristogo.net.Protocol;
-import ristogo.ui.graphics.beans.RestaurantBean;
 import ristogo.ui.graphics.config.GUIConfig;
 
 public class ModifyRestaurantForm extends VBox {
@@ -26,6 +25,8 @@ public class ModifyRestaurantForm extends VBox {
 	private TextArea descField;
 	private TextField seatsField;
 	private ChoiceBox<String> hourField;
+	
+	private int idOwnRestaurant = 0;
 	
 	
 	public ModifyRestaurantForm () {
@@ -145,7 +146,7 @@ public class ModifyRestaurantForm extends VBox {
 					h = OpeningHours.BOTH;
 				}
 				
-				ResponseMessage res = Protocol.getProtocol().editRestaurant(new Restaurant(n, g, p, ct, add, d, s, h));
+				ResponseMessage res = Protocol.getProtocol().editRestaurant(new Restaurant(idOwnRestaurant, n, RistogoGUI.getLoggedUser().getUsername(), g, p, ct, add, d, s, h));
 				if(!res.isSuccess()) {
 					error.setText("Error: " + res.getErrorMsg());
 					error.setVisible(true);
@@ -183,9 +184,10 @@ public class ModifyRestaurantForm extends VBox {
 		try {
        		ResponseMessage res = Protocol.getProtocol().getOwnRestaurant();
        		if(res.isSuccess()) {
-    				Restaurant restaurant = (Restaurant)res.getEntity();
-    				RestaurantBean r = RestaurantBean.fromEntity(restaurant);
+    				Restaurant r = (Restaurant)res.getEntity();
+    				RistogoGUI.setMyRestaurant(r);;
     			if(r.getName() != null) {
+    				idOwnRestaurant = r.getId();
     				nameField.setText(r.getName());
     				typeField.getSelectionModel().select(r.getGenre());
     				costField.setValue(r.getPrice());
