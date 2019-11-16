@@ -1,6 +1,7 @@
 package ristogo.ui.graphics;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,6 +10,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import ristogo.common.entities.Entity;
 import ristogo.common.entities.Reservation;
+import ristogo.common.entities.enums.ReservationTime;
 import ristogo.common.net.ResponseMessage;
 import ristogo.config.Configuration;
 import ristogo.net.Protocol;
@@ -19,8 +21,8 @@ public class TableViewReservation extends TableView<ReservationBean>  {
 	
 	 private final ObservableList<ReservationBean> reservationList;
 	 private TableColumn<ReservationBean, String> nameColumn;
-	 private TableColumn<ReservationBean, String> dateColumn;
-	 private TableColumn<ReservationBean, String> hourColumn;
+	 private TableColumn<ReservationBean, LocalDate> dateColumn;
+	 private TableColumn<ReservationBean, ReservationTime> hourColumn;
 	 private TableColumn<ReservationBean, String> seatsColumn;
 	 
 	 
@@ -47,18 +49,18 @@ public class TableViewReservation extends TableView<ReservationBean>  {
 
 				nameColumn.setCellValueFactory(new PropertyValueFactory<>("restaurantName"));
 			} else {
-				nameColumn.setCellValueFactory(new PropertyValueFactory<>("clientName"));
+				nameColumn.setCellValueFactory(new PropertyValueFactory<>("userName"));
 			}
 			nameColumn.setStyle(
 				"-fx-font-family: " + font + "; -fx-font-size: " + dimC + "; -fx-color: " + textColor + ";");
 
-			dateColumn = new TableColumn<ReservationBean, String>("Date");
+			dateColumn = new TableColumn<ReservationBean, LocalDate>("Date");
 			dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
 			dateColumn.setStyle(" -fx-alignment: CENTER; -fx-font-family: " + font + "; -fx-font-size: " + dimC +
 				"; -fx-color: " + textColor + ";");
 
-			hourColumn = new TableColumn<ReservationBean, String>("Hour");
-			hourColumn.setCellValueFactory(new PropertyValueFactory<>("hour"));
+			hourColumn = new TableColumn<ReservationBean, ReservationTime>("Hour");
+			hourColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
 			hourColumn.setStyle("-fx-alignment: CENTER; -fx-font-family: " + font + "; -fx-font-size: " + dimC +
 				"; -fx-color: " + textColor + ";");
 

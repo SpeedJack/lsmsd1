@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
+import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.ReservationTime;
 import ristogo.common.net.ResponseMessage;
 import ristogo.net.Protocol;
@@ -131,7 +132,9 @@ public class BookForm extends VBox {
 														String n = nameField.getText();
 														LocalDate d = dateField.getValue();
 														ReservationTime h = ReservationTime.valueOf(hourField.getValue().toUpperCase());
-														ResponseMessage res = Protocol.getProtocol().checkSeats(new Reservation(RistogoGUI.loggedUser.getUsername(), n, d, h, 0));
+														Reservation reserv = new Reservation(RistogoGUI.loggedUser.getUsername(), n, d, h, 0);
+														Restaurant rest = new Restaurant(idRestoReserve);
+														ResponseMessage res = Protocol.getProtocol().checkSeats(reserv,rest);
 														if(res.isSuccess()) {
 															Restaurant r = (Restaurant)res.getEntity();
 															if(r.getSeats()>0) {
@@ -145,6 +148,9 @@ public class BookForm extends VBox {
 																error.setText("Error: No more seats for this date/hour");
 																error.setVisible(true);
 															}
+														}
+														else {
+															System.out.println(res.getErrorMsg());
 														}
 
 													}catch(NullPointerException | IOException e) {
@@ -164,7 +170,7 @@ public class BookForm extends VBox {
 															listReservation.accept(true);
 														}
 														else {
-															error.setText("Error: Booking Failed. Retry");
+															error.setText("Error: " + res.getErrorMsg());
 															error.setVisible(true);
 															seatsField.getItems().clear();
 															
@@ -187,7 +193,7 @@ public class BookForm extends VBox {
 														delRes.setDisable(true);
 													}
 													else {
-														error.setText("Error: Delection Failed. Retry");
+														error.setText("Error: " + res.getErrorMsg());
 														error.setVisible(true);
 														
 													}
@@ -218,15 +224,15 @@ public class BookForm extends VBox {
 	}
 	
 	
-	public void fillOutForm(String name, String hour) {
+	public void fillOutForm(String name, OpeningHours hour) {
     	try {
     		delRes.setDisable(true);
 			nameField.setText(name);
 			hourField.getItems().clear();
-			if(hour.equals("BOTH")) {
+			if(hour.equals(OpeningHours.BOTH)) {
 				hourField.getItems().addAll("Lunch", "Dinner");
 			}
-			else if(hour.equals("LUNCH")) {
+			else if(hour.equals(OpeningHours.LUNCH)) {
 				hourField.getItems().add("Lunch");
 			}
 			else {

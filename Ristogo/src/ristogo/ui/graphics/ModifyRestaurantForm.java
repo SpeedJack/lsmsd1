@@ -19,8 +19,8 @@ import ristogo.ui.graphics.config.GUIConfig;
 public class ModifyRestaurantForm extends VBox {
 	
 	private TextField nameField;
-	private ChoiceBox<String> typeField;
-	private ChoiceBox<Integer> costField;
+	private ChoiceBox<Genre> typeField;
+	private ChoiceBox<Price> costField;
 	private TextField cityField;
 	private TextField addressField;
 	private TextArea descField;
@@ -49,9 +49,9 @@ public class ModifyRestaurantForm extends VBox {
 		Label type = new Label("Type: ");
 		type.setFont(GUIConfig.getBoldTextFont());
 		type.setTextFill(GUIConfig.getFgColor());
-		typeField = new ChoiceBox<String>();
-		typeField.getItems().addAll("Pizza", "Chinese", "Mexican", "Italian", "SteakHouse");
-
+		typeField = new ChoiceBox<Genre>();
+		typeField.getItems().addAll(Genre.PIZZA, Genre.ITALIAN, Genre.MEXICAN, Genre.JAPANESE, Genre.STEAKHOUSE);
+		
 		HBox typeBox = new HBox(20);
 		typeBox.getChildren().addAll(type,typeField);
 
@@ -60,8 +60,8 @@ public class ModifyRestaurantForm extends VBox {
 		cost.setFont(GUIConfig.getBoldTextFont());
 		cost.setTextFill(GUIConfig.getFgColor());
 
-		costField = new ChoiceBox<Integer>();
-		costField.getItems().addAll(1, 2, 3, 4, 5);
+		costField = new ChoiceBox<Price>();
+		costField.getItems().addAll(Price.ECONOMIC, Price.LOW, Price.MIDDLE, Price.HIGH, Price.LUXURY);
 		
 		HBox costBox = new HBox(20);
 		costBox.getChildren().addAll(cost,costField);
@@ -103,7 +103,7 @@ public class ModifyRestaurantForm extends VBox {
 		hour.setTextFill(GUIConfig.getFgColor());
 
 		hourField = new ChoiceBox<String>(FXCollections.observableArrayList("Lunch", "Dinner", "Lunch/Dinner"));
-		//hourField.getItems().addAll("Lunch", "Dinner", "Lunch&Dinner");
+
 		
 		HBox hourBox = new HBox(20);
 		hourBox.getChildren().addAll(hour,hourField);
@@ -128,8 +128,8 @@ public class ModifyRestaurantForm extends VBox {
 			error.setVisible(false);
 	    	try {
 				String n = nameField.getText();
-				Genre g = Genre.valueOf(typeField.getValue().toUpperCase());
-				Price p = Price.valueOf(costField.getValue().toString());
+				Genre g = typeField.getValue();
+				Price p = costField.getValue();
 				String ct = cityField.getText();
 				String add = addressField.getText();
 				String d = descField.getText();
@@ -147,9 +147,9 @@ public class ModifyRestaurantForm extends VBox {
 				
 				ResponseMessage res = Protocol.getProtocol().editRestaurant(new Restaurant(n, g, p, ct, add, d, s, h));
 				if(!res.isSuccess()) {
-					error.setText("Error: Commit Failed. Retry");
+					error.setText("Error: " + res.getErrorMsg());
 					error.setVisible(true);
-					
+					getOwnRestaurant();
 				}
 				
 			}catch(NullPointerException | IOException e) {
@@ -187,8 +187,8 @@ public class ModifyRestaurantForm extends VBox {
     				RestaurantBean r = RestaurantBean.fromEntity(restaurant);
     			if(r.getName() != null) {
     				nameField.setText(r.getName());
-    				typeField.getSelectionModel().select(r.getGenre().toString());
-    				costField.setValue(r.getPrice().ordinal());
+    				typeField.getSelectionModel().select(r.getGenre());
+    				costField.setValue(r.getPrice());
     				cityField.setText(r.getCity());
     				addressField.setText(r.getAddress());
     				descField.setText(r.getDescription());

@@ -102,14 +102,22 @@ public class RistogoGUI extends Application
 		subTitle2.setStyle("-fx-underline: true;");
 	    
 	    restaurant.setOnMouseClicked((e) -> {
-	    	bookForm.fillOutForm(restaurant.getSelectionName(), restaurant.getSelectionHours());
-	    	descriptionField.setText(restaurant.getSelectionDescription());
-	    	bookForm.setIdResToReserve(restaurant.getSelectionModel().getSelectedItem().getId());
+	    	try {
+		    	bookForm.fillOutForm(restaurant.getSelectionName(), restaurant.getSelectionHours());
+		    	descriptionField.setText(restaurant.getSelectionDescription());
+		    	bookForm.setIdResToReserve(restaurant.getSelectionModel().getSelectedItem().getId());
+	    	}catch(NullPointerException ex) {
+	    		//do nothing
+	    	}
 		});
 	  
 	    reservation.setOnMouseClicked((e) -> {
-	    							bookForm.getDelRes().setDisable(false);
-	    							bookForm.setIdResToDelete(reservation.getSelectionModel().getSelectedItem().getId());
+	    							try {
+		    							bookForm.getDelRes().setDisable(false);
+		    							bookForm.setIdResToDelete(reservation.getSelectionModel().getSelectedItem().getId());
+	    							}catch(NullPointerException ex){
+	    								//do nothing
+	    							}
 	    							});
 	    
 		VBox leftPart = new VBox(10);
@@ -147,9 +155,9 @@ public class RistogoGUI extends Application
 	    reservation.listReservations(false);
 	    
 	   	Button refresh = new Button("Refresh");
-	   	refresh.setFont(GUIConfig.getButtonFont());
-	   	refresh.setTextFill(GUIConfig.getInvertedFgColor());
-	   	refresh.setStyle(GUIConfig.getInvertedCSSBgColor() );
+    	refresh.setFont(GUIConfig.getButtonFont());
+    	refresh.setTextFill(GUIConfig.getInvertedFgColor());
+    	refresh.setStyle(GUIConfig.getInvertedCSSBgColorButton() );
 	   
 	   	refresh.setOnAction((ActionEvent ev) -> {
 	   											reservation.listReservations(false);
