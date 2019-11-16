@@ -45,10 +45,6 @@ public class Restaurant extends Entity
 		this.seats = seats;
 		this.openingHours = openingHours;
 	}
-	
-	public Restaurant(int id) {
-		super(id);
-	}
 
 	public void setOwnerName(String ownerName)
 	{
