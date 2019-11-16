@@ -25,7 +25,7 @@ public class Ristogo
 	{
 		Logger.getLogger(Ristogo.class.getName()).entering(Ristogo.class.getName(), "main", args);
 		
-		Options options = createOptions(args);
+		Options options = createOptions();
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = null;
 		try {
@@ -59,7 +59,7 @@ public class Ristogo
 		}
 	}
 	
-	private static Options createOptions(String[] args)
+	private static Options createOptions()
 	{
 		Options options = new Options();
 		options.addOption(new Option("g", "gui", false, "force load the Graphical User Interface."));

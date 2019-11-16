@@ -25,7 +25,7 @@ public class RistogoServer
 	{
 		Logger.getLogger(RistogoServer.class.getName()).entering(RistogoServer.class.getName(), "main", args);
 		
-		Options options = createOptions(args);
+		Options options = createOptions();
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = null;
 		try {
@@ -62,7 +62,7 @@ public class RistogoServer
 		}
 	}
 	
-	private static Options createOptions(String[] args)
+	private static Options createOptions()
 	{
 		Options options = new Options();
 		options.addOption(new Option("h", "help", false, "print this message."));
