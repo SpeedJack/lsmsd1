@@ -27,7 +27,6 @@ import ristogo.server.storage.UserManager;
 import ristogo.server.storage.entities.Reservation_;
 import ristogo.server.storage.entities.Restaurant_;
 import ristogo.server.storage.entities.User_;
-import ristogo.server.storage.kvdb.KVDBManager;
 
 public class Client extends Thread
 {
