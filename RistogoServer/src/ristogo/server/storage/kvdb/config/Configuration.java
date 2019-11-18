@@ -4,7 +4,6 @@ import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.Logger;
 import org.iq80.leveldb.Options;
 
-import ristogo.server.RistogoServer;
 import ristogo.server.storage.kvdb.KVDBManager;
 
 

@@ -1,21 +1,24 @@
 package ristogo.server.storage.kvdb;
 
-import org.iq80.leveldb.*;
-import static org.iq80.leveldb.impl.Iq80DBFactory.*;
-import java.io.*;
+import static org.iq80.leveldb.impl.Iq80DBFactory.asString;
+import static org.iq80.leveldb.impl.Iq80DBFactory.bytes;
+import static org.iq80.leveldb.impl.Iq80DBFactory.factory;
+
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
-import ristogo.common.entities.Entity;
-import ristogo.common.entities.Reservation;
-import ristogo.common.entities.User;
+import org.iq80.leveldb.DB;
+import org.iq80.leveldb.DBIterator;
+import org.iq80.leveldb.WriteBatch;
 
-import ristogo.server.storage.entities.Restaurant_;
-import ristogo.server.storage.entities.Reservation_;
 import ristogo.server.storage.entities.Entity_;
+import ristogo.server.storage.entities.Reservation_;
+import ristogo.server.storage.entities.Restaurant_;
 import ristogo.server.storage.entities.User_;
 import ristogo.server.storage.kvdb.adapter.EntityAdapter;
 import ristogo.server.storage.kvdb.config.Configuration;
