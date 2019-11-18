@@ -19,7 +19,7 @@ import ristogo.server.storage.EntityManager;
 
 public class RistogoServer
 {
-	private static int port;
+	private static int port = 8888;
 
 	public static void main(String[] args)
 	{
@@ -119,6 +119,9 @@ public class RistogoServer
 				Logger.getLogger(RistogoServer.class.getName()).warning("Invalid port specified. Using default: 8888.");
 				port = 8888;
 			}
+		} else {
+			Logger.getLogger(RistogoServer.class.getName()).config("Using default port 8888.");
+			port = 8888;
 		}
 	}
 	
