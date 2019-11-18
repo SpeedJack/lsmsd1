@@ -24,35 +24,79 @@ public class KVDBManager {
 	 
 	private static KVDBManager istance=null;
 	private static DB db = null;
-	//currentSnaphsot;
+	private boolean good;
+	
+	private KVDBManager() {good = false;}
 
-	private KVDBManager() {};
-
-	public static  KVDBManager get() {
+	public static synchronized KVDBManager get() {
 		if(istance==null)
 			istance = new KVDBManager();
 		return istance;
 	};
 
+	public boolean isGood() {return this.good;}
+	public synchronized void setGood(boolean g) {this.good= g;}
 	public boolean open() {
 		
 		try {
 			if(db == null)
-				Configuration.getConfig().setLogger(Logger.getLogger(KVDBManager.class.getName()));
+				//Configuration.getConfig().setLogger(Logger.getLogger(KVDBManager.class.getName()));
 				db = factory.open(new File(Configuration.getConfig().getPath()), 
 						Configuration.getConfig().getOptions());
+				good = false;
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace(); //@TODO: RIMUOVERE
 			return false;	
 		}
 	};
+	
+	public synchronized boolean populateDB(List<User_> lu, List<Restaurant_> lrst, List<Reservation_> lrsv) {
+		if(open()) {
+			Logger.getLogger(KVDBManager.class.getName()).info("PopulateDB");
+			boolean ok = true;
+			if(lu != null) {
+				for(User_ u : lu) {
+					if(!insert(u))
+					{
+						Logger.getLogger(KVDBManager.class.getName()).warning("user insertion failed");
+						ok = false;
+					}
+				};
+				Logger.getLogger(KVDBManager.class.getName()).info("end user insert");
+			}
+			
+			if(lrsv != null) {
+				for(Reservation_ rsv : lrsv) {
+					if(!insert(rsv)) {
+						Logger.getLogger(KVDBManager.class.getName()).warning("reservation insertion failed");
+						ok = false;
+					}
+					
+				}
+				Logger.getLogger(KVDBManager.class.getName()).info("end reservation insert");
+			}
+			
+			if(lrst != null) {
+				for(Restaurant_ rst : lrst) {
+					if(insert(rst))
+					{
+						Logger.getLogger(KVDBInitializer.class.getName()).warning("restaurant insertion failed");
+						ok = false;
+					}
+				}
+				Logger.getLogger(KVDBInitializer.class.getName()).info("end restaurant insert");
+			}
+			setGood(ok);
+			};
+			return isGood();
+		}
 
 	
 	//RestaurantList should work
 	public List<Restaurant_> getRestaurantList(){
 		if(open()) {
-			
+			Logger.getLogger(KVDBManager.class.getName()).info("getRestaurantList");
 			try (DBIterator iteratorRest = db.iterator();
 					){
 				List<Restaurant_> lr = new ArrayList<>();
@@ -93,7 +137,7 @@ public class KVDBManager {
 				} 
 				return lr;
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
 				return null;
 			}
 		};
@@ -102,8 +146,12 @@ public class KVDBManager {
 	};
 	
 	
-	public List<Restaurant_> getOwnerRestaurantList(int id) {
+	//NON SERVE?
+	
+	public List<Restaurant_> getOwnerRestaurantList(User_ u) {
 		if(open()) {
+			Logger.getLogger(KVDBManager.class.getName()).info("getOwnerRestaurantList");
+			
 		try (DBIterator iteratorRest = db.iterator();
 				){
 			List<Restaurant_> lr = new ArrayList<>();
@@ -140,14 +188,15 @@ public class KVDBManager {
                 		break;
                 	};
                 	
-                	if (kv.get("owner_id").equals(Integer.toString(id))){
+                	if (kv.get("owner_id").equals(Integer.toString(u.getId()))){
                 		lr.add((Restaurant_)EntityAdapter.buildEntity(EntityAdapter.RESTAURANT, kv));
                 	}
                 };
 			} 
 			return lr;
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
+			
 			return null;
 		}
 		}
@@ -155,12 +204,13 @@ public class KVDBManager {
 	};
 
 	
-	public List<Reservation_> getOwnerReservationList(int id){ 
+	public List<Reservation_> getOwnerReservationList(User_ u){ 
 		
 
 		//reservation:$id:$attribute = $value
 		
 		if(open()) {
+			Logger.getLogger(KVDBManager.class.getName()).info("getOwnerReservationList");
 			
 			try(DBIterator iter = db.iterator()){
 				List<Reservation_> lr = new ArrayList<>();
@@ -185,7 +235,7 @@ public class KVDBManager {
 					keySplit = key.split(":");
 					if(keySplit[keySplit.length - 1].equals("owner_id")) {
 						value = asString(iter.peekNext().getValue());
-						if(id == Integer.parseInt(value)) {
+						if(u.getId() == Integer.parseInt(value)) {
 							restaurant_id = keySplit[1];
 							restaurant_name = asString(db.get(bytes(key+":name")));	
 							if(restaurant_name == null) return null;
@@ -251,7 +301,8 @@ public class KVDBManager {
 					return lr;
 					
 				} catch (Exception e) {
-				System.out.println(e.getMessage());
+					Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
+					
 				return null;
 			}	
 		}
@@ -259,8 +310,10 @@ public class KVDBManager {
 	};
 		
 	
-	private List<Reservation_> getReservationListCustomer(int id){
+	public List<Reservation_> getCustomerReservationList(int id){
 		if(open()) {
+			Logger.getLogger(KVDBManager.class.getName()).info("getCustomerReservationList");
+			
 			List<Reservation_> lr = null;
 			try(DBIterator iter = db.iterator()){
 				lr = new ArrayList<>();
@@ -336,7 +389,8 @@ public class KVDBManager {
 					
 				};
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
+				
 				return null;
 			};
 			return lr;
@@ -344,7 +398,9 @@ public class KVDBManager {
 		return null;
 	}
 		
-	public boolean insert(Entity_ entity){
+	public synchronized boolean insert(Entity_ entity){
+		Logger.getLogger(KVDBManager.class.getName()).info("insert");
+		
 		if(entity == null) return false;
 		
 		if(entity instanceof Restaurant_) {
@@ -367,6 +423,8 @@ public class KVDBManager {
 	
 	public boolean insertUser(User_ u) {
 		if(open()) {
+			Logger.getLogger(KVDBManager.class.getName()).info("insert user");
+			
 			String key = EntityAdapter.stringifyKey(u);
 			try(WriteBatch batch = db.createWriteBatch()){
 				batch.put(bytes(key), bytes(u.getUsername()));
@@ -374,7 +432,8 @@ public class KVDBManager {
 				db.write(batch);
 				return true;
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
+				
 				return false;
 			}
 		}
@@ -382,6 +441,8 @@ public class KVDBManager {
 	};
 	public boolean insertRestaurant(Restaurant_ r) {
 		if(open()) {
+			Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "insertRestaurant");;
+			
 			String owner_id = null;
 			String key = EntityAdapter.stringifyKey(r);
 			try(DBIterator iter = db.iterator()){
@@ -404,7 +465,7 @@ public class KVDBManager {
 					
 				};
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
 				return false;
 			};
 			
@@ -423,7 +484,7 @@ public class KVDBManager {
 				
 				db.write(batch);
 			} catch(Exception e) {
-				System.out.println(e.getMessage());
+				Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
 				return false;
 			}
 			
@@ -435,6 +496,7 @@ public class KVDBManager {
 	
 	public boolean insertReservation(Reservation_ r) {
 		if(open()) {
+			Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "insertReservation");
 			String restaurant_id = null;
 			String user_id = null;
 			String key = EntityAdapter.stringifyKey(r);
@@ -476,7 +538,7 @@ public class KVDBManager {
 				
 				
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
 				return false;
 			};
 			
@@ -490,7 +552,7 @@ public class KVDBManager {
 								
 				db.write(batch);
 			} catch(Exception e) {
-				System.out.println(e.getMessage());
+				Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
 				return false;
 			}
 			
@@ -499,7 +561,9 @@ public class KVDBManager {
 		return false;
 	};
 	
-	public boolean delete(Entity_ entity){
+	public synchronized boolean delete(Entity_ entity){
+		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "delete");
+		
 		if(entity == null) return false;
 		if(entity instanceof Restaurant_) {
 			Restaurant_ r = ((Restaurant_) entity);
@@ -520,15 +584,15 @@ public class KVDBManager {
 	
 		//NON USATA
 	public boolean deleteUser(User_ u) {
-		
+		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "deleteUser");
 		if(open()) {
 			String key = EntityAdapter.stringifyKey(u);
 			List<Reservation_> lr = null;
 			List<Restaurant_> lrst = null;
 			
 			if(u.isOwner()) {
-				lr = getOwnerReservationList(u.getId());
-				lrst = getOwnerRestaurantList(u.getId());
+				lr = getOwnerReservationList(u);
+				lrst = getOwnerRestaurantList(u);
 				if (lr==null || lrst == null) return false;
 				
 				try(WriteBatch batch = db.createWriteBatch()) {
@@ -552,7 +616,7 @@ public class KVDBManager {
 					return false;
 				}
 		} else {
-			lr = getReservationListCustomer(u.getId());
+			lr = getCustomerReservationList(u.getId());
 			if(lr == null) return false;
 			try(WriteBatch batch = db.createWriteBatch()) {
 				
@@ -567,7 +631,7 @@ public class KVDBManager {
 				return true;
 							
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				Logger.getLogger(KVDBManager.class.getName()).warning(e.getMessage());
 				return false;
 			}
 		}
@@ -578,6 +642,7 @@ public class KVDBManager {
 		
 		//NON USATA
 	public boolean deleteRestaurant(Restaurant_ r) {
+		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "deleteRestaurant");
 		if(open()) {
 			String key = EntityAdapter.stringifyKey(r);
 			try(WriteBatch batch = db.createWriteBatch()){
@@ -593,7 +658,7 @@ public class KVDBManager {
 				
 				db.write(batch);
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				Logger.getLogger(KVDBManager.class.getName()).warning(e.getMessage());
 				return false;
 			}
 			
@@ -603,6 +668,7 @@ public class KVDBManager {
 		
 		
 	public boolean deleteReservation(Reservation_ r) {
+		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "deleteReservation");
 		if(open()) {
 			String key = EntityAdapter.stringifyKey(r);
 			try(WriteBatch batch = db.createWriteBatch()){
@@ -614,7 +680,7 @@ public class KVDBManager {
 				
 				db.write(batch);
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				Logger.getLogger(KVDBManager.class.getName()).warning(e.getMessage());
 				return false;
 			}
 			
@@ -625,7 +691,8 @@ public class KVDBManager {
 	
 	
 	//UPDATE e INSERT sono la medesima operazione
-	public boolean update(Entity_ entity){
+	public synchronized boolean update(Entity_ entity){
+		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "update");
 		
 		if(entity == null) return false;
 		
@@ -648,14 +715,48 @@ public class KVDBManager {
 		return false;
 	};	
 	
-//	public Restaurant_ checkSeats(Restaurant_ r) {
-//		if(r != null) {
-//			if(open()) {
-//				//List<Restaurant_> lr = getReservationList()
-//			}
-//		}
-//	}
-//	
+	
+	//
+	public Restaurant_ checkSeats(Restaurant_ r) {
+		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "checkSeats");
+		
+		if(r != null) {
+			if(open()) {
+				String key;
+				String[] keysplit; 
+				int total_seats;
+				
+				String prefix;
+				try(DBIterator iter = db.iterator()){
+					total_seats = Integer.parseInt(db.get(bytes("restaurant:"+Integer.toString(r.getId())+"seats")).toString());
+					for(iter.seek(bytes("reservation")); iter.hasNext(); iter.next()) {
+						key = iter.peekNext().getKey().toString();
+						keysplit = key.split(":");
+						if(keysplit[1].equals(Integer.toString(r.getId())) && keysplit[keysplit.length -1].equals("restaurant_id")) 
+						{
+							prefix = keysplit[0] +":"+ keysplit[1] + ":seats";
+							total_seats -= Integer.parseInt(db.get(bytes(prefix)).toString());
+							if(total_seats <= 0) {
+								r.setSeats(0);
+								return r;
+							}
+						}
+					};
+					
+					r.setSeats(total_seats);
+					return r;
+							
+				} catch (Exception e) {
+					Logger.getLogger(KVDBManager.class.getName()).warning(e.getMessage());
+					return null;
+				}
+				
+			}
+			
+		}
+		return null;
+	}
+	
 	public boolean close(){
 		try {
 			db.close();

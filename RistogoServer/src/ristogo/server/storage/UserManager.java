@@ -1,5 +1,6 @@
 package ristogo.server.storage;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.persistence.NoResultException;
@@ -30,6 +31,29 @@ public class UserManager extends EntityManager
 			return query.getSingleResult();
 		} catch (NoResultException ex) {
 			Logger.getLogger(UserManager.class.getName()).info("getSingleResult() returned no result.");
+			return null;
+		}
+	}
+	
+	public List<User_> getAllUsers()
+	{
+		Logger.getLogger(UserManager.class.getName()).entering(UserManager.class.getName(), "getAllUsers");
+		javax.persistence.EntityManager em = getEM();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User_> cq = cb.createQuery(User_.class);
+		Root<User_> from = cq.from(User_.class);
+		CriteriaQuery<User_> select = cq.select(from);
+		//ParameterExpression<String> usernamePar = cb.parameter(String.class);
+		//select.where(
+				//cb.equal(from.get("username"), usernamePar)
+	//			);
+		TypedQuery<User_> query = em.createQuery(cq);
+		//query.setParameter(usernamePar, username);
+		Logger.getLogger(UserManager.class.getName()).exiting(UserManager.class.getName(), "getAllUsers");
+		try {
+			return query.getResultList();
+		} catch (NoResultException ex) {
+			Logger.getLogger(UserManager.class.getName()).info("getResultList() returned no result.");
 			return null;
 		}
 	}

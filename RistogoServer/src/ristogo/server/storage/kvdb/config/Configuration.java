@@ -5,6 +5,7 @@ import org.iq80.leveldb.Logger;
 import org.iq80.leveldb.Options;
 
 import ristogo.server.RistogoServer;
+import ristogo.server.storage.kvdb.KVDBManager;
 
 
 public class Configuration {
@@ -17,10 +18,17 @@ public class Configuration {
 	private Configuration() {
 		this.opt = new Options();
 		this.opt.cacheSize(100 * 1048576);
-		this.opt.compressionType(CompressionType.SNAPPY);
-		this.opt.logger(logger);
+		this.opt.compressionType(CompressionType.NONE);
+		//this.opt.logger = new Logger(System.out);
 		this.opt.createIfMissing(true);
 		this.path = "KVDB";
+		this.logger = new Logger() {
+			public void log(String m) {
+				java.util.logging.Logger.getLogger(KVDBManager.class.getName()).info(m);
+			}
+		};
+		this.opt.logger(this.logger);
+
 	}
 	
 	public static Configuration getConfig(){
@@ -30,5 +38,4 @@ public class Configuration {
 	}
 	public Options getOptions() {return this.opt;};
 	public String getPath() {return this.path;};
-	public void setLogger(java.util.logging.Logger l) {this.logger = (Logger)l;}
 }
