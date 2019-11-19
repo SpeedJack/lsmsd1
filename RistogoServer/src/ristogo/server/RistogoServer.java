@@ -1,7 +1,6 @@
 package ristogo.server;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -17,12 +16,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import ristogo.server.storage.EntityManager;
-import ristogo.server.storage.entities.Entity_;
-import ristogo.server.storage.entities.Reservation_;
-import ristogo.server.storage.entities.Restaurant_;
-import ristogo.server.storage.entities.User_;
-import ristogo.server.storage.kvdb.KVDBInitializer;
-import ristogo.server.storage.kvdb.KVDBManager;
 
 public class RistogoServer
 {
@@ -31,22 +24,6 @@ public class RistogoServer
 	public static void main(String[] args)
 	{
 		Logger.getLogger(RistogoServer.class.getName()).entering(RistogoServer.class.getName(), "main", args);
-		
-		/* TODO: this is LevelDB test code
-		KVDBManager manager = KVDBInitializer.getInitializer().startInit();
-		User_ user = (User_)manager.get(User_.class, 1);
-		System.out.println(user.getId() + " | " + user.getUsername() + " | " + user.getPassword());
-		Reservation_ reservation = (Reservation_)manager.get(Reservation_.class, 3);
-		System.out.println(reservation.getId() + " | " + reservation.getDate() + " | " + reservation.getTime() + " | " + reservation.getSeats());
-		user = reservation.getUser();
-		System.out.println(user.getId() + " | " + user.getUsername() + " | " + user.getPassword());
-		Restaurant_ restaurant = reservation.getRestaurant();
-		System.out.println(restaurant.getId() + " | " + restaurant.getName() + " | " + restaurant.getGenre() + " | " + restaurant.getPrice() + " | " + restaurant.getCity() + " | " + restaurant.getAddress() + " | " + restaurant.getOpeningHours() + " | " + restaurant.getSeats());
-		System.out.println(restaurant.getDescription());
-		user = restaurant.getOwner();
-		System.out.println(user.getId() + " | " + user.getUsername() + " | " + user.getPassword());
-		System.exit(0);
-		*/
 		
 		Options options = createOptions();
 		CommandLineParser parser = new DefaultParser();
