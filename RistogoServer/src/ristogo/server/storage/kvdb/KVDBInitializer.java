@@ -11,58 +11,51 @@ import ristogo.server.storage.entities.Reservation_;
 import ristogo.server.storage.entities.Restaurant_;
 import ristogo.server.storage.entities.User_;
 
-public class KVDBInitializer {
+public class KVDBInitializer
+{
 	private static KVDBInitializer init;
 	private static KVDBManager kvdb;
 	private UserManager userManager;
 	private RestaurantManager restaurantManager;
 	private ReservationManager reservationManager;
-	private boolean done;
-	private List<User_>  lu;
+	private List<User_> lu;
 	private List<Restaurant_> lrst;
 	private List<Reservation_> lrsv;
-	private KVDBInitializer() {
+
+	private KVDBInitializer()
+	{
 		this.reservationManager = new ReservationManager();
 		this.restaurantManager = new RestaurantManager();
 		this.userManager = new UserManager();
-		this.done = false;
-	};
-	
-	public static synchronized  KVDBInitializer getInitializer() {
-		if(init == null) {
+	}
+
+	public static KVDBInitializer getInitializer()
+	{
+		if (init == null) {
 			init = new KVDBInitializer();
-			kvdb =  KVDBManager.get();
+			kvdb = KVDBManager.getInstance();
 		}
 		return init;
 	}
-	
-	synchronized public KVDBManager startInit() {
-		
-		lu = userManager.getAllUsers();
-		if(lu == null) {
+
+	public KVDBManager startInit()
+	{
+
+		lu = userManager.getAll();
+		if (lu == null) {
 			Logger.getLogger(KVDBInitializer.class.getName()).warn("User List is null");
 		}
 		lrst = restaurantManager.getAll();
-		if(lrst == null) {
+		if (lrst == null) {
 			Logger.getLogger(KVDBInitializer.class.getName()).warn("Restaurant List is null");
 		}
-		lrsv = reservationManager.getActiveReservations();
-		if(lrsv == null) {
+		lrsv = reservationManager.getAll();
+		if (lrsv == null) {
 			Logger.getLogger(KVDBInitializer.class.getName()).warn("Reservation List is null");
 		}
-		
-		boolean ok = kvdb.populateDB(lu , lrst, lrsv);
-		
-		if(ok)setDone(true);
-		
-		if(isDone()) return kvdb;
-		else {
-			Logger.getLogger(KVDBInitializer.class.getName()).error("failed to initialize KVDBManager");
-			return null;
-		}
+
+		kvdb.populateDB(lu, lrst, lrsv);
+
+		return kvdb;
 	}
-		
-	public boolean isDone() {return this.done;}
-	
-	public synchronized void setDone(boolean d) {this.done = d;}
 }

@@ -58,7 +58,7 @@ public class EntityAdapter {
 			User_ c = new User_();
 			c.setId(Integer.parseInt(kv.get("id")));
 			c.setUsername(kv.get("username"));
-			c.setPasswordHash(kv.get("password"));
+			c.setPassword(kv.get("password"));
 			return c;
 		} else return null;
 		

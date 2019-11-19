@@ -6,13 +6,22 @@ import static org.iq80.leveldb.impl.Iq80DBFactory.factory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+
 import org.iq80.leveldb.DB;
+import org.iq80.leveldb.DBComparator;
 import org.iq80.leveldb.DBIterator;
 import org.iq80.leveldb.WriteBatch;
 
@@ -23,92 +32,230 @@ import ristogo.server.storage.entities.User_;
 import ristogo.server.storage.kvdb.adapter.EntityAdapter;
 import ristogo.server.storage.kvdb.config.Configuration;
 
-public class KVDBManager
+public class KVDBManager implements AutoCloseable
 {
 
 	private static KVDBManager instance;
 	private static DB db;
-	private boolean good;
 
-	private KVDBManager()
+	private KVDBManager() throws IOException
 	{
+		db = factory.open(new File(Configuration.getConfig().getPath()), Configuration.getConfig().getOptions());
 	}
 
-	public static synchronized KVDBManager get()
+	public static KVDBManager getInstance()
 	{
 		if (instance == null)
-			instance = new KVDBManager();
+			try {
+				instance = new KVDBManager();
+			} catch (IOException ex) {
+			}
 		return instance;
 	}
 
-	public boolean isGood()
+	public void populateDB(List<User_> users, List<Restaurant_> restaurants, List<Reservation_> reservations)
 	{
-		return this.good;
-	}
-
-	public synchronized void setGood(boolean g)
-	{
-		this.good = g;
-	}
-
-	public boolean open()
-	{
-
-		try {
-			if (db == null)
-				// Configuration.getConfig().setLogger(Logger.getLogger(KVDBManager.class.getName()));
-				db = factory.open(new File(Configuration.getConfig().getPath()),
-					Configuration.getConfig().getOptions());
-			good = false;
-			return true;
-		} catch (Exception ex) {
-			ex.printStackTrace(); // @TODO: RIMUOVERE
-			return false;
-		}
-	}
-
-	public synchronized boolean populateDB(List<User_> users, List<Restaurant_> restaurants, List<Reservation_> reservations)
-	{
-		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "PopulateDB", new Object[]{users, restaurants, reservations});
-		if (!open())
-			return isGood();
-		
-		boolean ok = true;
-		
 		if (users != null)
 			for (User_ user: users)
-				if (!insert(user)) {
-					Logger.getLogger(KVDBManager.class.getName()).warning("user insertion failed");
-					ok = false;
-				}
-			Logger.getLogger(KVDBManager.class.getName()).fine("populateDB: users inserted.");
+				insert(user);
 		
 		if (restaurants != null)
-			for (Restaurant_ restaurant : restaurants)
-				if (!insert(restaurant)) {
-					Logger.getLogger(KVDBInitializer.class.getName()).warning("restaurant insertion failed");
-					ok = false;
-				}
-			Logger.getLogger(KVDBManager.class.getName()).fine("populateDB: restaurants inserted.");
+			for (Restaurant_ restaurant: restaurants)
+				insert(restaurant);
 
 		if (reservations != null)
 			for (Reservation_ reservation: reservations)
-				if (!insert(reservation)) {
-					Logger.getLogger(KVDBManager.class.getName()).warning("reservation insertion failed");
-					ok = false;
-				}
-			Logger.getLogger(KVDBManager.class.getName()).fine("populateDB: reservations inserted.");
-		
-		setGood(ok);
-		Logger.getLogger(KVDBManager.class.getName()).exiting(KVDBManager.class.getName(), "PopulateDB", new Object[]{users, restaurants, reservations});
-		return isGood();
+				insert(reservation);
 	}
-
+	
+	private static String capitalizeFirst(String str)
+	{
+		return str.substring(0, 1).toUpperCase() + str.substring(1);
+	}
+	
+	public String getAttributeName(Field field)
+	{
+		if (field.getAnnotation(Attribute.class).name().isEmpty())
+			return field.getName();
+		return field.getAnnotation(Attribute.class).name();
+	}
+	
+	private Method getAttributeSetter(Class<? extends Entity_> entityClass, Field field)
+	{
+		String setterName;
+		if (field.getAnnotation(Attribute.class).setter().isEmpty())
+			setterName = "set" + capitalizeFirst(field.getName());
+		else
+			setterName = field.getAnnotation(Attribute.class).setter();
+		Method[] methods = entityClass.getMethods();
+		for (Method method: methods) {
+			if (!method.getName().equals(setterName) || method.getParameterCount() != 1)
+				continue;
+			return method;
+		}
+		return null;
+	}
+	
+	private Method getAttributeGetter(Class<? extends Entity_> entityClass, Field field)
+	{
+		String getterName;
+		if (field.getAnnotation(Attribute.class).getter().isEmpty())
+			getterName = "get" + capitalizeFirst(field.getName());
+		else
+			getterName = field.getAnnotation(Attribute.class).getter();
+		Method[] methods = entityClass.getMethods();
+		for (Method method: methods) {
+			if (!method.getName().equals(getterName) || method.getParameterCount() != 0)
+				continue;
+			return method;
+		}
+		return null;
+	}
+	
+	private Field getAttributeField(Class<? extends Entity_> entityClass, String attributeName)
+	{
+		Field[] fields = entityClass.getDeclaredFields();
+		for (Field field: fields) {
+			if (!field.isAnnotationPresent(Attribute.class))
+				continue;
+			if (field.getAnnotation(Attribute.class).name().equals(attributeName))
+				return field;
+		}
+		try {
+			return entityClass.getDeclaredField(attributeName);
+		} catch (NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Entity_ get(Class<? extends Entity_> entityClass, int entityId)
+	{
+		String entityName = entityClass.getAnnotation(Table.class).name();
+		Entity_ entity;
+		try {
+			entity = entityClass.getConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+			| InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+			// TODO Auto-generated catch block
+			ex.printStackTrace();
+			return null;
+		}
+		entity.setId(entityId);
+		boolean found = false;
+		try (DBIterator iterator = db.iterator()) {
+			for (iterator.seek(bytes(entityName + ":" + entityId)); iterator.hasNext(); iterator.next()) {
+				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
+				if (!key[0].equals(entityName) || Integer.parseInt(key[1]) != entityId)
+					break;
+				found = true;
+				String attributeName = key[2];
+				Field field = getAttributeField(entityClass, attributeName);
+				Attribute annotation = field.getAnnotation(Attribute.class);
+				Method attributeSetter = getAttributeSetter(entityClass, field);
+				Class<?> attributeClass = attributeSetter.getParameterTypes()[0];
+				String attributeValueStr = asString(iterator.peekNext().getValue());
+				Object attributeValue;
+				try {
+					if (annotation.isEntity()) {
+						attributeValue = get(attributeClass.asSubclass(Entity_.class), Integer.parseInt(attributeValueStr));
+					} else if (attributeClass.isEnum()) {
+						attributeValue = attributeClass.getMethod("valueOf", String.class).invoke(null, attributeValueStr);
+					} else if (attributeClass.equals(int.class)) {
+						attributeValue = Integer.parseInt(attributeValueStr);
+					} else if (attributeClass.equals(LocalDate.class)) {
+						attributeValue = LocalDate.parse(attributeValueStr);
+					} else {
+						attributeValue = attributeClass.cast(attributeValueStr);
+					}
+					attributeSetter.invoke(entity, attributeValue);
+				} catch (IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+					// TODO Auto-generated catch block
+					ex.printStackTrace();
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return found ? entity : null;
+	}
+	
+	public void delete(Class<? extends Entity_> entityClass, int entityId)
+	{
+		String entityName = entityClass.getAnnotation(Table.class).name();
+		try (WriteBatch batch = db.createWriteBatch()) {
+			for (Field field: entityClass.getDeclaredFields()) {
+				if (!field.isAnnotationPresent(Attribute.class))
+					continue;
+				String attributeName = getAttributeName(field);
+				String key = entityName + ":" + entityId + ":" + attributeName;
+				batch.delete(bytes(key));
+			}
+			db.write(batch);
+		} catch (IOException ex) {
+			// TODO Auto-generated catch block
+			ex.printStackTrace();
+		}
+	}
+	
+	public void update(Entity_ entity)
+	{
+		insert(entity);
+	}
+	
+	public void insert(Entity_ entity)
+	{
+		Class<? extends Entity_> entityClass = entity.getClass();
+		String entityName = entityClass.getAnnotation(Table.class).name();
+		int entityId = entity.getId();
+		try (WriteBatch batch = db.createWriteBatch()) {
+			for (Field field: entityClass.getDeclaredFields()) {
+				if (!field.isAnnotationPresent(Attribute.class))
+					continue;
+				Attribute annotation = field.getAnnotation(Attribute.class);
+				String attributeName = getAttributeName(field);
+				Method attributeGetter = getAttributeGetter(entityClass, field);
+				Class<?> attributeClass = field.getType();
+				String attributeValue;
+				try {
+					if (annotation.isEntity()) {
+						Entity_ innerEntity = (Entity_)attributeGetter.invoke(entity);
+						attributeValue = Integer.toString(innerEntity.getId());
+					} else if (attributeClass.isEnum()) {
+						attributeValue = ((Enum<?>)attributeGetter.invoke(entity)).name();
+					} else if (attributeClass.equals(int.class)) {
+						attributeValue = Integer.toString((int)attributeGetter.invoke(entity));
+					} else {
+						attributeValue = attributeClass.cast(attributeGetter.invoke(entity)).toString();
+					}
+				} catch (IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException ex) {
+					ex.printStackTrace();
+					continue;
+				}
+				String key = entityName + ":" + entityId + ":" + attributeName;
+				batch.put(bytes(key), bytes(attributeValue));
+			}
+			db.write(batch);
+		} catch (IOException ex) {
+			// TODO Auto-generated catch block
+			ex.printStackTrace();
+		}
+	}
+/*
+ * TODO !!!!!!!!!!!
+ * TODO: getRestaurantList() should be generalized with a getAll(Class<? extends Entity_> entityClass) method that returns all saved instances for the given entityClass (regardless that they are users, restaurants or reservations).
+ * TODO: find a way to generalize also "criteria" get*List(). eg. getAllCriteria(Class<? extends Entity_> entityClass, int entityId, String filterAttributeName, String filterAttributeValue) // or: addCriteria(String filterAttributeName, String filterAttributeValue); getAll(Class<? extends Entity_> entityClass, int entityId); clearCriteria().
+ * TODO: create methods beginBatch(), commitBatch(), rollbackBatch().
 	// RestaurantList should work
 	public List<Restaurant_> getRestaurantList()
 	{
 		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "getRestaurantList");
-		if (open())
+		if (!open())
 			return null;
 		try (DBIterator iteratorRest = db.iterator()) {
 			List<Restaurant_> restaurants = new ArrayList<>();
@@ -438,416 +585,14 @@ public class KVDBManager
 		}
 		return null;
 	}
-
-	public synchronized boolean insert(Entity_ entity)
-	{
-		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "insert", entity);
-
-		if (entity == null)
-			return false;
-		if (entity instanceof Restaurant_)
-			return insertRestaurant((Restaurant_)entity);
-		if (entity instanceof User_)
-			return insertUser((User_)entity);
-		if (entity instanceof Reservation_)
-			return insertReservation((Reservation_)entity);
-
-		// refresh snapshot
-		return false;
-
-	}
-
-	public boolean insertUser(User_ user)
-	{
-		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "insertUser", user);
-		if (!open())
-			return false;
-
-		String key = EntityAdapter.stringifyKey(user);
-		try (WriteBatch batch = db.createWriteBatch()) {
-			batch.put(bytes(key), bytes(user.getUsername()));
-			batch.put(bytes(key), bytes(user.getPasswordHash()));
-			db.write(batch);
-			return true;
-		} catch (Exception e) {
-			Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
-
-			return false;
-		}
-	}
-
-	public boolean insertRestaurant(Restaurant_ restaurant)
-	{
-		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "insertRestaurant", restaurant);
-		if (open())
-			return false;
-
-		String owner_id = null;
-		String key = EntityAdapter.stringifyKey(restaurant);
-		try (DBIterator iter = db.iterator()) {
-			String userKey = null;
-			String[] userKeySplit = null;
-
-			// Cerco owner id in owner
-			for (iter.seek(bytes("user:")); iter.hasNext(); iter.next()) {
-				userKey = iter.peekNext().getKey().toString();
-				userKeySplit = userKey.split(":");
-
-				// Se raggiungo la fine degli utenti prima di trovare quello giusto non aggiungo
-				// (manca l'utente)
-				if (!iter.peekNext().toString().equals("user"))
-					return false;
-				if (userKeySplit[userKeySplit.length - 1] == "username") {
-					if (iter.peekNext().getValue().toString()
-						.equals(restaurant.getOwner().getUsername())) {
-						owner_id = userKeySplit[1];
-						break;
-					}
-					;
-				}
-				;
-
-			}
-			;
-		} catch (Exception e) {
-			Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
-			return false;
-		}
-		;
-
-		try (WriteBatch batch = db.createWriteBatch()) {
-
-			batch.put(bytes(key + ":owner_id"), bytes(owner_id));
-			batch.put(bytes(key + ":name"), bytes(owner_id));
-			batch.put(bytes(key + ":address"), bytes(restaurant.getAddress()));
-			batch.put(bytes(key + ":city"), bytes(restaurant.getCity()));
-			batch.put(bytes(key + ":description"), bytes(restaurant.getDescription()));
-			batch.put(bytes(key + ":genre"), bytes(restaurant.getGenre().toString()));
-			batch.put(bytes(key + ":owner_id"), bytes(Integer.toString(restaurant.getOwner().getId())));
-			batch.put(bytes(key + ":opening_hours"), bytes(restaurant.getOpeningHours().toString()));
-			batch.put(bytes(key + ":price"), bytes(restaurant.getPrice().toString()));
-			batch.put(bytes(key + ":seats"), bytes(Integer.toString(restaurant.getSeats())));
-
-			db.write(batch);
-		} catch (Exception e) {
-			Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
-			return false;
-		}
-
-		return true;
-	}
-
-	public boolean insertReservation(Reservation_ r)
-	{
-		if (open()) {
-			Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(),
-				"insertReservation");
-			String restaurant_id = null;
-			String user_id = null;
-			String key = EntityAdapter.stringifyKey(r);
-
-			try (DBIterator iter = db.iterator()) {
-				String userKey = null;
-				String[] userKeySplit = null;
-
-				// Cerco user id in user
-				for (iter.seek(bytes("user:")); iter.hasNext(); iter.next()) {
-					userKey = iter.peekNext().getKey().toString();
-					userKeySplit = userKey.split(":");
-
-					// Se raggiungo la fine degli utenti prima di trovare quello giusto non aggiungo
-					// (manca l'utente)
-					if (!iter.peekNext().toString().equals("user"))
-						return false;
-					if (userKeySplit[userKeySplit.length - 1] == "username") {
-						if (iter.peekNext().getValue().toString()
-							.equals(r.getUser().getUsername())) {
-							user_id = userKeySplit[1];
-							break;
-						}
-						;
-					}
-					;
-
-				}
-				;
-
-				// Cerco restaurant_name in restaurant
-				for (iter.seek(bytes("restaurant:")); iter.hasNext(); iter.next()) {
-					userKey = iter.peekNext().getKey().toString();
-					userKeySplit = userKey.split(":");
-
-					// Se raggiungo la fine degli utenti prima di trovare quello giusto non aggiungo
-					// (manca l'utente)
-					if (!iter.peekNext().toString().equals("restaurant"))
-						return false;
-					if (userKeySplit[userKeySplit.length - 1] == "name") {
-						if (iter.peekNext().getValue().toString()
-							.equals(r.getRestaurant().getName())) {
-							restaurant_id = userKeySplit[1];
-							break;
-						}
-						;
-					}
-					;
-				}
-				;
-
-			} catch (Exception e) {
-				Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
-				return false;
-			}
-			;
-
-			try (WriteBatch batch = db.createWriteBatch()) {
-
-				batch.put(bytes(key + ":user_id"), bytes(user_id));
-				batch.put(bytes(key + ":restaurant_id"), bytes(restaurant_id));
-				batch.put(bytes(key + ":date"), bytes(r.getDate().toString()));
-				batch.put(bytes(key + ":seats"), bytes(Integer.toString(r.getSeats())));
-				batch.put(bytes(key + ":time"), bytes(r.getTime().toString()));
-
-				db.write(batch);
-			} catch (Exception e) {
-				Logger.getLogger(KVDBManager.class.getName()).info(e.getMessage());
-				return false;
-			}
-
-			return true;
-		}
-		return false;
-	}
-
-	public synchronized boolean delete(Entity_ entity)
-	{
-		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "delete");
-
-		if (entity == null)
-			return false;
-		if (entity instanceof Restaurant_) {
-			Restaurant_ r = ((Restaurant_)entity);
-			return deleteRestaurant(r);
-		}
-		;
-		if (entity instanceof User_) {
-			User_ u = ((User_)entity);
-			return deleteUser(u);
-		}
-		;
-		if (entity instanceof Reservation_) {
-			Reservation_ r = ((Reservation_)entity);
-			return deleteReservation(r);
-		}
-		;
-
-		// refresh snapshot
-
-		return false;
-	}
-
-	// NON USATA
-	public boolean deleteUser(User_ u)
-	{
-		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "deleteUser");
-		if (open()) {
-			String key = EntityAdapter.stringifyKey(u);
-			List<Reservation_> lr = null;
-			List<Restaurant_> lrst = null;
-
-			if (u.isOwner()) {
-				lr = getOwnerReservationList(u);
-				lrst = getOwnerRestaurantList(u);
-				if (lr == null || lrst == null)
-					return false;
-
-				try (WriteBatch batch = db.createWriteBatch()) {
-
-					batch.delete(bytes(key + ":username"));
-					batch.delete(bytes(key + ":password"));
-
-					for (Reservation_ r : lr) {
-						if (!deleteReservation(r))
-							return false;
-					}
-					;
-
-					for (Restaurant_ r : lrst) {
-						if (!deleteRestaurant(r))
-							return false;
-					}
-					;
-
-					db.write(batch);
-					return true;
-
-				} catch (Exception e) {
-					System.out.println(e.getMessage());
-					return false;
-				}
-			} else {
-				lr = getCustomerReservationList(u.getId());
-				if (lr == null)
-					return false;
-				try (WriteBatch batch = db.createWriteBatch()) {
-
-					batch.delete(bytes(key + ":username"));
-					batch.delete(bytes(key + ":password"));
-
-					for (Reservation_ r : lr) {
-						if (!deleteReservation(r))
-							return false;
-					}
-					;
-
-					db.write(batch);
-					return true;
-
-				} catch (Exception e) {
-					Logger.getLogger(KVDBManager.class.getName()).warning(e.getMessage());
-					return false;
-				}
-			}
-		}
-		return false;
-	}
-
-	// NON USATA
-	public boolean deleteRestaurant(Restaurant_ r)
-	{
-		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "deleteRestaurant");
-		if (open()) {
-			String key = EntityAdapter.stringifyKey(r);
-			try (WriteBatch batch = db.createWriteBatch()) {
-				batch.delete(bytes(key + ":owner_id"));
-				batch.delete(bytes(key + ":opening_hours"));
-				batch.delete(bytes(key + ":seats"));
-				batch.delete(bytes(key + ":genre"));
-				batch.delete(bytes(key + ":address"));
-				batch.delete(bytes(key + ":city"));
-				batch.delete(bytes(key + ":description"));
-				batch.delete(bytes(key + ":price"));
-				batch.delete(bytes(key + ":name"));
-
-				db.write(batch);
-			} catch (Exception e) {
-				Logger.getLogger(KVDBManager.class.getName()).warning(e.getMessage());
-				return false;
-			}
-
-		}
-		;
-		return false;
-	};
-
-	public boolean deleteReservation(Reservation_ r)
-	{
-		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(),
-			"deleteReservation");
-		if (open()) {
-			String key = EntityAdapter.stringifyKey(r);
-			try (WriteBatch batch = db.createWriteBatch()) {
-				batch.delete(bytes(key + ":seats"));
-				batch.delete(bytes(key + ":time"));
-				batch.delete(bytes(key + ":seats"));
-				batch.delete(bytes(key + ":restaurant_id"));
-				batch.delete(bytes(key + ":user_id"));
-
-				db.write(batch);
-			} catch (Exception e) {
-				Logger.getLogger(KVDBManager.class.getName()).warning(e.getMessage());
-				return false;
-			}
-
-		}
-		;
-		return false;
-	};
-
-	// UPDATE e INSERT sono la medesima operazione
-	public synchronized boolean update(Entity_ entity)
-	{
-		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "update");
-
-		if (entity == null)
-			return false;
-
-		if (entity instanceof Restaurant_) {
-			Restaurant_ r = ((Restaurant_)entity);
-			return insertRestaurant(r);
-		}
-		;
-
-		if (entity instanceof User_) {
-			User_ u = ((User_)entity);
-			return insertUser(u);
-		}
-		;
-
-		if (entity instanceof Reservation_) {
-			Reservation_ r = ((Reservation_)entity);
-			return insertReservation(r);
-		}
-		;
-
-		// refresh snapshot
-		return false;
-	}
-
-	//
-	public Restaurant_ checkSeats(Restaurant_ r)
-	{
-		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "checkSeats");
-
-		if (r != null) {
-			if (open()) {
-				String key;
-				String[] keysplit;
-				int total_seats;
-
-				String prefix;
-				try (DBIterator iter = db.iterator()) {
-					total_seats = Integer.parseInt(
-						db.get(bytes("restaurant:" + Integer.toString(r.getId()) + "seats"))
-							.toString());
-					for (iter.seek(bytes("reservation")); iter.hasNext(); iter.next()) {
-						key = iter.peekNext().getKey().toString();
-						keysplit = key.split(":");
-						if (keysplit[1].equals(Integer.toString(r.getId())) &&
-							keysplit[keysplit.length - 1].equals("restaurant_id")) {
-							prefix = keysplit[0] + ":" + keysplit[1] + ":seats";
-							total_seats -= Integer
-								.parseInt(db.get(bytes(prefix)).toString());
-							if (total_seats <= 0) {
-								r.setSeats(0);
-								return r;
-							}
-						}
-					}
-					;
-
-					r.setSeats(total_seats);
-					return r;
-
-				} catch (Exception e) {
-					Logger.getLogger(KVDBManager.class.getName()).warning(e.getMessage());
-					return null;
-				}
-
-			}
-
-		}
-		return null;
-	}
-
-	public boolean close()
+*/
+	
+	public void close()
 	{
 		try {
 			db.close();
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println(e.getMessage());
-			return false;
+		} catch (IOException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).warning("Can not close KVDBManager.");
 		}
 	}
 

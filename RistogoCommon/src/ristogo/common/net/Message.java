@@ -57,7 +57,7 @@ public class Message implements Serializable
 		try {
 			output.writeUTF(xml);
 		} catch (IOException ex) {
-			Logger.getLogger(Message.class.getName()).log(Level.SEVERE, "Failure in sending message.", ex);
+			Logger.getLogger(Message.class.getName()).warning("Failure in sending message.");
 		}
 	}
 	
@@ -69,7 +69,7 @@ public class Message implements Serializable
 			Logger.getLogger(Message.class.getName()).fine(Thread.currentThread().getName() + ": RECEIVED\n" + xml);
 			return fromXML(xml);
 		} catch (IOException ex) {
-			Logger.getLogger(Message.class.getName()).log(Level.WARNING, "Failure in receiving message. Probably counterpart terminated.", ex);
+			Logger.getLogger(Message.class.getName()).warning("Failure in receiving message. Probably counterpart terminated.");
 			return null;
 		}
 	}

@@ -12,6 +12,7 @@ import javax.persistence.Table;
 
 import ristogo.common.entities.Reservation;
 import ristogo.common.entities.enums.ReservationTime;
+import ristogo.server.storage.kvdb.Attribute;
 
 @javax.persistence.Entity
 @Table(name = "reservations")
@@ -19,20 +20,25 @@ public class Reservation_ extends Entity_
 {
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="userId", nullable=false)
+	@Attribute(name="userId", isEntity=true)
 	protected User_ user;
 
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="restaurantId", nullable=false)
+	@Attribute(name="restaurantId", isEntity=true)
 	protected Restaurant_ restaurant;
 
 	@Column(name = "date", nullable=false)
+	@Attribute
 	protected LocalDate date;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "time", nullable=false)
+	@Attribute
 	protected ReservationTime time;
 
 	@Column(name = "seats", nullable=false)
+	@Attribute
 	protected int seats;
 	
 	public Reservation_()

@@ -18,6 +18,7 @@ import ristogo.common.entities.Customer;
 import ristogo.common.entities.Owner;
 import ristogo.common.entities.User;
 import ristogo.common.entities.enums.UserType;
+import ristogo.server.storage.kvdb.Attribute;
 
 
 
@@ -26,9 +27,11 @@ import ristogo.common.entities.enums.UserType;
 public class User_ extends Entity_
 {
 	@Column(name="username", length=32, nullable=false, unique=true)
+	@Attribute
 	protected String username;
 	
 	@Column(name="password", length=32, nullable=false)
+	@Attribute
 	protected String password;
 	
 	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
@@ -79,7 +82,7 @@ public class User_ extends Entity_
 	public boolean merge(User user)
 	{
 		return setUsername(user.getUsername()) &&
-			setPasswordHash(user.getPasswordHash());
+			setPassword(user.getPasswordHash());
 	}
 	
 	public boolean setUsername(String username)
@@ -92,7 +95,7 @@ public class User_ extends Entity_
 		return true;
 	}
 	
-	public boolean setPasswordHash(String passwordHash)
+	public boolean setPassword(String passwordHash)
 	{
 		if (!User.validatePasswordHash(passwordHash)) {
 			Logger.getLogger(User_.class.getName()).warning("User " + username + " has an invalid password hash.");
@@ -107,7 +110,7 @@ public class User_ extends Entity_
 		return this.username;
 	}
 	
-	public String getPasswordHash()
+	public String getPassword()
 	{
 		return this.password;
 	}

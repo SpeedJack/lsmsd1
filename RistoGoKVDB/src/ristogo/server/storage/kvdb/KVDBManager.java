@@ -373,7 +373,7 @@ public class KVDBManager {
 			String key = EntityAdapter.stringifyKey(u);
 			try(WriteBatch batch = db.createWriteBatch()){
 				batch.put(bytes(key), bytes(u.getUsername()));
-				batch.put(bytes(key), bytes(u.getPasswordHash()));
+				batch.put(bytes(key), bytes(u.getPassword()));
 				db.write(batch);
 				return true;
 			} catch (Exception e) {

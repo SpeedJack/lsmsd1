@@ -66,28 +66,14 @@ public class ReservationManager extends EntityManager
 		}
 	}
 	
-	public List<Reservation_> getActiveReservations()
+	public List<Reservation_> getAll()
 	{
-				
-		Logger.getLogger(ReservationManager.class.getName()).entering(ReservationManager.class.getName(), "getAllReservations");
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Reservation_> cq = cb.createQuery(Reservation_.class);
 		Root<Reservation_> from = cq.from(Reservation_.class);
-		CriteriaQuery<Reservation_> select = cq.select(from);
-	//	ParameterExpression<Integer> idPar = cb.parameter(Integer.class);
-		ParameterExpression<LocalDate> datePar = cb.parameter(LocalDate.class);
-	//	ParameterExpression<ReservationTime> timePar = cb.parameter(ReservationTime.class);
-		select.where(cb.and(
-			cb.greaterThanOrEqualTo(from.get("date"), datePar) //,
-			//cb.equal(from.join("restaurant").get("id"), idPar),
-			//cb.equal(from.get("time"), timePar)
-		));
+		cq.select(from);
 		TypedQuery<Reservation_> query = em.createQuery(cq);
-	//	query.setParameter(idPar, restaurantId);
-		query.setParameter(datePar, LocalDate.now());
-	//	query.setParameter(timePar, time);
-		Logger.getLogger(ReservationManager.class.getName()).exiting(ReservationManager.class.getName(), "getAllReservations");
 		try {
 			return query.getResultList();
 		} catch (NoResultException ex) {

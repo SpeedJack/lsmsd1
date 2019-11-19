@@ -164,7 +164,7 @@ public class Client extends Thread
 		if (!user.hasValidUsername() || !user.hasValidPassword())
 			return new ResponseMessage("Invalid username or password.");
 		User_ savedUser = userManager.getUserByUsername(user.getUsername());
-		if (savedUser != null && user.checkPasswordHash(savedUser.getPasswordHash())) {
+		if (savedUser != null && user.checkPasswordHash(savedUser.getPassword())) {
 			loggedUser = savedUser;
 			return new ResponseMessage(loggedUser.toCommonEntity());
 		}

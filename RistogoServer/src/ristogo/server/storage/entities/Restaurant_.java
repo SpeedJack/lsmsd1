@@ -21,6 +21,7 @@ import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.enums.Genre;
 import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.Price;
+import ristogo.server.storage.kvdb.Attribute;
 
 @javax.persistence.Entity
 @Table(name="restaurants")
@@ -29,33 +30,42 @@ public class Restaurant_ extends Entity_
 {
 	@OneToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="ownerId", nullable=false)
+	@Attribute(name="ownerId", isEntity=true)
 	protected User_ owner;
 	
 	@Column(name="name", length=45, nullable=false)
+	@Attribute
 	protected String name;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="genre", nullable=true)
+	@Attribute
 	protected Genre genre;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="price", nullable=true)
+	@Attribute
 	protected Price price;
 	
 	@Column(name="city", length=32, nullable=true)
+	@Attribute
 	protected String city;
 	
 	@Column(name="address", length=32, nullable=true)
+	@Attribute
 	protected String address;
 	
 	@Column(name="description", nullable=true)
+	@Attribute
 	protected String description;
 	
 	@Column(name="seats", nullable=false)
+	@Attribute
 	protected int seats;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(name="openingHours", nullable=false)
+	@Attribute
 	protected OpeningHours openingHours;
 	
 	@OneToMany(mappedBy="restaurant", fetch=FetchType.LAZY)
