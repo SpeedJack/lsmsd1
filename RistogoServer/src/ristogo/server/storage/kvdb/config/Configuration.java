@@ -6,7 +6,7 @@ import org.iq80.leveldb.Options;
 
 import ristogo.server.storage.kvdb.EntityDBComparator;
 import ristogo.server.storage.kvdb.KVDBManager;
-
+// TODO: remove this class. initialize configuration directly in KVDBManager.
 public class Configuration
 {
 	private static Configuration singletonObj = null;

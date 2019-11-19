@@ -1,6 +1,7 @@
 package ristogo.server;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -16,6 +17,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import ristogo.server.storage.EntityManager;
+import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.entities.Reservation_;
 import ristogo.server.storage.entities.Restaurant_;
 import ristogo.server.storage.entities.User_;

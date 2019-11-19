@@ -130,6 +130,103 @@ public class KVDBManager implements AutoCloseable
 		}
 	}
 	
+	public List<Entity_> getAll(Class<? extends Entity_> entityClass)
+	{
+		String entityName = entityClass.getAnnotation(Table.class).name();
+		List<Entity_> entities = new ArrayList<Entity_>();
+		int entityId = -1;
+		try (DBIterator iterator = db.iterator()) {
+			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext(); iterator.next()) {
+				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
+				if (!key[0].equals(entityName))
+					break;
+				if (Integer.parseInt(key[1]) == entityId)
+					continue;
+				entityId = Integer.parseInt(key[1]);
+				entities.add(get(entityClass, entityId));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new ArrayList<Entity_>();
+		}
+		return entities;
+	}
+	
+	public Restaurant_ getRestaurantByOwner(int ownerId)
+	{
+		String entityName = Restaurant_.class.getAnnotation(Table.class).name();
+		int entityId;
+		try (DBIterator iterator = db.iterator()) {
+			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext(); iterator.next()) {
+				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
+				if (!key[0].equals(entityName))
+					break;
+				entityId = Integer.parseInt(key[1]);
+				if (!key[2].equals("ownerId"))
+					continue;
+				if (Integer.parseInt(asString(iterator.peekNext().getValue())) == ownerId)
+					return (Restaurant_)get(Restaurant_.class, entityId);
+				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+				iterator.prev();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public List<Reservation_> getActiveReservationByUser(int userId)
+	{
+		String entityName = Reservation_.class.getAnnotation(Table.class).name();
+		List<Reservation_> reservations = new ArrayList<Reservation_>();
+		int entityId = 0;
+		int foundUserId = -1;
+		LocalDate foundDate = null;
+		LocalDate now = LocalDate.now();
+		try (DBIterator iterator = db.iterator()) {
+			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext(); iterator.next()) {
+				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
+				if (!key[0].equals(entityName))
+					break;
+				if (Integer.parseInt(key[1]) != entityId) {
+					foundUserId = -1;
+					foundDate = null;
+				}
+				entityId = Integer.parseInt(key[1]);
+				if (key[2].equals("date")) {
+					foundDate = LocalDate.parse(asString(iterator.peekNext().getValue()));
+					if (foundDate.isBefore(now)) {
+						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+						iterator.prev();
+						continue;
+					}
+				} else if (key[2].equals("userId")) {
+					foundUserId = Integer.parseInt(asString(iterator.peekNext().getValue()));
+					if (foundUserId != userId) {
+						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+						iterator.prev();
+						continue;
+					}
+				} else {
+					continue;
+				}
+				if (foundUserId == -1 || foundDate == null)
+					continue;
+				if (foundUserId == userId && !foundDate.isBefore(now))
+					reservations.add((Reservation_)get(Reservation_.class, entityId));
+				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+				iterator.prev();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new ArrayList<Reservation_>();
+		}
+		return reservations;
+	}
+	
 	public Entity_ get(Class<? extends Entity_> entityClass, int entityId)
 	{
 		String entityName = entityClass.getAnnotation(Table.class).name();
@@ -256,8 +353,7 @@ public class KVDBManager implements AutoCloseable
 	}
 /*
  * TODO !!!!!!!!!!!
- * TODO: getRestaurantList() should be generalized with a getAll(Class<? extends Entity_> entityClass) method that returns all saved instances for the given entityClass (regardless that they are users, restaurants or reservations).
- * TODO: find a way to generalize also "criteria" get*List(). eg. getAllCriteria(Class<? extends Entity_> entityClass, int entityId, String filterAttributeName, String filterAttributeValue) // or: addCriteria(String filterAttributeName, String filterAttributeValue); getAll(Class<? extends Entity_> entityClass, int entityId); clearCriteria().
+ * TODO: getActiveReservationsByRestaurant(int restaurantId)
  * TODO: create methods beginBatch(), commitBatch(), rollbackBatch().
 	// RestaurantList should work
 	public List<Restaurant_> getRestaurantList()
