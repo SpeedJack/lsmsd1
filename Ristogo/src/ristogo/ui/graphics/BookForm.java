@@ -138,6 +138,7 @@ public class BookForm extends VBox {
 														if(res.isSuccess()) {
 															Restaurant r = (Restaurant)res.getEntity();
 															if(r.getSeats()>0) {
+																seatsField.getItems().clear();
 																for(int i=1; i<=r.getSeats(); i++) {
 																	seatsField.getItems().add(i);
 																	seatsField.setDisable(false);
@@ -226,7 +227,6 @@ public class BookForm extends VBox {
 	
 	public void fillOutForm(String name, OpeningHours hour) {
     	try {
-    		delRes.setDisable(true);
 			nameField.setText(name);
 			hourField.getItems().clear();
 			if(hour.equals(OpeningHours.BOTH)) {

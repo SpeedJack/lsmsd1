@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
+import ristogo.common.entities.enums.OpeningHours;
 import ristogo.ui.graphics.config.GUIConfig;
 
 
@@ -54,7 +55,7 @@ public class RistogoGUI extends Application
 											//logout
 										});
 			stage.setTitle("RistoGo");
-			stage.setResizable(false);
+			stage.setResizable(true);
 			stage.setScene(scene);
 			stage.getIcons().add(new Image("/resources/logo.png"));
 			stage.show(); 
@@ -104,6 +105,7 @@ public class RistogoGUI extends Application
 	    
 	    restaurant.setOnMouseClicked((e) -> {
 	    	try {
+	    		bookForm.getDelRes().setDisable(true);
 		    	bookForm.fillOutForm(restaurant.getSelectionName(), restaurant.getSelectionHours());
 		    	descriptionField.setText(restaurant.getSelectionDescription());
 		    	bookForm.setIdResToReserve(restaurant.getSelectionModel().getSelectedItem().getId());
@@ -115,6 +117,7 @@ public class RistogoGUI extends Application
 	    reservation.setOnMouseClicked((e) -> {
 	    							try {
 		    							bookForm.getDelRes().setDisable(false);
+		    							bookForm.fillOutForm("", OpeningHours.BOTH);
 		    							bookForm.setIdResToDelete(reservation.getSelectionModel().getSelectedItem().getId());
 	    							}catch(NullPointerException ex){
 	    								//do nothing
@@ -207,7 +210,7 @@ public class RistogoGUI extends Application
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(30);
-		grid.setPadding(new Insets(1, 1, 40, 1));
+		grid.setPadding(new Insets(1, 1, 5, 1));
 		
 		grid.add(title, 0, 0);
 		grid.add(icon, 1, 0);
