@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -65,7 +66,7 @@ public class User_ extends Entity_
 		return toCommonEntity(isOwner() ? UserType.OWNER : UserType.CUSTOMER);
 	}
 	
-	protected User toCommonEntity(UserType type)
+	public User toCommonEntity(UserType type)
 	{
 		switch (type) {
 		case OWNER:

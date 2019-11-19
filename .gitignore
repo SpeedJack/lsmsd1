@@ -1,3 +1,6 @@
+# LevelDB database
+RistogoServer/kvdb/
+
 # App config file
 Ristogo/config.xml
 

@@ -17,6 +17,7 @@ import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
 import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.ReservationTime;
+import ristogo.common.entities.enums.UserType;
 import ristogo.common.net.Message;
 import ristogo.common.net.RequestMessage;
 import ristogo.common.net.ResponseMessage;
@@ -166,7 +167,7 @@ public class Client extends Thread
 		User_ savedUser = userManager.getUserByUsername(user.getUsername());
 		if (savedUser != null && user.checkPasswordHash(savedUser.getPassword())) {
 			loggedUser = savedUser;
-			return new ResponseMessage(loggedUser.toCommonEntity());
+			return new ResponseMessage(loggedUser.toCommonEntity((restaurantManager.getRestaurantByOwner(loggedUser) == null) ? UserType.CUSTOMER : UserType.OWNER));
 		}
 		return new ResponseMessage("Invalid username or password.");
 	}
@@ -209,7 +210,7 @@ public class Client extends Thread
 			return new ResponseMessage("Username already in use.");
 		}
 		userManager.refresh(savedUser);
-		return new ResponseMessage(savedUser.toCommonEntity());
+		return new ResponseMessage(savedUser.toCommonEntity((restaurant == null) ? UserType.CUSTOMER : UserType.CUSTOMER));
 	}
 	
 	private ResponseMessage handleGetOwnRestaurant(RequestMessage reqMsg)
