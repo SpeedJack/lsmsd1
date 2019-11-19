@@ -224,13 +224,21 @@ public class KVDBManager implements AutoCloseable
 				try {
 					if (annotation.isEntity()) {
 						Entity_ innerEntity = (Entity_)attributeGetter.invoke(entity);
+						if (innerEntity == null)
+							continue;
 						attributeValue = Integer.toString(innerEntity.getId());
 					} else if (attributeClass.isEnum()) {
-						attributeValue = ((Enum<?>)attributeGetter.invoke(entity)).name();
+						Enum<?> enumValue = (Enum<?>)attributeGetter.invoke(entity);
+						if (enumValue == null)
+							continue;
+						attributeValue = enumValue.name();
 					} else if (attributeClass.equals(int.class)) {
 						attributeValue = Integer.toString((int)attributeGetter.invoke(entity));
 					} else {
-						attributeValue = attributeClass.cast(attributeGetter.invoke(entity)).toString();
+						Object objValue = attributeGetter.invoke(entity);
+						if (objValue == null)
+							continue;
+						attributeValue = attributeClass.cast(objValue).toString();
 					}
 				} catch (IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException ex) {

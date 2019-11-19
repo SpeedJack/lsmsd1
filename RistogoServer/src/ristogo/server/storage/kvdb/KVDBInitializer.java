@@ -10,7 +10,7 @@ import ristogo.server.storage.UserManager;
 import ristogo.server.storage.entities.Reservation_;
 import ristogo.server.storage.entities.Restaurant_;
 import ristogo.server.storage.entities.User_;
-
+// TODO: remove this class: initialize levelDB directly in KVDBManager
 public class KVDBInitializer
 {
 	private static KVDBInitializer init;

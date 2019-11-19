@@ -8,7 +8,7 @@ import ristogo.common.entities.enums.Genre;
 import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.Price;
 import ristogo.common.entities.enums.ReservationTime;
-
+// TODO: remove this class. build entities directly in KVDBManager.
 public class EntityAdapter
 {
 	public static String stringifyKey(Entity_ entity)
