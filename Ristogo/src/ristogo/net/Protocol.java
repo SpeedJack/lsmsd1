@@ -55,7 +55,7 @@ public class Protocol implements AutoCloseable
 	public ResponseMessage registerUser(Customer customer)
 	{
 		ResponseMessage resMsg = sendRequest(ActionRequest.REGISTER, customer);
-		if (!(resMsg.getEntity() instanceof Customer))
+		if (resMsg.isSuccess() && !(resMsg.getEntity() instanceof Customer))
 			return getProtocolErrorMessage();
 		return resMsg;
 	}
@@ -63,7 +63,7 @@ public class Protocol implements AutoCloseable
 	public ResponseMessage registerUser(Owner owner, Restaurant restaurant)
 	{
 		ResponseMessage resMsg = sendRequest(ActionRequest.REGISTER, owner, restaurant);
-		if (!(resMsg.getEntity() instanceof Owner))
+		if (resMsg.isSuccess() && !(resMsg.getEntity() instanceof Owner))
 			return getProtocolErrorMessage();
 		return resMsg;
 	}

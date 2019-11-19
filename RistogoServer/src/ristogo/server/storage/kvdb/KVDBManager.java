@@ -16,15 +16,17 @@ import java.util.logging.Logger;
 
 import javax.persistence.Table;
 
+import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBIterator;
+import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
 
+import ristogo.common.entities.enums.ReservationTime;
 import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.entities.Reservation_;
 import ristogo.server.storage.entities.Restaurant_;
 import ristogo.server.storage.entities.User_;
-import ristogo.server.storage.kvdb.config.Configuration;
 
 public class KVDBManager implements AutoCloseable
 {
@@ -32,6 +34,7 @@ public class KVDBManager implements AutoCloseable
 	private static KVDBManager instance;
 	private static DB db;
 	private static final ThreadLocal<WriteBatch> threadLocal;
+	private boolean initialized = false;
 	
 	static {
 		threadLocal = new ThreadLocal<WriteBatch>();
@@ -49,7 +52,18 @@ public class KVDBManager implements AutoCloseable
 
 	private KVDBManager() throws IOException
 	{
-		db = factory.open(new File(Configuration.getConfig().getPath()), Configuration.getConfig().getOptions());
+		Options options = new Options();
+		options.cacheSize(100 * 1024 * 1024);
+		options.compressionType(CompressionType.NONE);
+		options.comparator(new EntityDBComparator());
+		options.createIfMissing(true);
+		options.logger(new org.iq80.leveldb.Logger() {
+			public void log(String m)
+			{
+				Logger.getLogger(KVDBManager.class.getName()).fine(m);
+			}
+		});
+		db = factory.open(new File("kvdb"), options);
 	}
 
 	public static KVDBManager getInstance()
@@ -61,20 +75,22 @@ public class KVDBManager implements AutoCloseable
 			}
 		return instance;
 	}
-
-	public void populateDB(List<User_> users, List<Restaurant_> restaurants, List<Reservation_> reservations)
+	
+	public boolean isInitialized()
 	{
-		if (users != null)
-			for (User_ user: users)
-				insert(user);
-		
-		if (restaurants != null)
-			for (Restaurant_ restaurant: restaurants)
-				insert(restaurant);
+		return initialized;
+	}
+	
+	public void setInitialized()
+	{
+		initialized = true;
+	}
 
-		if (reservations != null)
-			for (Reservation_ reservation: reservations)
-				insert(reservation);
+	public void populateDB(List<Entity_> entities)
+	{
+		for (Entity_ entity: entities)
+			insert(entity);
+		setInitialized();
 	}
 	
 	private static String capitalizeFirst(String str)
@@ -167,17 +183,18 @@ public class KVDBManager implements AutoCloseable
 		String entityName = Restaurant_.class.getAnnotation(Table.class).name();
 		int entityId;
 		try (DBIterator iterator = db.iterator()) {
-			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext(); iterator.next()) {
+			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext();) {
 				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
 				if (!key[0].equals(entityName))
 					break;
 				entityId = Integer.parseInt(key[1]);
-				if (!key[2].equals("ownerId"))
+				if (!key[2].equals("ownerId")) {
+					iterator.next();
 					continue;
+				}
 				if (Integer.parseInt(asString(iterator.peekNext().getValue())) == ownerId)
 					return (Restaurant_)get(Restaurant_.class, entityId);
 				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
-				iterator.prev();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -205,7 +222,7 @@ public class KVDBManager implements AutoCloseable
 		LocalDate foundDate = null;
 		LocalDate now = LocalDate.now();
 		try (DBIterator iterator = db.iterator()) {
-			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext(); iterator.next()) {
+			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext();) {
 				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
 				if (!key[0].equals(entityName))
 					break;
@@ -218,25 +235,25 @@ public class KVDBManager implements AutoCloseable
 					foundDate = LocalDate.parse(asString(iterator.peekNext().getValue()));
 					if (foundDate.isBefore(now)) {
 						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
-						iterator.prev();
 						continue;
 					}
 				} else if (key[2].equals(idAttribute)) {
 					foundId = Integer.parseInt(asString(iterator.peekNext().getValue()));
 					if (foundId != id) {
 						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
-						iterator.prev();
 						continue;
 					}
 				} else {
+					iterator.next();
 					continue;
 				}
-				if (foundId == -1 || foundDate == null)
+				if (foundId == -1 || foundDate == null) {
+					iterator.next();
 					continue;
+				}
 				if (foundId == id && !foundDate.isBefore(now))
 					reservations.add((Reservation_)get(Reservation_.class, entityId));
 				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
-				iterator.prev();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -244,6 +261,92 @@ public class KVDBManager implements AutoCloseable
 			return new ArrayList<Reservation_>();
 		}
 		return reservations;
+	}
+	
+	public List<Reservation_> getReservationsByDateTime(int restaurantId, LocalDate date, ReservationTime time)
+	{
+		String entityName = Reservation_.class.getAnnotation(Table.class).name();
+		List<Reservation_> reservations = new ArrayList<Reservation_>();
+		int entityId = 0;
+		int foundId = -1;
+		LocalDate foundDate = null;
+		ReservationTime foundTime = null;
+		try (DBIterator iterator = db.iterator()) {
+			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext();) {
+				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
+				if (!key[0].equals(entityName))
+					break;
+				if (Integer.parseInt(key[1]) != entityId) {
+					foundId = -1;
+					foundDate = null;
+					foundTime = null;
+				}
+				entityId = Integer.parseInt(key[1]);
+				if (key[2].equals("date")) {
+					foundDate = LocalDate.parse(asString(iterator.peekNext().getValue()));
+					if (!foundDate.isEqual(date)) {
+						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+						continue;
+					}
+				} else if (key[2].equals("time")) {
+					foundTime = ReservationTime.valueOf(asString(iterator.peekNext().getValue()));
+					if (foundTime != time) {
+						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+						continue;
+					}
+				} else if (key[2].equals("restaurantId")) {
+					foundId = Integer.parseInt(asString(iterator.peekNext().getValue()));
+					if (foundId != restaurantId) {
+						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+						continue;
+					}
+				} else {
+					iterator.next();
+					continue;
+				}
+				if (foundId == -1 || foundDate == null || foundTime == null) {
+					iterator.next();
+					continue;
+				}
+				if (foundId == restaurantId && foundDate.isEqual(date) && foundTime == time)
+					reservations.add((Reservation_)get(Reservation_.class, entityId));
+				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new ArrayList<Reservation_>();
+		}
+		return reservations;
+	}
+	
+	public User_ getUserByUsername(String username)
+	{
+		String entityName = User_.class.getAnnotation(Table.class).name();
+		try (DBIterator iterator = db.iterator()) {
+			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext();) {
+				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
+				if (!key[0].equals(entityName))
+					break;
+				int entityId = Integer.parseInt(key[1]);
+				if (key[2].equals("username")) {
+					String foundUsername = asString(iterator.peekNext().getValue());
+					if (foundUsername.equals(username))
+						return (User_)get(User_.class, entityId);
+					iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+				}
+				iterator.next();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Entity_ get(Entity_ entity)
+	{
+		return get(entity.getClass(), entity.getId());
 	}
 	
 	public Entity_ get(Class<? extends Entity_> entityClass, int entityId)
@@ -300,22 +403,31 @@ public class KVDBManager implements AutoCloseable
 		return found ? entity : null;
 	}
 	
+	public boolean isActiveBatch()
+	{
+		return getWriteBatch() != null;
+	}
+	
 	public void beginBatch()
 	{
+		if (isActiveBatch())
+			return;
 		setWriteBatch(db.createWriteBatch());
 	}
 	
 	public void commitBatch()
 	{
+		if (!isActiveBatch())
+			return;
 		db.write(getWriteBatch());
 	}
 	
 	public void closeBatch()
 	{
+		if (!isActiveBatch())
+			return;
 		try {
-			WriteBatch wb = getWriteBatch();
-			if (wb != null)
-				wb.close();
+				getWriteBatch().close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -324,41 +436,28 @@ public class KVDBManager implements AutoCloseable
 		}
 	}
 	
-	public void remove(String key)
-	{
-		getWriteBatch().delete(bytes(key));
-	}
-	
-	public void put(String key, String value)
-	{
-		getWriteBatch().put(bytes(key), bytes(value));
-	}
-	
-	public void delete(Class<? extends Entity_> entityClass, int entityId)
+	public void remove(Class<? extends Entity_> entityClass, int entityId)
 	{
 		String entityName = entityClass.getAnnotation(Table.class).name();
-		beginBatch();
 		for (Field field: entityClass.getDeclaredFields()) {
 			if (!field.isAnnotationPresent(Attribute.class))
 				continue;
 			String attributeName = getAttributeName(field);
 			String key = entityName + ":" + entityId + ":" + attributeName;
-			remove(key);
+			getWriteBatch().delete(bytes(key));
 		}
-		commitBatch();
 	}
 	
-	public void update(Entity_ entity)
+	public void remove(Entity_ entity)
 	{
-		insert(entity);
+		remove(entity.getClass(), entity.getId());
 	}
 	
-	public void insert(Entity_ entity)
+	public void put(Entity_ entity)
 	{
 		Class<? extends Entity_> entityClass = entity.getClass();
 		String entityName = entityClass.getAnnotation(Table.class).name();
 		int entityId = entity.getId();
-		beginBatch();
 		for (Field field: entityClass.getDeclaredFields()) {
 			if (!field.isAnnotationPresent(Attribute.class))
 				continue;
@@ -392,8 +491,31 @@ public class KVDBManager implements AutoCloseable
 				continue;
 			}
 			String key = entityName + ":" + entityId + ":" + attributeName;
-			put(key, attributeValue);
+			getWriteBatch().put(bytes(key), bytes(attributeValue));
 		}
+	}
+	
+	public void delete(Class<? extends Entity_> entityClass, int entityId)
+	{
+		beginBatch();
+		remove(entityClass, entityId);
+		commitBatch();
+	}
+	
+	public void delete(Entity_ entity)
+	{
+		delete(entity.getClass(), entity.getId());
+	}
+	
+	public void update(Entity_ entity)
+	{
+		insert(entity);
+	}
+	
+	public void insert(Entity_ entity)
+	{
+		beginBatch();
+		put(entity);
 		commitBatch();
 	}
 	

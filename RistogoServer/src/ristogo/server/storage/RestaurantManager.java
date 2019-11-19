@@ -10,7 +10,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.entities.Restaurant_;
+import ristogo.server.storage.entities.User_;
 
 public class RestaurantManager extends EntityManager
 {
@@ -24,19 +26,24 @@ public class RestaurantManager extends EntityManager
 		super.delete(Restaurant_.class, restaurantId);
 	}
 	
-	public Restaurant_ get(Restaurant_ restaurant)
+	public Restaurant_ getRestaurantByOwner(User_ owner)
 	{
-		return get(restaurant.getId());
+		if (isLevelDBEnabled())
+			return getLevelDBManager().getRestaurantByOwner(owner.getId());
+		return owner.getRestaurant();
 	}
 	
-	public void delete(Restaurant_ restaurant)
-	{
-		delete(restaurant.getId());
-	}
-	
+	@Override
 	public List<Restaurant_> getAll()
 	{
 		Logger.getLogger(RestaurantManager.class.getName()).entering(RestaurantManager.class.getName(), "getAll");
+		if (isLevelDBEnabled()) {
+			List<Entity_> entities = getLevelDBManager().getAll(Restaurant_.class);
+			List<Restaurant_> restaurants = new ArrayList<Restaurant_>();
+			for (Entity_ entity: entities)
+				restaurants.add((Restaurant_)entity);
+			return restaurants;
+		}
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Restaurant_> cq = cb.createQuery(Restaurant_.class);

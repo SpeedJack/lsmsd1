@@ -214,16 +214,33 @@ public class Client extends Thread
 	
 	private ResponseMessage handleGetOwnRestaurant(RequestMessage reqMsg)
 	{
-		Restaurant_ restaurant = loggedUser.getRestaurant();
+		Restaurant_ restaurant = restaurantManager.getRestaurantByOwner(loggedUser);
 		if (restaurant == null)
 			return new ResponseMessage("You do not have any restaurant.");
 		return new ResponseMessage(restaurant.toCommonEntity());
 	}
 	
+	private boolean hasRestaurant(User_ user, int restaurantId)
+	{
+		Restaurant_ restaurant = restaurantManager.getRestaurantByOwner(user);
+		if (restaurant == null)
+			return false;
+		return restaurant.getOwner().getId() == user.getId();
+	}
+	
+	private boolean hasReservation(User_ user, int reservationId)
+	{
+		List<Reservation_> reservations = reservationManager.getActiveReservations(user);
+		for (Reservation_ reservation: reservations)
+			if (reservation.getId() == reservationId)
+				return true;
+		return false;
+	}
+	
 	private ResponseMessage handleEditRestaurant(RequestMessage reqMsg)
 	{
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
-		if (!loggedUser.hasRestaurant(restaurant.getId()))
+		if (!hasRestaurant(loggedUser, restaurant.getId()))
 			return new ResponseMessage("You can only edit restaurants that you own.");
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
 		if (!restaurant_.merge(restaurant))
@@ -241,7 +258,7 @@ public class Client extends Thread
 	private ResponseMessage handleListOwnReservations(RequestMessage reqMsg)
 	{
 		ResponseMessage resMsg = new ResponseMessage();
-		List<Reservation_> reservations = loggedUser.getActiveReservations();
+		List<Reservation_> reservations = reservationManager.getActiveReservations(loggedUser);
 		for (Reservation_ reservation: reservations)
 			resMsg.addEntity(reservation.toCommonEntity());
 		return resMsg;
@@ -252,7 +269,7 @@ public class Client extends Thread
 		Reservation reservation = (Reservation)reqMsg.getEntity();
 		if (reservation.getDate().isBefore(LocalDate.now()))
 			return new ResponseMessage("The reservation date must be a date in future.");
-		if (!loggedUser.hasReservation(reservation.getId()))
+		if (!hasReservation(loggedUser, reservation.getId()))
 			return new ResponseMessage("You can only edit your own reservations.");
 		Reservation_ reservation_ = reservationManager.get(reservation.getId());
 		Restaurant_ restaurant_ = reservation_.getRestaurant();
@@ -350,7 +367,7 @@ public class Client extends Thread
 	private ResponseMessage handleDeleteReservation(RequestMessage reqMsg)
 	{
 		Reservation reservation = (Reservation)reqMsg.getEntity();
-		if (!loggedUser.hasReservation(reservation.getId()))
+		if (!hasReservation(loggedUser, reservation.getId()))
 			return new ResponseMessage("You can only delete your own reservations.");
 		Reservation_ reservation_ = reservationManager.get(reservation.getId());
 		if (reservation_ == null)
@@ -368,7 +385,7 @@ public class Client extends Thread
 	private ResponseMessage handleDeleteRestaurant(RequestMessage reqMsg)
 	{
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
-		if (!loggedUser.hasRestaurant(restaurant.getId()))
+		if (!hasRestaurant(loggedUser, restaurant.getId()))
 			return new ResponseMessage("You can only delete restaurants that you own.");
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
 		if (restaurant_ == null)
@@ -385,12 +402,12 @@ public class Client extends Thread
 	private ResponseMessage handleListReservations(RequestMessage reqMsg)
 	{
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
-		if (!loggedUser.hasRestaurant(restaurant.getId()))
+		if (!hasRestaurant(loggedUser, restaurant.getId()))
 			return new ResponseMessage("You can only view reservations for restaurants that you own.");
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
 		if (restaurant_ == null)
 			return new ResponseMessage("Can not find the specified restaurant.");
-		List<Reservation_> reservations = restaurant_.getActiveReservations();
+		List<Reservation_> reservations = reservationManager.getActiveReservations(restaurant_);
 		ResponseMessage resMsg = new ResponseMessage();
 		for (Reservation_ reservation: reservations)
 			resMsg.addEntity(reservation.toCommonEntity());

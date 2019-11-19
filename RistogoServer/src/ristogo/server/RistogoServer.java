@@ -66,6 +66,7 @@ public class RistogoServer
 	{
 		Options options = new Options();
 		options.addOption(new Option("h", "help", false, "print this message."));
+		options.addOption(new Option("L", "leveldb", false, "Enable LevelDB database."));
 		Option portOpt = new Option("p", "port", true, "set listening port.");
 		portOpt.setType(Integer.class);
 		portOpt.setArgName("PORT");
@@ -82,7 +83,7 @@ public class RistogoServer
 	{
 		if (cmd.hasOption("help")) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("ristogoserver [-h | --help] [-p <PORT> | --port <PORT>] [-l <LEVEL> | --log-level <LEVEL>]",
+			formatter.printHelp("ristogoserver [-h | --help] [-L | --leveldb] [-p <PORT> | --port <PORT>] [-l <LEVEL> | --log-level <LEVEL>]",
 				"", options, "\nLOG LEVELS:\n" +
 				"ALL: print all logs.\n" + 
 				"FINEST: print all tracing logs.\n" +
@@ -122,6 +123,10 @@ public class RistogoServer
 		} else {
 			Logger.getLogger(RistogoServer.class.getName()).config("Using default port 8888.");
 			port = 8888;
+		}
+		if (cmd.hasOption("leveldb")) {
+			Logger.getLogger(RistogoServer.class.getName()).config("Enabling LevelDB.");
+			EntityManager.enableLevelDB();
 		}
 	}
 	

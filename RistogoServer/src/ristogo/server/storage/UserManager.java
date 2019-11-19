@@ -1,5 +1,6 @@
 package ristogo.server.storage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -10,6 +11,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 
+import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.entities.User_;
 
 public class UserManager extends EntityManager
@@ -17,6 +19,8 @@ public class UserManager extends EntityManager
 	public User_ getUserByUsername(String username)
 	{
 		Logger.getLogger(UserManager.class.getName()).entering(UserManager.class.getName(), "getUserByUsername", username);
+		if (isLevelDBEnabled())
+			return getLevelDBManager().getUserByUsername(username);
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User_> cq = cb.createQuery(User_.class);
@@ -35,8 +39,16 @@ public class UserManager extends EntityManager
 		}
 	}
 	
+	@Override
 	public List<User_> getAll()
 	{
+		if (isLevelDBEnabled()) {
+			List<Entity_> entities = getLevelDBManager().getAll(User_.class);
+			List<User_> users = new ArrayList<User_>();
+			for (Entity_ entity: entities)
+				users.add((User_)entity);
+			return users;
+		}
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User_> cq = cb.createQuery(User_.class);
@@ -47,7 +59,7 @@ public class UserManager extends EntityManager
 			return query.getResultList();
 		} catch (NoResultException ex) {
 			Logger.getLogger(UserManager.class.getName()).info("getResultList() returned no result.");
-			return null;
+			return new ArrayList<User_>();
 		}
 	}
 	
@@ -59,15 +71,5 @@ public class UserManager extends EntityManager
 	public void delete(int userId)
 	{
 		super.delete(User_.class, userId);
-	}
-	
-	public User_ get(User_ user)
-	{
-		return get(user.getId());
-	}
-	
-	public void delete(User_ user)
-	{
-		delete(user.getId());
 	}
 }
