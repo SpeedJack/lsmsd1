@@ -1,6 +1,7 @@
 package ristogo.server;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.TimeZone;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -67,7 +68,23 @@ public class RistogoServer
 		Options options = new Options();
 		options.addOption(new Option("h", "help", false, "print this message."));
 		options.addOption(new Option("L", "leveldb", false, "Enable LevelDB database."));
-		Option portOpt = new Option("p", "port", true, "set listening port.");
+		Option hostOpt = new Option("H", "host", true, "Specify MySQL database hostname (default: localhost).");
+		hostOpt.setType(String.class);
+		hostOpt.setArgName("HOST");
+		options.addOption(hostOpt);
+		Option dbportOpt = new Option("dbport", true, "Specify MySQL database port (default: 3306).");
+		hostOpt.setType(Integer.class);
+		hostOpt.setArgName("PORT");
+		options.addOption(dbportOpt);
+		Option userOpt = new Option("u", "user", true, "Specify MySQL database username (default: root).");
+		userOpt.setType(String.class);
+		userOpt.setArgName("USER");
+		options.addOption(userOpt);
+		Option passOpt = new Option("p", "pass", true, "Specify MySQL database password (default: <empty>).");
+		passOpt.setType(String.class);
+		passOpt.setArgName("PASS");
+		options.addOption(passOpt);
+		Option portOpt = new Option("P", "port", true, "set listening port (default: 8888).");
 		portOpt.setType(Integer.class);
 		portOpt.setArgName("PORT");
 		options.addOption(portOpt);
@@ -83,7 +100,7 @@ public class RistogoServer
 	{
 		if (cmd.hasOption("help")) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("ristogoserver [-h | --help] [-L | --leveldb] [-p <PORT> | --port <PORT>] [-l <LEVEL> | --log-level <LEVEL>]",
+			formatter.printHelp("ristogoserver [-h | --help] [-H <HOST> | --host <HOST>] [--dbport <PORT>] [-u <USER> | --user <USER>] [-p <PASS> | --pass <PASS>] [-L | --leveldb] [-P <PORT> | --port <PORT>] [-l <LEVEL> | --log-level <LEVEL>]",
 				"", options, "\nLOG LEVELS:\n" +
 				"ALL: print all logs.\n" + 
 				"FINEST: print all tracing logs.\n" +
@@ -108,12 +125,49 @@ public class RistogoServer
 			}
 			setLogLevel(logLevel);
 		}
+		Properties properties = new Properties();
+		String host = "localhost";
+		String dbport = "3306";
+		if (cmd.hasOption("host")) {
+			host = cmd.getOptionValue("host");
+			if (host.isBlank()) {
+				Logger.getLogger(RistogoServer.class.getName()).warning("Invalid host specified. Using default: localhost.");
+				host = "localhost";
+			}
+		}
+		if (cmd.hasOption("dbport")) {
+			dbport = cmd.getOptionValue("dbport");
+			try {
+				int intdbport = Integer.parseInt(dbport);
+				if (intdbport < 0 || intdbport > 65535) {
+					NumberFormatException ex = new NumberFormatException("The dbport must be a number between 0 and 65535.");
+					Logger.getLogger(RistogoServer.class.getName()).throwing(RistogoServer.class.getName(), "parseOptions", ex);
+					throw ex;
+				}
+			} catch (NumberFormatException ex) {
+				Logger.getLogger(RistogoServer.class.getName()).warning("Invalid dbport specified. Using default: 3306.");
+				dbport = "3306";
+			}
+		}
+		properties.setProperty("javax.persistence.jdbc.url", "jdbc:mysql://" + host + ":" + dbport + "/ristogo?serverTimezone=UTC");
+		if (cmd.hasOption("user")) {
+			String user = cmd.getOptionValue("user");
+			if (!user.isBlank())
+				properties.setProperty("javax.persistence.jdbc.user", user);
+			else
+				Logger.getLogger(RistogoServer.class.getName()).warning("Invalid user specified. Using default: root.");
+		}
+		if (cmd.hasOption("pass")) {
+			String pass = cmd.getOptionValue("pass");
+			properties.setProperty("javax.persistence.jdbc.password", pass);
+		}
+		EntityManager.init(properties);
 		if (cmd.hasOption("port")) {
 			try {
 				port = Integer.parseInt(cmd.getOptionValue("port", "8888"));
 				if (port < 0 || port > 65535) {
 					NumberFormatException ex = new NumberFormatException("The port must be a number between 0 and 65535.");
-					Logger.getLogger(RistogoServer.class.getName()).throwing(RistogoServer.class.getName(), "main", ex);
+					Logger.getLogger(RistogoServer.class.getName()).throwing(RistogoServer.class.getName(), "parseOptions", ex);
 					throw ex;
 				}
 			} catch (NumberFormatException ex) {

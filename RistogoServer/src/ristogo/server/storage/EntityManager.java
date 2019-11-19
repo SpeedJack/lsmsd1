@@ -3,6 +3,7 @@ package ristogo.server.storage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManagerFactory;
@@ -16,13 +17,17 @@ import ristogo.server.storage.kvdb.KVDBManager;
 
 public abstract class EntityManager implements AutoCloseable
 {
-	private static final EntityManagerFactory factory;
+	private static EntityManagerFactory factory;
 	private static KVDBManager levelDBManager;
 	private static final ThreadLocal<javax.persistence.EntityManager> threadLocal;
 	
 	static {
-		factory = Persistence.createEntityManagerFactory("ristogo");
 		threadLocal = new ThreadLocal<javax.persistence.EntityManager>();
+	}
+	
+	public static void init(Properties properties)
+	{
+		factory = Persistence.createEntityManagerFactory("ristogo", properties);
 	}
 	
 	public static void enableLevelDB()
@@ -71,7 +76,8 @@ public abstract class EntityManager implements AutoCloseable
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "closeFactory");
 		if (getLevelDBManager() != null)
 			getLevelDBManager().close();
-		factory.close();
+		if (factory != null)
+			factory.close();
 	}
 	
 	abstract public List<? extends Entity_> getAll();
