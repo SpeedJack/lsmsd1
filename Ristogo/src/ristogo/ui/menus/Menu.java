@@ -17,7 +17,7 @@ public abstract class Menu
 	protected abstract SortedSet<MenuEntry> getMenu();
 	protected static Protocol protocol;
 	protected static User loggedUser;
-	
+
 	static {
 		try {
 			protocol = Protocol.getProtocol();
@@ -26,7 +26,7 @@ public abstract class Menu
 			System.exit(1);
 		}
 	}
-	
+
 	protected MenuEntry printMenu()
 	{
 		Console.newLine();
@@ -34,27 +34,27 @@ public abstract class Menu
 		selection.triggerHandler();
 		return selection;
 	}
-	
+
 	protected Menu()
 	{
 		this("Select an action");
 	}
-	
+
 	protected Menu(String prompt)
 	{
 		this.prompt = prompt;
 	}
-	
+
 	public void show()
 	{
 		while (!printMenu().isExit());
 	}
-	
+
 	public void setPrompt(String prompt)
 	{
 		this.prompt = prompt;
 	}
-	
+
 	protected static String getReservationMenuName(Reservation reservation)
 	{
 		return reservation.getRestaurantName() + " " + reservation.getDate() + " " + reservation.getTime() + " x" + reservation.getSeats();

@@ -12,18 +12,18 @@ public class RequestMessage extends Message
 	private static final long serialVersionUID = 6989601732466426604L;
 
 	protected final ActionRequest action;
-	
+
 	public RequestMessage(ActionRequest action, Entity... entities)
 	{
 		super(entities);
 		this.action = action;
 	}
-	
+
 	public ActionRequest getAction()
 	{
 		return action;
 	}
-	
+
 	public boolean isValid()
 	{
 		boolean hasOwner = false;
@@ -43,7 +43,7 @@ public class RequestMessage extends Message
 				else if (entity instanceof Restaurant)
 					hasRestaurant = true;
 			return hasOwner && hasRestaurant;
-				
+
 		case EDIT_RESTAURANT:
 		case DELETE_RESTAURANT:
 		case LIST_RESERVATIONS:

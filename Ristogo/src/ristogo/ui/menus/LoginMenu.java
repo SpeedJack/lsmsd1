@@ -25,13 +25,13 @@ public class LoginMenu extends Menu
 		menu.add(new MenuEntry(0, "Exit", true));
 		return menu;
 	}
-	
+
 	private void handleLogin(MenuEntry entry)
 	{
 		HashMap<Integer, String> response = new LoginForm().show();
 		doLogin(response.get(0), response.get(1));
 	}
-	
+
 	private void handleRegister(MenuEntry entry)
 	{
 		HashMap<Integer, String> response = new RegisterForm().show();
@@ -58,7 +58,7 @@ public class LoginMenu extends Menu
 		Console.newLine();
 		doLogin(username, password);
 	}
-	
+
 	private void doLogin(String username, String password)
 	{
 		ResponseMessage resMsg = protocol.performLogin(new Customer(username, password));

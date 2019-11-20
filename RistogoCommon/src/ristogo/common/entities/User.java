@@ -12,27 +12,27 @@ public abstract class User extends Entity
 
 	protected String username;
 	protected String password;
-	
+
 	public User()
 	{
 		this(null);
 	}
-	
+
 	public User(String username)
 	{
 		this(username, null);
 	}
-	
+
 	public User(int id, String username)
 	{
 		this(id, username, null);
 	}
-	
+
 	public User(String username, String password)
 	{
 		this(0, username, password);
 	}
-	
+
 	public User(int id, String username, String password)
 	{
 		super(id);
@@ -40,7 +40,7 @@ public abstract class User extends Entity
 		if (password != null)
 			setPassword(password);
 	}
-	
+
 	public boolean setUsername(String username)
 	{
 		if (!validateUsername(username))
@@ -48,7 +48,7 @@ public abstract class User extends Entity
 		this.username = username;
 		return true;
 	}
-	
+
 	public boolean setPassword(String password)
 	{
 		if (!validatePassword(password))
@@ -56,22 +56,22 @@ public abstract class User extends Entity
 		setPasswordHash(hashPassword(password));
 		return true;
 	}
-	
+
 	public void setPasswordHash(String passwordHash)
 	{
 		password = passwordHash;
 	}
-	
+
 	public String getUsername()
 	{
 		return this.username;
 	}
-	
+
 	public String getPasswordHash()
 	{
 		return this.password;
 	}
-	
+
 	protected final static String hashPassword(String password)
 	{
 		String passwordHash;
@@ -88,42 +88,42 @@ public abstract class User extends Entity
 		}
 		return passwordHash;
 	}
-	
+
 	public static boolean validatePassword(String password)
 	{
 		return password != null && password.length() > 7;
 	}
-	
+
 	public static boolean validateUsername(String username)
 	{
 		return username != null && username.matches("^[A-Za-z0-9]{3,32}$");
 	}
-	
+
 	public boolean hasValidUsername()
 	{
 		return validateUsername(username);
 	}
-	
+
 	public boolean checkPassword(String password)
 	{
 		return this.password != null && this.password.equals(hashPassword(password));
 	}
-	
+
 	public boolean checkPasswordHash(String passwordHash)
 	{
 		return password != null && password.equals(passwordHash);
 	}
-	
+
 	public boolean hasValidPassword()
 	{
 		return validatePasswordHash(password);
 	}
-	
+
 	public static boolean validatePasswordHash(String passwordHash)
 	{
 		return passwordHash.matches("^[a-fA-F0-9]{64}$");
 	}
-	
+
 	public boolean isOwner()
 	{
 		return (this instanceof Owner);

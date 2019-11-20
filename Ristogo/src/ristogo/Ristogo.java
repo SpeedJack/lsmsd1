@@ -19,12 +19,12 @@ import ristogo.ui.Console;
 import ristogo.ui.menus.LoginMenu;
 
 public class Ristogo
-{	
+{
 
 	public static void main(String[] args)
 	{
 		Logger.getLogger(Ristogo.class.getName()).entering(Ristogo.class.getName(), "main", args);
-		
+
 		Options options = createOptions();
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = null;
@@ -37,10 +37,10 @@ public class Ristogo
 
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		Configuration config = Configuration.getConfig();
-		
+
 		if (cmd == null || !cmd.hasOption("log-level"))
 			setLogLevel(config.getLogLevel());
-		
+
 		switch (config.getInterfaceMode()) {
 		case FORCE_CLI:
 			Logger.getLogger(Ristogo.class.getName()).config("Forcing CLI by config option");
@@ -58,7 +58,7 @@ public class Ristogo
 			}
 		}
 	}
-	
+
 	private static Options createOptions()
 	{
 		Options options = new Options();
@@ -69,17 +69,17 @@ public class Ristogo
 		logLevelOpt.setType(Level.class);
 		logLevelOpt.setArgName("LEVEL");
 		options.addOption(logLevelOpt);
-		
+
 		return options;
 	}
-	
+
 	private static void parseOptions(CommandLine cmd, Options options)
 	{
 		if (cmd.hasOption("help")) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("ristogo [-h | --help] [-c | --cli] [-g | --gui] [-l <LEVEL> | --log-level <LEVEL>]",
 				"", options, "\nLOG LEVELS:\n" +
-				"ALL: print all logs.\n" + 
+				"ALL: print all logs.\n" +
 				"FINEST: print all tracing logs.\n" +
 				"FINER: print most tracing logs.\n" +
 				"FINE: print some tracing logs.\n" +
@@ -111,18 +111,18 @@ public class Ristogo
 			launchGUI(cmd.getArgs());
 		}
 	}
-	
+
 	private static void launchCLI(String[] args)
 	{
 		Logger.getLogger(Ristogo.class.getName()).entering(Ristogo.class.getName(), "launchCLI", args);
 		Console.println("WELCOME TO RISTOGO!");
-		
+
 		new LoginMenu().show();
 
 		Logger.getLogger(Ristogo.class.getName()).exiting(Ristogo.class.getName(), "launchCLI", args);
 		close();
 	}
-	
+
 	private static void launchGUI(String[] args)
 	{
 		Logger.getLogger(Ristogo.class.getName()).entering(Ristogo.class.getName(), "launchGUI", args);
@@ -130,21 +130,21 @@ public class Ristogo
 		Logger.getLogger(Ristogo.class.getName()).exiting(Ristogo.class.getName(), "launchGUI", args);
 		close();
 	}
-	
+
 	private static void close()
 	{
 		Logger.getLogger(Ristogo.class.getName()).fine("Exiting...");
 		Console.close();
 		System.exit(0);
 	}
-	
+
 	private static void setLogLevel(Level level)
 	{
 		Logger rootLogger = LogManager.getLogManager().getLogger("");
 		rootLogger.setLevel(level);
 		for (Handler handler: rootLogger.getHandlers())
 			handler.setLevel(level);
-		
+
 		Logger.getLogger(Ristogo.class.getName()).config("Log level set to " + level + ".");
 	}
 }

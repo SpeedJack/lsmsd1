@@ -18,7 +18,7 @@ public class Console
 		String str = scanner.nextLine();
 		return str.isBlank() ? null : str;
 	}
-	
+
 	public static String askPassword(String prompt)
 	{
 		if (exists()) {
@@ -28,7 +28,7 @@ public class Console
 		Logger.getLogger(Console.class.getName()).warning("Can not hide console input buffer for password submission: System.console() returned null.");
 		return askString(prompt);
 	}
-	
+
 	public static int askInteger(String prompt)
 	{
 		while (true) {
@@ -43,22 +43,22 @@ public class Console
 			}
 		}
 	}
-	
+
 	public static boolean askConfirm()
 	{
 		return askConfirm("Are you sure?", false);
 	}
-	
+
 	public static boolean askConfirm(boolean defaultYes)
 	{
 		return askConfirm("Are you sure?", defaultYes);
 	}
-	
+
 	public static boolean askConfirm(String prompt)
 	{
 		return askConfirm(prompt, false);
 	}
-	
+
 	public static boolean askConfirm(String prompt, boolean defaultYes)
 	{
 		while (true) {
@@ -72,28 +72,28 @@ public class Console
 			newLine();
 		}
 	}
-	
+
 	public static void printPrompt(String str)
 	{
 		print(str + ": ");
 	}
-	
+
 	public static void print(String str)
 	{
 		System.out.print(str);
 		System.out.flush();
 	}
-	
+
 	public static void println(String str)
 	{
 		System.out.println(str);
 	}
-	
+
 	public static void newLine()
 	{
 		System.out.println();
 	}
-	
+
 	public static void newLine(int lineSkip)
 	{
 		if (lineSkip < 1)
@@ -101,12 +101,12 @@ public class Console
 		for (int i = 0; i < lineSkip; i++)
 			newLine();
 	}
-	
+
 	public static void printMenuEntry(MenuEntry entry)
 	{
 		println(entry.getKey() + ")\t" + entry.getText());
 	}
-	
+
 	public static MenuEntry printMenu(String prompt, SortedSet<MenuEntry> entries)
 	{
 		printPrompt(prompt);
@@ -126,19 +126,19 @@ public class Console
 			newLine();
 		}
 	}
-	
+
 	public static void pause()
 	{
 		newLine();
 		print("Press ENTER to continue...");
 		scanner.nextLine();
 	}
-	
+
 	public static boolean exists()
 	{
 		return System.console() != null;
 	}
-	
+
 	public static void close()
 	{
 		scanner.close();

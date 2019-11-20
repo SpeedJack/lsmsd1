@@ -19,9 +19,9 @@ import ristogo.common.entities.Entity;
 public class Message implements Serializable
 {
 	private static final long serialVersionUID = -5181705765357502182L;
-	
+
 	protected final List<Entity> entities = new ArrayList<>();
-	
+
 	protected Message(Entity... entities)
 	{
 		if (entities != null)
@@ -34,7 +34,7 @@ public class Message implements Serializable
 		XStream xs = new XStream();
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + xs.toXML(this);
 	}
-	
+
 	protected static Message fromXML(String xml)
 	{
 		XStream xs = new XStream();
@@ -48,7 +48,7 @@ public class Message implements Serializable
 		});
 		return (Message)xs.fromXML(xml);
 	}
-	
+
 	public void send(DataOutputStream output)
 	{
 		String xml = this.toXML();
@@ -59,7 +59,7 @@ public class Message implements Serializable
 			Logger.getLogger(Message.class.getName()).warning("Failure in sending message.");
 		}
 	}
-	
+
 	public static Message receive(DataInputStream input)
 	{
 		String xml;
@@ -72,29 +72,29 @@ public class Message implements Serializable
 			return null;
 		}
 	}
-	
+
 	public List<Entity> getEntities()
 	{
 		return entities;
 	}
-	
+
 	public Entity getEntity(int index)
 	{
 		if (index < 0 || index >= getEntityCount())
 			return null;
 		return entities.get(index);
 	}
-	
+
 	public Entity getEntity()
 	{
 		return getEntity(0);
 	}
-	
+
 	public void addEntity(Entity entity)
 	{
 		entities.add(entity);
 	}
-	
+
 	public int getEntityCount()
 	{
 		return entities.size();

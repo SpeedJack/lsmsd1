@@ -25,7 +25,7 @@ public class RistogoServer
 	public static void main(String[] args)
 	{
 		Logger.getLogger(RistogoServer.class.getName()).entering(RistogoServer.class.getName(), "main", args);
-		
+
 		Options options = createOptions();
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = null;
@@ -35,13 +35,13 @@ public class RistogoServer
 		} catch (ParseException ex) {
 			Logger.getLogger(RistogoServer.class.getName()).warning("Can not parse command line options: " + ex.getMessage());
 		}
-		
+
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-		
+
 		startServer();
 		Logger.getLogger(RistogoServer.class.getName()).exiting(RistogoServer.class.getName(), "main", args);
 	}
-	
+
 	private static void startServer()
 	{
 		Logger.getLogger(RistogoServer.class.getName()).entering(RistogoServer.class.getName(), "startServer");
@@ -62,7 +62,7 @@ public class RistogoServer
 			Logger.getLogger(RistogoServer.class.getName()).exiting(RistogoServer.class.getName(), "startServer");
 		}
 	}
-	
+
 	private static Options createOptions()
 	{
 		Options options = new Options();
@@ -92,17 +92,17 @@ public class RistogoServer
 		logLevelOpt.setType(Level.class);
 		logLevelOpt.setArgName("LEVEL");
 		options.addOption(logLevelOpt);
-		
+
 		return options;
 	}
-	
+
 	private static void parseOptions(CommandLine cmd, Options options)
 	{
 		if (cmd.hasOption("help")) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("ristogoserver [-h | --help] [-H <HOST> | --host <HOST>] [--dbport <PORT>] [-u <USER> | --user <USER>] [-p <PASS> | --pass <PASS>] [-L | --leveldb] [-P <PORT> | --port <PORT>] [-l <LEVEL> | --log-level <LEVEL>]",
 				"", options, "\nLOG LEVELS:\n" +
-				"ALL: print all logs.\n" + 
+				"ALL: print all logs.\n" +
 				"FINEST: print all tracing logs.\n" +
 				"FINER: print most tracing logs.\n" +
 				"FINE: print some tracing logs.\n" +
@@ -183,14 +183,14 @@ public class RistogoServer
 			EntityManager.enableLevelDB();
 		}
 	}
-	
+
 	private static void setLogLevel(Level level)
 	{
 		Logger rootLogger = LogManager.getLogManager().getLogger("");
 		rootLogger.setLevel(level);
 		for (Handler handler: rootLogger.getHandlers())
 			handler.setLevel(level);
-		
+
 		Logger.getLogger(RistogoServer.class.getName()).config("Log level set to " + level + ".");
 	}
 }

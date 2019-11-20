@@ -29,42 +29,42 @@ public class User_ extends Entity_
 	@Column(name="username", length=32, nullable=false, unique=true)
 	@Attribute
 	protected String username;
-	
+
 	@Column(name="password", length=32, nullable=false)
 	@Attribute
 	protected String password;
-	
+
 	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
 	@LazyCollection(LazyCollectionOption.EXTRA)
 	@Where(clause="date >= CURRENT_DATE()")
 	protected List<Reservation_> activeReservations = new ArrayList<>();
-	
+
 	@OneToOne(mappedBy="owner", fetch=FetchType.LAZY)
 	@LazyCollection(LazyCollectionOption.EXTRA)
 	protected Restaurant_ restaurant;
-	
+
 	public User_()
 	{
 		this("", "");
 	}
-	
+
 	public User_(String username, String passwordHash)
 	{
 		this(0, username, passwordHash);
 	}
-	
+
 	public User_(int id, String username, String passwordHash)
 	{
 		super(id);
 		this.username = username;
 		this.password = passwordHash;
 	}
-	
+
 	public User toCommonEntity()
 	{
 		return toCommonEntity(isOwner() ? UserType.OWNER : UserType.CUSTOMER);
 	}
-	
+
 	public User toCommonEntity(UserType type)
 	{
 		switch (type) {
@@ -76,15 +76,15 @@ public class User_ extends Entity_
 			Logger.getLogger(User_.class.getName()).warning("Invalid UserType " + type + ".");
 			return null;
 		}
-		
+
 	}
-	
+
 	public boolean merge(User user)
 	{
 		return setUsername(user.getUsername()) &&
 			setPassword(user.getPasswordHash());
 	}
-	
+
 	public boolean setUsername(String username)
 	{
 		if (!User.validateUsername(username)) {
@@ -94,7 +94,7 @@ public class User_ extends Entity_
 		this.username = username;
 		return true;
 	}
-	
+
 	public boolean setPassword(String passwordHash)
 	{
 		if (!User.validatePasswordHash(passwordHash)) {
@@ -104,12 +104,12 @@ public class User_ extends Entity_
 		this.password = passwordHash;
 		return true;
 	}
-	
+
 	public String getUsername()
 	{
 		return this.username;
 	}
-	
+
 	public String getPassword()
 	{
 		return this.password;
@@ -119,27 +119,27 @@ public class User_ extends Entity_
 	{
 		return restaurant != null;
 	}
-	
+
 	public List<Reservation_> getActiveReservations()
 	{
 		return activeReservations;
 	}
-	
+
 	public Restaurant_ getRestaurant()
 	{
 		return restaurant;
 	}
-	
+
 	public boolean hasRestaurant(int restaurantId)
 	{
 		return (restaurant == null) ? false : restaurant.getId() == restaurantId;
 	}
-	
+
 	public boolean hasRestaurant(Restaurant_ restaurant)
 	{
 		return hasRestaurant(restaurant.getId());
 	}
-	
+
 	public boolean hasReservation(int reservationId)
 	{
 		for (Reservation_ reservation: activeReservations)
@@ -147,7 +147,7 @@ public class User_ extends Entity_
 				return true;
 		return false;
 	}
-	
+
 	public boolean hasReservation(Reservation_ reservation)
 	{
 		return hasReservation(reservation.getId());

@@ -10,7 +10,7 @@ import ristogo.common.entities.enums.Price;
 public class Restaurant extends Entity
 {
 	private static final long serialVersionUID = -2839130753004235292L;
-	
+
 	protected String ownerName;
 	protected String name;
 	protected Genre genre;
@@ -21,17 +21,17 @@ public class Restaurant extends Entity
 	protected int seats;
 	protected OpeningHours openingHours;
 	protected List<Reservation> activeReservations = new ArrayList<>();
-	
+
 	public Restaurant(int id)
 	{
 		super(id);
 	}
-	
+
 	public Restaurant(String ownerName)
 	{
 		this(0, ownerName + "'s Restaurant", ownerName, null, null, null, null, null, 0, OpeningHours.BOTH);
 	}
-	
+
 	public Restaurant(int id, String name, String ownerName, Genre genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
 	{
 		super(id);
@@ -50,17 +50,17 @@ public class Restaurant extends Entity
 	{
 		this.ownerName = ownerName;
 	}
-	
+
 	public String getOwnerName()
 	{
 		return ownerName;
 	}
-	
+
 	public void setName(String name)
 	{
 		this.name = name;
 	}
-	
+
 	public String getName()
 	{
 		return name;
@@ -115,12 +115,12 @@ public class Restaurant extends Entity
 	{
 		this.description = description;
 	}
-	
+
 	public int getSeats()
 	{
 		return seats;
 	}
-	
+
 	public void setSeats(int seats)
 	{
 		this.seats = seats;
@@ -135,12 +135,12 @@ public class Restaurant extends Entity
 	{
 		this.openingHours = openingHours;
 	}
-	
+
 	@Override
 	public String toString()
 	{
 		return "Name: " + getName() + "\n" +
-			"Owner: " + getOwnerName() + "\n" + 
+			"Owner: " + getOwnerName() + "\n" +
 			"Genre: " + fieldToString(getGenre()) + "\n" +
 			"Price: " + fieldToString(getPrice()) + "\n" +
 			"City: " + fieldToString(getCity()) + "\n" +
@@ -149,7 +149,7 @@ public class Restaurant extends Entity
 			"Seats: " + getSeats() + "\n" +
 			"Opening hours: " + getOpeningHours().toString() + "\n";
 	}
-	
+
 	private String fieldToString(Object field)
 	{
 		return field == null ? "<NOT-SET>" : field.toString();

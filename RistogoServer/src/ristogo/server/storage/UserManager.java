@@ -38,7 +38,7 @@ public class UserManager extends EntityManager
 			return null;
 		}
 	}
-	
+
 	@Override
 	public List<User_> getAll()
 	{
@@ -62,12 +62,12 @@ public class UserManager extends EntityManager
 			return new ArrayList<User_>();
 		}
 	}
-	
+
 	public User_ get(int userId)
 	{
 		return (User_)super.get(User_.class, userId);
 	}
-	
+
 	public void delete(int userId)
 	{
 		super.delete(User_.class, userId);

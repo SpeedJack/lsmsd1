@@ -38,7 +38,7 @@ public class Client extends Thread
 	private UserManager userManager;
 	private RestaurantManager restaurantManager;
 	private ReservationManager reservationManager;
-	
+
 	Client(Socket clientSocket)
 	{
 		Logger.getLogger(Client.class.getName()).info("New incoming connection from " +
@@ -55,7 +55,7 @@ public class Client extends Thread
 			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
+
 	@Override
 	public void run()
 	{
@@ -73,7 +73,7 @@ public class Client extends Thread
 			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
+
 	private void process()
 	{
 		RequestMessage reqMsg = (RequestMessage)Message.receive(inputStream);
@@ -92,7 +92,7 @@ public class Client extends Thread
 		Logger.getLogger(Client.class.getName()).info(getName() +
 			": received " + reqMsg.getAction() + " request." +
 			(loggedUser != null ? " (User: " + loggedUser.getUsername() + ")" : "") + ".");
-		
+
 		ResponseMessage resMsg = null;
 		switch(reqMsg.getAction()) {
 		case LOGIN:
@@ -108,7 +108,7 @@ public class Client extends Thread
 			if (loggedUser == null)
 				resMsg = new ResponseMessage("You must be logged in to perform this action.");
 		}
-		
+
 		if (resMsg == null)
 			switch (reqMsg.getAction()) {
 			case LOGIN:
@@ -158,7 +158,7 @@ public class Client extends Thread
 			(loggedUser != null ? " (User: " + loggedUser.getUsername() + ")" : "") + ".");
 		resMsg.send(outputStream);
 	}
-	
+
 	private ResponseMessage handleLogin(RequestMessage reqMsg)
 	{
 		User user = (User)reqMsg.getEntity();
@@ -171,13 +171,13 @@ public class Client extends Thread
 		}
 		return new ResponseMessage("Invalid username or password.");
 	}
-	
+
 	private ResponseMessage handleLogout(RequestMessage reqMsg)
 	{
 		loggedUser = null;
 		return new ResponseMessage();
 	}
-	
+
 	private ResponseMessage handleRegister(RequestMessage reqMsg)
 	{
 		User user = null;
@@ -212,7 +212,7 @@ public class Client extends Thread
 		userManager.refresh(savedUser);
 		return new ResponseMessage(savedUser.toCommonEntity((restaurant == null) ? UserType.CUSTOMER : UserType.CUSTOMER));
 	}
-	
+
 	private ResponseMessage handleGetOwnRestaurant(RequestMessage reqMsg)
 	{
 		Restaurant_ restaurant = restaurantManager.getRestaurantByOwner(loggedUser);
@@ -220,7 +220,7 @@ public class Client extends Thread
 			return new ResponseMessage("You do not have any restaurant.");
 		return new ResponseMessage(restaurant.toCommonEntity());
 	}
-	
+
 	private boolean hasRestaurant(User_ user, int restaurantId)
 	{
 		Restaurant_ restaurant = restaurantManager.getRestaurantByOwner(user);
@@ -228,7 +228,7 @@ public class Client extends Thread
 			return false;
 		return restaurant.getOwner().getId() == user.getId();
 	}
-	
+
 	private boolean hasReservation(User_ user, int reservationId)
 	{
 		List<Reservation_> reservations = reservationManager.getActiveReservations(user);
@@ -237,7 +237,7 @@ public class Client extends Thread
 				return true;
 		return false;
 	}
-	
+
 	private ResponseMessage handleEditRestaurant(RequestMessage reqMsg)
 	{
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
@@ -255,7 +255,7 @@ public class Client extends Thread
 		restaurantManager.refresh(restaurant_);
 		return new ResponseMessage(restaurant_.toCommonEntity());
 	}
-	
+
 	private ResponseMessage handleListOwnReservations(RequestMessage reqMsg)
 	{
 		ResponseMessage resMsg = new ResponseMessage();
@@ -264,7 +264,7 @@ public class Client extends Thread
 			resMsg.addEntity(reservation.toCommonEntity());
 		return resMsg;
 	}
-	
+
 	private ResponseMessage handleEditReservation(RequestMessage reqMsg)
 	{
 		Reservation reservation = (Reservation)reqMsg.getEntity();
@@ -307,7 +307,7 @@ public class Client extends Thread
 		reservationManager.refresh(reservation_);
 		return new ResponseMessage(reservation_.toCommonEntity());
 	}
-	
+
 	private ResponseMessage handleListRestaurants(RequestMessage reqMsg)
 	{
 		List<Restaurant_> restaurants = restaurantManager.getAll();
@@ -316,7 +316,7 @@ public class Client extends Thread
 			resMsg.addEntity(restaurant.toCommonEntity());
 		return resMsg;
 	}
-	
+
 	private ResponseMessage handleReserve(RequestMessage reqMsg)
 	{
 		Reservation reservation = null;
@@ -364,7 +364,7 @@ public class Client extends Thread
 		reservationManager.refresh(reservation_);
 		return new ResponseMessage(reservation_.toCommonEntity());
 	}
-	
+
 	private ResponseMessage handleDeleteReservation(RequestMessage reqMsg)
 	{
 		Reservation reservation = (Reservation)reqMsg.getEntity();
@@ -382,7 +382,7 @@ public class Client extends Thread
 		restaurantManager.refresh(reservation_.getRestaurant());
 		return new ResponseMessage();
 	}
-	
+
 	private ResponseMessage handleDeleteRestaurant(RequestMessage reqMsg)
 	{
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
@@ -399,7 +399,7 @@ public class Client extends Thread
 		userManager.refresh(restaurant_.getOwner());
 		return new ResponseMessage();
 	}
-	
+
 	private ResponseMessage handleListReservations(RequestMessage reqMsg)
 	{
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
@@ -414,7 +414,7 @@ public class Client extends Thread
 			resMsg.addEntity(reservation.toCommonEntity());
 		return resMsg;
 	}
-	
+
 	private ResponseMessage handleCheckSeats(RequestMessage reqMsg)
 	{
 		Reservation reservation = null;

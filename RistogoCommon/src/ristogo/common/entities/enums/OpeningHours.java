@@ -7,7 +7,7 @@ public enum OpeningHours
 	LUNCH,
 	DINNER,
 	BOTH;
-	
+
 	public String toString()
 	{
 		switch (this) {
@@ -22,7 +22,7 @@ public enum OpeningHours
 			return "Unknown";
 		}
 	}
-	
+
 	public ReservationTime toReservationTime()
 	{
 		if (this == BOTH)

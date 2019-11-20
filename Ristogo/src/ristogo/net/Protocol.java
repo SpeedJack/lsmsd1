@@ -24,7 +24,7 @@ public class Protocol implements AutoCloseable
 	private DataInputStream inputStream = null;
 	private DataOutputStream outputStream = null;
 	private static Protocol protocol = null;
-	
+
 	private Protocol() throws IOException
 	{
 		Configuration config = Configuration.getConfig();
@@ -33,25 +33,25 @@ public class Protocol implements AutoCloseable
 		outputStream = new DataOutputStream(socket.getOutputStream());
 		Logger.getLogger(Protocol.class.getName()).info("Connected to " + config.getServerIp() + ":" + config.getServerPort() + ".");
 	}
-	
+
 	public static Protocol getProtocol() throws IOException{
 		if(protocol == null) {
 			protocol = new Protocol();
 		}
 		return protocol;
 	}
-	
-	
+
+
 	public ResponseMessage performLogin(User user)
 	{
 		return sendRequest(ActionRequest.LOGIN, user);
 	}
-	
+
 	public ResponseMessage performLogout()
 	{
 		return sendRequest(ActionRequest.LOGOUT);
 	}
-	
+
 	public ResponseMessage registerUser(Customer customer)
 	{
 		ResponseMessage resMsg = sendRequest(ActionRequest.REGISTER, customer);
@@ -59,7 +59,7 @@ public class Protocol implements AutoCloseable
 			return getProtocolErrorMessage();
 		return resMsg;
 	}
-	
+
 	public ResponseMessage registerUser(Owner owner, Restaurant restaurant)
 	{
 		ResponseMessage resMsg = sendRequest(ActionRequest.REGISTER, owner, restaurant);
@@ -67,57 +67,57 @@ public class Protocol implements AutoCloseable
 			return getProtocolErrorMessage();
 		return resMsg;
 	}
-	
+
 	public ResponseMessage getOwnRestaurant()
 	{
 		return sendRequest(ActionRequest.GET_OWN_RESTAURANT);
 	}
-	
+
 	public ResponseMessage editRestaurant(Restaurant restaurant)
 	{
 		return sendRequest(ActionRequest.EDIT_RESTAURANT, restaurant);
 	}
-	
+
 	public ResponseMessage deleteRestaurant(Restaurant restaurant)
 	{
 		return sendRequest(ActionRequest.DELETE_RESTAURANT, restaurant);
 	}
-	
+
 	public ResponseMessage getOwnActiveReservations()
 	{
 		return sendRequest(ActionRequest.LIST_OWN_RESERVATIONS);
 	}
-	
+
 	public ResponseMessage editReservation(Reservation reservation)
 	{
 		return sendRequest(ActionRequest.EDIT_RESERVATION, reservation);
 	}
-	
+
 	public ResponseMessage getRestaurants()
 	{
 		return sendRequest(ActionRequest.LIST_RESTAURANTS);
 	}
-	
+
 	public ResponseMessage reserve(Reservation reservation, Restaurant restaurant)
 	{
 		return sendRequest(ActionRequest.RESERVE, reservation, restaurant);
 	}
-	
+
 	public ResponseMessage deleteReservation(Reservation reservation)
 	{
 		return sendRequest(ActionRequest.DELETE_RESERVATION, reservation);
 	}
-	
+
 	public ResponseMessage getReservations(Restaurant restaurant)
 	{
 		return sendRequest(ActionRequest.LIST_RESERVATIONS, restaurant);
 	}
-	
+
 	public ResponseMessage checkSeats(Reservation reservation, Restaurant restaurant)
 	{
 		return sendRequest(ActionRequest.CHECK_SEATS, reservation, restaurant);
 	}
-	
+
 	private ResponseMessage sendRequest(ActionRequest actionRequest, Entity... entities)
 	{
 		Logger.getLogger(Protocol.class.getName()).entering(Protocol.class.getName(), "sendRequest", entities);
@@ -126,13 +126,13 @@ public class Protocol implements AutoCloseable
 		Logger.getLogger(Protocol.class.getName()).exiting(Protocol.class.getName(), "sendRequest", entities);
 		return resMsg != null && resMsg.isValid(actionRequest) ? resMsg : getProtocolErrorMessage();
 	}
-	
+
 	private ResponseMessage getProtocolErrorMessage()
 	{
 		Logger.getLogger(Protocol.class.getName()).warning("Received an invalid response from server.");
 		return new ResponseMessage("Invalid response from server.");
 	}
-	
+
 	public void close() throws IOException
 	{
 		inputStream.close();

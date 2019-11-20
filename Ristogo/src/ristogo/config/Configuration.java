@@ -27,7 +27,7 @@ public class Configuration implements Serializable
 	private static final long serialVersionUID = 3785622852095732177L;
 
 	private static Configuration singletonObj;
-	
+
 	private String serverIp;
 	private int serverPort;
 	private InterfaceMode interfaceMode;
@@ -37,12 +37,12 @@ public class Configuration implements Serializable
 	private String fgColorName;
 	private int numberRowsDisplayable;
 	private Level logLevel;
-	
+
 	private Configuration()
 	{
 		mergeDefaults();
 	}
-	
+
 	private void mergeDefaults()
 	{
 		if (serverIp == null || serverIp.isBlank()) {
@@ -82,7 +82,7 @@ public class Configuration implements Serializable
 			Logger.getLogger(Configuration.class.getName()).config("logLevel not set. Using default value: " + logLevel + ".");
 		}
 	}
-	
+
 	public static Configuration getConfig()
 	{
 		if (singletonObj == null)
@@ -97,7 +97,7 @@ public class Configuration implements Serializable
 			}
 		return singletonObj;
 	}
-	
+
 	private static Configuration loadConfiguration() throws FileNotFoundException, InvalidConfigurationException
 	{
 		if (!validateConfiguration()) {
@@ -113,7 +113,7 @@ public class Configuration implements Serializable
 		config.mergeDefaults();
 		return config;
 	}
-	
+
 	private static boolean validateConfiguration()
 	{
 		try {
@@ -128,22 +128,22 @@ public class Configuration implements Serializable
 		}
 		return true;
 	}
-	
+
 	public String getServerIp()
 	{
 		return serverIp;
 	}
-	
+
 	public int getServerPort()
 	{
 		return serverPort;
 	}
-	
+
 	public InterfaceMode getInterfaceMode()
 	{
 		return interfaceMode;
 	}
-	
+
 	public String getFontName()
 	{
 		return fontName;
@@ -168,7 +168,7 @@ public class Configuration implements Serializable
 	{
 		return fgColorName;
 	}
-	
+
 	public Level getLogLevel()
 	{
 		return logLevel;

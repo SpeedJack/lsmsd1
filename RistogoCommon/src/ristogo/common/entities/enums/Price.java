@@ -9,7 +9,7 @@ public enum Price
 	MIDDLE,
 	HIGH,
 	LUXURY;
-	
+
 	public String toString()
 	{
 		switch (this) {

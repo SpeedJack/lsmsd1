@@ -11,29 +11,29 @@ public class ResponseMessage extends Message
 
 	protected final boolean success;
 	protected final String errorMsg;
-	
+
 	public ResponseMessage(String errorMsg)
 	{
 		this(false, errorMsg, (Entity[])null);
 	}
-	
+
 	public ResponseMessage(Entity... entities)
 	{
 		this(true, null, entities);
 	}
-	
+
 	protected ResponseMessage(boolean success, String errorMsg, Entity... entities)
 	{
 		super(entities);
 		this.success = success;
 		this.errorMsg = errorMsg;
 	}
-	
+
 	public boolean isSuccess()
 	{
 		return success;
 	}
-	
+
 	public boolean isValid(ActionRequest actionRequest)
 	{
 		if (!isSuccess())
@@ -71,7 +71,7 @@ public class ResponseMessage extends Message
 			return false;
 		}
 	}
-	
+
 	public String getErrorMsg()
 	{
 		return errorMsg;

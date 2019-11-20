@@ -12,7 +12,7 @@ public class ClientPool implements Runnable
 {
 	private final ServerSocket serverSocket;
 	private final ExecutorService pool;
-	
+
 	ClientPool(int port) throws IOException
 	{
 		pool = Executors.newCachedThreadPool();
@@ -31,7 +31,7 @@ public class ClientPool implements Runnable
 			shutdown();
 		}
 	}
-	
+
 	void shutdown()
 	{
 		Logger.getLogger(ClientPool.class.getName()).info("Shutting down...");

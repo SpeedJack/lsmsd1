@@ -8,7 +8,7 @@ import ristogo.common.net.ResponseMessage;
 import ristogo.ui.Console;
 
 public class UserMenu extends Menu
-{	
+{
 	@Override
 	protected SortedSet<MenuEntry> getMenu()
 	{
@@ -20,7 +20,7 @@ public class UserMenu extends Menu
 		menu.add(new MenuEntry(0, "Log-Out", true, this::handleLogout));
 		return menu;
 	}
-	
+
 	private void handleLogout(MenuEntry entry)
 	{
 		ResponseMessage resMsg = protocol.performLogout();
@@ -31,12 +31,12 @@ public class UserMenu extends Menu
 		}
 		Console.println("Sucessfully logged out!");
 	}
-	
+
 	private void handleViewOwnReservations(MenuEntry entry)
 	{
 		new OwnReservationListMenu().show();
 	}
-	
+
 	private void handleEditRestaurant(MenuEntry entry)
 	{
 		ResponseMessage resMsg = protocol.getOwnRestaurant();
@@ -46,7 +46,7 @@ public class UserMenu extends Menu
 		}
 		new RestaurantMenu((Restaurant)resMsg.getEntity()).show();
 	}
-	
+
 	private void handleReserve(MenuEntry entry)
 	{
 		new RestaurantListMenu().show();
