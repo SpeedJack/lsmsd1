@@ -19,15 +19,15 @@ import ristogo.ui.graphics.beans.RestaurantBean;
 
 
 public class TableViewRestaurant extends TableView<RestaurantBean> {
-	
+
 	final ObservableList<RestaurantBean> restaurantList;
 	private TableColumn<RestaurantBean, String> nameColumn;
 	private TableColumn<RestaurantBean, Genre> typeColumn;
 	private TableColumn<RestaurantBean, Price> priceColumn;
 	private TableColumn<RestaurantBean, String> cityColumn;
 	private TableColumn<RestaurantBean, String> addressColumn;
-	 
-		 
+
+
 	@SuppressWarnings("unchecked")
 	public TableViewRestaurant()
 	{
@@ -39,8 +39,8 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
 		String font = Configuration.getConfig().getFontName();
 		double dimC = Configuration.getConfig().getFontSize();
 		String textColor = Configuration.getConfig().getFgColorName();
-		    
-		    
+
+
 		nameColumn = new TableColumn<RestaurantBean, String>("Name");
 		nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 		nameColumn.setStyle(
@@ -80,21 +80,21 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
 		getColumns().addAll(nameColumn, typeColumn, priceColumn, cityColumn, addressColumn);
 		restaurantList = FXCollections.observableArrayList();
 		setItems(restaurantList);
-		    
-	}	
-	
+
+	}
+
  	public String getSelectionName() {
  		return this.getSelectionModel().getSelectedItem().getName();
  	}
- 	
+
  	public String getSelectionDescription() {
  		return this.getSelectionModel().getSelectedItem().getDescription();
  	}
- 	
+
  	public OpeningHours getSelectionHours() {
  		return this.getSelectionModel().getSelectedItem().getOpeningHours();
  	}
- 	
+
    public void listRestaurants(){
 	   restaurantList.clear();
 	   try {
@@ -109,5 +109,5 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
 		   e.printStackTrace();
 	   }
    }
-	  
+
 }

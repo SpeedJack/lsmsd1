@@ -11,13 +11,13 @@ import ristogo.common.entities.enums.Price;
 public class RestaurantForm extends TextForm
 {
 	protected Restaurant restaurant;
-	
+
 	public RestaurantForm(Restaurant restaurant)
 	{
 		super("Editing " + restaurant.getName());
 		this.restaurant = restaurant;
 	}
-	
+
 	@Override
 	protected LinkedHashSet<FormField> createFields()
 	{
@@ -38,7 +38,7 @@ public class RestaurantForm extends TextForm
 		fields.add(new ChoiceFormField<OpeningHours>("Opening hours", restaurant.getOpeningHours(), OpeningHours.class));
 		return fields;
 	}
-	
+
 	@Override
 	public HashMap<Integer, String> show()
 	{

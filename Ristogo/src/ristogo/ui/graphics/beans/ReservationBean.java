@@ -27,7 +27,7 @@ public class ReservationBean extends EntityBean
 		this.seats = new SimpleIntegerProperty(seats);
 
 	}
-	
+
 	public static ReservationBean fromEntity(Reservation reservation)
 	{
 		return new ReservationBean(reservation.getId(), reservation.getUserName(),
@@ -74,12 +74,12 @@ public class ReservationBean extends EntityBean
 	{
 		this.time.set(time);
 	}
-	
+
 	public void setUserName(String userName)
 	{
 		this.userName.set(userName);
 	}
-	
+
 	public void setRestaurantName(String restaurantName)
 	{
 		this.restaurantName.set(restaurantName);

@@ -32,7 +32,7 @@ public class OwnReservationListMenu extends Menu
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
-	
+
 	private void handleReservationSelection(MenuEntry entry)
 	{
 		new ReservationManageMenu((Reservation)entry.getHandlerData()).show();

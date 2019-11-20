@@ -13,11 +13,11 @@ public class Reservation extends Entity
 	protected LocalDate date;
 	protected ReservationTime time;
 	protected int seats;
-	
+
 	public Reservation(int id) {
 		super(id);
 	}
-	
+
 	public Reservation(int id, String userName, String restaurantName, LocalDate date, ReservationTime time, int seats)
 	{
 		super(id);
@@ -27,7 +27,7 @@ public class Reservation extends Entity
 		this.time = time;
 		this.seats = seats;
 	}
-	
+
 	public Reservation(String userName, String restaurantName, LocalDate date, ReservationTime time, int seats)
 	{
 		this(0, userName, restaurantName, date, time, seats);
@@ -83,12 +83,12 @@ public class Reservation extends Entity
 	{
 		return seats;
 	}
-	
+
 	public boolean isActive()
 	{
 		return date != null && !date.isBefore(LocalDate.now());
 	}
-	
+
 	@Override
 	public String toString()
 	{

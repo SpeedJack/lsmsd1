@@ -11,7 +11,7 @@ public class RegisterForm extends TextForm
 	{
 		super("Create an account");
 	}
-	
+
 	@Override
 	protected LinkedHashSet<FormField> createFields()
 	{
@@ -21,7 +21,7 @@ public class RegisterForm extends TextForm
 		fields.add(new ChoiceFormField<UserType>("TYPE", UserType.CUSTOMER, UserType.class));
 		return fields;
 	}
-	
+
 	@Override
 	protected boolean validatePassword(String password)
 	{
@@ -35,7 +35,7 @@ public class RegisterForm extends TextForm
 		}
 		return true;
 	}
-	
-	
+
+
 
 }

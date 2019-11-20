@@ -18,14 +18,14 @@ import ristogo.ui.graphics.beans.ReservationBean;
 
 
 public class TableViewReservation extends TableView<ReservationBean>  {
-	
+
 	 private final ObservableList<ReservationBean> reservationList;
 	 private TableColumn<ReservationBean, String> nameColumn;
 	 private TableColumn<ReservationBean, LocalDate> dateColumn;
 	 private TableColumn<ReservationBean, ReservationTime> hourColumn;
 	 private TableColumn<ReservationBean, String> seatsColumn;
-	 
-	 
+
+
 	 @SuppressWarnings("unchecked")
 		public TableViewReservation(boolean isCustomer){
 
@@ -82,8 +82,8 @@ public class TableViewReservation extends TableView<ReservationBean>  {
 			reservationList = FXCollections.observableArrayList();
 			setItems(reservationList);
 		}
-	 
-	  
+
+
 	  	public void listReservations(boolean isCostumer) {
 	  		reservationList.clear();
 		   try {

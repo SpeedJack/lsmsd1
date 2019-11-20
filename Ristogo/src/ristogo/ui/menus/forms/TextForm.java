@@ -14,17 +14,17 @@ public abstract class TextForm
 	private LinkedHashSet<FormField> fields;
 
 	protected abstract LinkedHashSet<FormField> createFields();
-	
+
 	protected TextForm()
 	{
 		this("Fill the following form");
 	}
-	
+
 	protected TextForm(String prompt)
 	{
 		this.prompt = prompt;
 	}
-	
+
 	public HashMap<Integer, String> show()
 	{
 		if (!prompt.isBlank())
@@ -40,7 +40,7 @@ public abstract class TextForm
 		}
 		return hm;
 	}
-	
+
 	protected boolean validateUsername(String username)
 	{
 		if (!User.validateUsername(username)) {
@@ -49,7 +49,7 @@ public abstract class TextForm
 		}
 		return true;
 	}
-	
+
 	protected boolean validatePassword(String password)
 	{
 		if (!User.validatePassword(password)) {
@@ -58,7 +58,7 @@ public abstract class TextForm
 		}
 		return true;
 	}
-	
+
 	protected boolean validatePositiveInteger(String value)
 	{
 		try {
@@ -71,7 +71,7 @@ public abstract class TextForm
 		}
 		return true;
 	}
-	
+
 	protected boolean validateFutureDate(String date)
 	{
 		try {

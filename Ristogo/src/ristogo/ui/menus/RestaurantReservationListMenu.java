@@ -12,7 +12,7 @@ import ristogo.ui.Console;
 public class RestaurantReservationListMenu extends Menu
 {
 	protected Restaurant restaurant;
-	
+
 	public RestaurantReservationListMenu(Restaurant restaurant)
 	{
 		super("Select reservation");
@@ -40,12 +40,12 @@ public class RestaurantReservationListMenu extends Menu
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
-	
+
 	protected static String getReservationMenuName(Reservation reservation)
 	{
 		return reservation.getRestaurantName() + " " + reservation.getDate() + " " + reservation.getTime() + " x" + reservation.getSeats();
 	}
-	
+
 	private void handleViewReservation(MenuEntry entry)
 	{
 		Reservation reservation = (Reservation)entry.getHandlerData();

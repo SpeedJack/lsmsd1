@@ -19,7 +19,7 @@ public class RestaurantBean extends EntityBean
 	private final SimpleStringProperty description;
 	private final SimpleIntegerProperty seats;
 	private final SimpleObjectProperty<OpeningHours> openingHours;
-	
+
 	public RestaurantBean(int id, String ownerName, String name, Genre genre,
 		Price price, String city, String address, String description,
 		int seats, OpeningHours openingHours)
@@ -35,7 +35,7 @@ public class RestaurantBean extends EntityBean
 		this.seats = new SimpleIntegerProperty(seats);
 		this.openingHours = new SimpleObjectProperty<OpeningHours>(openingHours);
 	}
-	
+
 	public static RestaurantBean fromEntity(Restaurant restaurant)
 	{
 		return new RestaurantBean(restaurant.getId(), restaurant.getOwnerName(),

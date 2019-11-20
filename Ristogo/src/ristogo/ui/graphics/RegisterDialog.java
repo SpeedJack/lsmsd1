@@ -31,19 +31,19 @@ import ristogo.net.Protocol;
 import ristogo.ui.graphics.config.GUIConfig;
 
 public class RegisterDialog extends Dialog<Integer> {
-	
+
 	private TextField username;
 	private PasswordField password;
 	private ChoiceBox<String> cb;
 	private Label error;
-	
+
 	public RegisterDialog(){
 
-		
+
 		DialogPane dialogPane = getDialogPane();
 		Stage stage = (Stage)dialogPane.getScene().getWindow();
 		stage.getIcons().add(new Image(this.getClass().getResource("/resources/logo.png").toString()));
-		
+
 		dialogPane.setStyle(GUIConfig.getInvertedCSSBgColor());
 
 		setTitle("RistoGo - Register");
@@ -52,7 +52,7 @@ public class RegisterDialog extends Dialog<Integer> {
 		dialogPane.getStyleClass().remove("alert");
 
 		GridPane header = (GridPane)dialogPane.lookup(".header-panel");
-		header.setStyle(GUIConfig.getInvertedCSSBgColor() + 
+		header.setStyle(GUIConfig.getInvertedCSSBgColor() +
 				GUIConfig.getCSSFontFamily() +
 				GUIConfig.getInvertedCSSFgColor() +
 				"-fx-wrap-text: true ;");
@@ -63,7 +63,7 @@ public class RegisterDialog extends Dialog<Integer> {
 		img.setFitHeight(50);
 		img.setFitWidth(50);
 		setGraphic(img);
-		
+
 ////////////////////////////CONTENUTO//////////////////////////////////////////////////////////////////////
 		Label l1 = new Label("Name: ");
 		username = new TextField();
@@ -79,7 +79,7 @@ public class RegisterDialog extends Dialog<Integer> {
 		l1.setTextFill(GUIConfig.getBgColor());
 		username.setFont(GUIConfig.getTextFont());
 		username.setMaxWidth(200);
-		
+
 		l2.setFont(GUIConfig.getFormTitleFont());
 		l2.setTextFill(GUIConfig.getBgColor());
 		password.setFont(GUIConfig.getTextFont());
@@ -87,7 +87,7 @@ public class RegisterDialog extends Dialog<Integer> {
 
 		l3.setFont(GUIConfig.getFormTitleFont());
 		l3.setTextFill(GUIConfig.getBgColor());
-		
+
 		error = new Label("Error: Register Failed. Retry with different username");
 		error.setFont(GUIConfig.getFormTitleFont());
 		error.setTextFill(GUIConfig.getBgColor());
@@ -105,14 +105,14 @@ public class RegisterDialog extends Dialog<Integer> {
 		grid.add(password, 1, 1);
 		grid.add(l3, 0, 2);
 		grid.add(cb, 1, 2);
-		
+
 		VBox content = new VBox(10);
 		content.getChildren().addAll(grid,error);
 		dialogPane.setContent(content);
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-		
+
 		ButtonType registerButtonType = new ButtonType("Register", ButtonData.OK_DONE);
 		dialogPane.getButtonTypes().addAll(registerButtonType, ButtonType.CANCEL);
 
@@ -127,7 +127,7 @@ public class RegisterDialog extends Dialog<Integer> {
 		username.textProperty().addListener((observable, oldValue, newValue) -> {
 			registerButton.setDisable(newValue.trim().isEmpty());
 		});
-		
+
 		Platform.runLater(() -> username.requestFocus());
 		setResultConverter(dialogButton -> {
 			 		if (dialogButton == registerButtonType) {
@@ -153,7 +153,7 @@ public class RegisterDialog extends Dialog<Integer> {
 			 			}
 			 		}
 					return 0;
-			});		
+			});
 }
-	
+
 }

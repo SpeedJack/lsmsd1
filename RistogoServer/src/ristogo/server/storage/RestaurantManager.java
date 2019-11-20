@@ -20,19 +20,19 @@ public class RestaurantManager extends EntityManager
 	{
 		return (Restaurant_)super.get(Restaurant_.class, restaurantId);
 	}
-	
+
 	public void delete(int restaurantId)
 	{
 		super.delete(Restaurant_.class, restaurantId);
 	}
-	
+
 	public Restaurant_ getRestaurantByOwner(User_ owner)
 	{
 		if (isLevelDBEnabled())
 			return getLevelDBManager().getRestaurantByOwner(owner.getId());
 		return owner.getRestaurant();
 	}
-	
+
 	@Override
 	public List<Restaurant_> getAll()
 	{

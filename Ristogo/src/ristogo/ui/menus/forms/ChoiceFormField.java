@@ -10,7 +10,7 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 	protected int defaultSelection;
 	protected Class<T> enumClass;
 	protected Predicate<T> validator;
-	
+
 	public ChoiceFormField(String name, Class<T> e)
 	{
 		super(name);
@@ -22,13 +22,13 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 			i++;
 		}
 	}
-	
+
 	public ChoiceFormField(String name, Class<T> e, Predicate<T> validator)
 	{
 		this(name, e);
 		this.validator = validator;
 	}
-	
+
 	public ChoiceFormField(String name, T defaultValue, Class<T> e)
 	{
 		super(name, defaultValue.toString());
@@ -42,13 +42,13 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 			i++;
 		}
 	}
-	
+
 	public ChoiceFormField(String name, T defaultValue, Class<T> e, Predicate<T> validator)
 	{
 		this(name, defaultValue, e);
 		this.validator = validator;
 	}
-	
+
 	@Override
 	protected boolean isValid()
 	{
@@ -58,7 +58,7 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 			return true;
 		return validator.test(Enum.valueOf(enumClass, value));
 	}
-	
+
 	@Override
 	public void setValue(String value)
 	{
@@ -66,7 +66,7 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 			value = Integer.toString(defaultSelection);
 		this.value = values.get(Integer.parseInt(value));
 	}
-	
+
 	@Override
 	public String toString()
 	{
@@ -77,7 +77,7 @@ public class ChoiceFormField<T extends Enum<T>> extends FormField
 		sb.append("Enter selection" + (defaultSelection > 0 ? " [" + defaultSelection + "]" : ""));
 		return sb.toString();
 	}
-	
+
 	protected static String[] getEnumNames(Class<? extends Enum<?>> e)
 	{
 		return Arrays.stream(e.getEnumConstants()).map(Enum::name).toArray(String[]::new);

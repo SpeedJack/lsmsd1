@@ -35,16 +35,16 @@ public class KVDBManager implements AutoCloseable
 	private static DB db;
 	private static final ThreadLocal<WriteBatch> threadLocal;
 	private boolean initialized = false;
-	
+
 	static {
 		threadLocal = new ThreadLocal<WriteBatch>();
 	}
-	
+
 	private static WriteBatch getWriteBatch()
 	{
 		return threadLocal.get();
 	}
-	
+
 	private static void setWriteBatch(WriteBatch wb)
 	{
 		threadLocal.set(wb);
@@ -75,12 +75,12 @@ public class KVDBManager implements AutoCloseable
 			}
 		return instance;
 	}
-	
+
 	public boolean isInitialized()
 	{
 		return initialized;
 	}
-	
+
 	public void setInitialized()
 	{
 		initialized = true;
@@ -92,19 +92,19 @@ public class KVDBManager implements AutoCloseable
 			insert(entity);
 		setInitialized();
 	}
-	
+
 	private static String capitalizeFirst(String str)
 	{
 		return str.substring(0, 1).toUpperCase() + str.substring(1);
 	}
-	
+
 	public String getAttributeName(Field field)
 	{
 		if (field.getAnnotation(Attribute.class).name().isEmpty())
 			return field.getName();
 		return field.getAnnotation(Attribute.class).name();
 	}
-	
+
 	private Method getAttributeSetter(Class<? extends Entity_> entityClass, Field field)
 	{
 		String setterName;
@@ -120,7 +120,7 @@ public class KVDBManager implements AutoCloseable
 		}
 		return null;
 	}
-	
+
 	private Method getAttributeGetter(Class<? extends Entity_> entityClass, Field field)
 	{
 		String getterName;
@@ -136,7 +136,7 @@ public class KVDBManager implements AutoCloseable
 		}
 		return null;
 	}
-	
+
 	private Field getAttributeField(Class<? extends Entity_> entityClass, String attributeName)
 	{
 		Field[] fields = entityClass.getDeclaredFields();
@@ -154,7 +154,7 @@ public class KVDBManager implements AutoCloseable
 			return null;
 		}
 	}
-	
+
 	public List<Entity_> getAll(Class<? extends Entity_> entityClass)
 	{
 		String entityName = entityClass.getAnnotation(Table.class).name();
@@ -177,7 +177,7 @@ public class KVDBManager implements AutoCloseable
 		}
 		return entities;
 	}
-	
+
 	public Restaurant_ getRestaurantByOwner(int ownerId)
 	{
 		String entityName = Restaurant_.class.getAnnotation(Table.class).name();
@@ -202,17 +202,17 @@ public class KVDBManager implements AutoCloseable
 		}
 		return null;
 	}
-	
+
 	public List<Reservation_> getActiveReservationsByUser(int userId)
 	{
 		return getActiveReservations(userId, "userId");
 	}
-	
+
 	public List<Reservation_> getActiveReservationsByRestaurant(int restaurantId)
 	{
 		return getActiveReservations(restaurantId, "restaurantId");
 	}
-	
+
 	private List<Reservation_> getActiveReservations(int id, String idAttribute)
 	{
 		String entityName = Reservation_.class.getAnnotation(Table.class).name();
@@ -262,7 +262,7 @@ public class KVDBManager implements AutoCloseable
 		}
 		return reservations;
 	}
-	
+
 	public List<Reservation_> getReservationsByDateTime(int restaurantId, LocalDate date, ReservationTime time)
 	{
 		String entityName = Reservation_.class.getAnnotation(Table.class).name();
@@ -319,7 +319,7 @@ public class KVDBManager implements AutoCloseable
 		}
 		return reservations;
 	}
-	
+
 	public User_ getUserByUsername(String username)
 	{
 		String entityName = User_.class.getAnnotation(Table.class).name();
@@ -343,12 +343,12 @@ public class KVDBManager implements AutoCloseable
 		}
 		return null;
 	}
-	
+
 	public Entity_ get(Entity_ entity)
 	{
 		return get(entity.getClass(), entity.getId());
 	}
-	
+
 	public Entity_ get(Class<? extends Entity_> entityClass, int entityId)
 	{
 		String entityName = entityClass.getAnnotation(Table.class).name();
@@ -402,26 +402,26 @@ public class KVDBManager implements AutoCloseable
 		}
 		return found ? entity : null;
 	}
-	
+
 	public boolean isActiveBatch()
 	{
 		return getWriteBatch() != null;
 	}
-	
+
 	public void beginBatch()
 	{
 		if (isActiveBatch())
 			return;
 		setWriteBatch(db.createWriteBatch());
 	}
-	
+
 	public void commitBatch()
 	{
 		if (!isActiveBatch())
 			return;
 		db.write(getWriteBatch());
 	}
-	
+
 	public void closeBatch()
 	{
 		if (!isActiveBatch())
@@ -435,7 +435,7 @@ public class KVDBManager implements AutoCloseable
 			setWriteBatch(null);
 		}
 	}
-	
+
 	public void remove(Class<? extends Entity_> entityClass, int entityId)
 	{
 		String entityName = entityClass.getAnnotation(Table.class).name();
@@ -447,12 +447,12 @@ public class KVDBManager implements AutoCloseable
 			getWriteBatch().delete(bytes(key));
 		}
 	}
-	
+
 	public void remove(Entity_ entity)
 	{
 		remove(entity.getClass(), entity.getId());
 	}
-	
+
 	public void put(Entity_ entity)
 	{
 		Class<? extends Entity_> entityClass = entity.getClass();
@@ -494,31 +494,31 @@ public class KVDBManager implements AutoCloseable
 			getWriteBatch().put(bytes(key), bytes(attributeValue));
 		}
 	}
-	
+
 	public void delete(Class<? extends Entity_> entityClass, int entityId)
 	{
 		beginBatch();
 		remove(entityClass, entityId);
 		commitBatch();
 	}
-	
+
 	public void delete(Entity_ entity)
 	{
 		delete(entity.getClass(), entity.getId());
 	}
-	
+
 	public void update(Entity_ entity)
 	{
 		insert(entity);
 	}
-	
+
 	public void insert(Entity_ entity)
 	{
 		beginBatch();
 		put(entity);
 		commitBatch();
 	}
-	
+
 	public void close()
 	{
 		try {

@@ -42,7 +42,7 @@ public class RestaurantListMenu extends Menu
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
-	
+
 	private void handleRestaurantSelection(MenuEntry entry)
 	{
 		Restaurant restaurant = (Restaurant)entry.getHandlerData();

@@ -6,7 +6,7 @@ public enum UserType
 {
 	CUSTOMER,
 	OWNER;
-	
+
 	public String toString()
 	{
 		switch (this) {

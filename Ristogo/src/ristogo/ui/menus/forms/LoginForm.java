@@ -8,7 +8,7 @@ public class LoginForm extends TextForm
 	{
 		super("Please, log in");
 	}
-	
+
 	@Override
 	protected LinkedHashSet<FormField> createFields()
 	{

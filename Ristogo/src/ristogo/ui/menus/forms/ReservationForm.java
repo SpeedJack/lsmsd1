@@ -27,7 +27,7 @@ public class ReservationForm extends TextForm
 		fields.add(new FormField("Seats", this::validateSeats));
 		return fields;
 	}
-	
+
 	private boolean validateSeats(String value)
 	{
 		if (!validatePositiveInteger(value))
@@ -39,7 +39,7 @@ public class ReservationForm extends TextForm
 		}
 		return true;
 	}
-	
+
 	private boolean validateReservationTime(ReservationTime reservationTime)
 	{
 		OpeningHours oh = restaurant.getOpeningHours();
@@ -52,7 +52,7 @@ public class ReservationForm extends TextForm
 			}
 		default:
 			return true;
-		
+
 		}
 	}
 }

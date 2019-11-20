@@ -10,7 +10,7 @@ import ristogo.common.entities.enums.ReservationTime;
 public class ReservationEditForm extends TextForm
 {
 	protected Reservation reservation;
-	
+
 	public ReservationEditForm(Reservation reservation)
 	{
 		super("Editing reservation for " + reservation.getRestaurantName());
@@ -26,7 +26,7 @@ public class ReservationEditForm extends TextForm
 		fields.add(new FormField("Seats", Integer.toString(reservation.getSeats()), this::validatePositiveInteger));
 		return fields;
 	}
-	
+
 	@Override
 	public HashMap<Integer, String> show()
 	{

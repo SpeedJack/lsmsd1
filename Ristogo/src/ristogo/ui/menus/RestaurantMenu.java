@@ -12,7 +12,7 @@ import ristogo.ui.menus.forms.RestaurantForm;
 public class RestaurantMenu extends Menu
 {
 	protected Restaurant restaurant;
-	
+
 	public RestaurantMenu(Restaurant restaurant)
 	{
 		super(restaurant.getName() + " | select an action");
@@ -30,13 +30,13 @@ public class RestaurantMenu extends Menu
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
-	
+
 	private void handleViewRestaurant(MenuEntry entry)
 	{
 		Console.println("Restaurant details:");
 		Console.println(restaurant.toString());
 	}
-	
+
 	private void handleEditRestaurant(MenuEntry entry)
 	{
 		Restaurant old = restaurant;
@@ -66,7 +66,7 @@ public class RestaurantMenu extends Menu
 		}
 		Console.newLine();
 	}
-	
+
 	private void handleViewReservations(MenuEntry entry)
 	{
 		new ReservationListMenu(restaurant).show();

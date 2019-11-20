@@ -11,7 +11,7 @@ import ristogo.ui.menus.forms.ReservationEditForm;
 public class ReservationManageMenu extends Menu
 {
 	protected Reservation reservation;
-	
+
 	public ReservationManageMenu(Reservation reservation)
 	{
 		super("Reservation at " + reservation.getRestaurantName() + " | select an action");
@@ -28,13 +28,13 @@ public class ReservationManageMenu extends Menu
 		menu.add(new MenuEntry(0, "Go back", true));
 		return menu;
 	}
-	
+
 	private void handleViewReservation(MenuEntry entry)
 	{
 		Console.println("Reservation details:");
 		Console.println(reservation.toString());
 	}
-	
+
 	private void handleEditReservation(MenuEntry entry)
 	{
 		Reservation old = reservation;
@@ -49,7 +49,7 @@ public class ReservationManageMenu extends Menu
 		}
 		Console.newLine();
 	}
-	
+
 	private void handleDeleteReservation(MenuEntry entry)
 	{
 		boolean confirm = Console.askConfirm();

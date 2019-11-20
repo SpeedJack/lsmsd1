@@ -40,12 +40,12 @@ public class Reservation_ extends Entity_
 	@Column(name = "seats", nullable=false)
 	@Attribute
 	protected int seats;
-	
+
 	public Reservation_()
 	{
 		this(0, null, null, 0);
 	}
-	
+
 	public Reservation_(int id, LocalDate date, ReservationTime time, int seats)
 	{
 		super(id);
@@ -53,12 +53,12 @@ public class Reservation_ extends Entity_
 		this.time = time;
 		this.seats = seats;
 	}
-	
+
 	public Reservation toCommonEntity()
 	{
 		return new Reservation(getId(), getUser().getUsername(), getRestaurant().getName(), getDate(), getTime(), getSeats());
 	}
-	
+
 	public boolean merge(Reservation r)
 	{
 		setTime(r.getTime());
@@ -118,7 +118,7 @@ public class Reservation_ extends Entity_
 	{
 		return seats;
 	}
-	
+
 	public boolean isActive()
 	{
 		return date != null && !date.isBefore(LocalDate.now());

@@ -6,7 +6,7 @@ public enum ReservationTime
 {
 	LUNCH,
 	DINNER;
-	
+
 	public String toString()
 	{
 		switch (this) {
@@ -19,7 +19,7 @@ public enum ReservationTime
 			return "Unknown";
 		}
 	}
-	
+
 	public OpeningHours toOpeningHours()
 	{
 		return OpeningHours.valueOf(this.name());

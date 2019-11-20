@@ -9,7 +9,7 @@ public enum Genre
 	MEXICAN,
 	ITALIAN,
 	STEAKHOUSE;
-	
+
 	@Override
 	public String toString()
 	{

@@ -24,26 +24,26 @@ public class ReservationManager extends EntityManager
 	{
 		return (Reservation_)super.get(Reservation_.class, reservationId);
 	}
-	
+
 	public void delete(int reservationId)
 	{
 		super.delete(Reservation_.class, reservationId);
 	}
-	
+
 	public List<Reservation_> getActiveReservations(User_ user)
 	{
 		if (isLevelDBEnabled())
 			return getLevelDBManager().getActiveReservationsByUser(user.getId());
 		return user.getActiveReservations();
 	}
-	
+
 	public List<Reservation_> getActiveReservations(Restaurant_ restaurant)
 	{
 		if (isLevelDBEnabled())
 			return getLevelDBManager().getActiveReservationsByRestaurant(restaurant.getId());
 		return restaurant.getActiveReservations();
 	}
-	
+
 	public List<Reservation_> getReservationsByDateTime(int restaurantId, LocalDate date, ReservationTime time)
 	{
 		Logger.getLogger(ReservationManager.class.getName()).entering(ReservationManager.class.getName(), "getReservationsByDateTime", new Object[]{restaurantId, date, time});
@@ -74,7 +74,7 @@ public class ReservationManager extends EntityManager
 			return null;
 		}
 	}
-	
+
 	@Override
 	public List<Reservation_> getAll()
 	{

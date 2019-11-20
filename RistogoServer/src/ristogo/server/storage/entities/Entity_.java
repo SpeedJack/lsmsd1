@@ -13,22 +13,22 @@ public abstract class Entity_
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id", nullable=false)
 	protected int id;
-	
+
 	protected Entity_(int id)
 	{
 		setId(id);
 	}
-	
+
 	protected Entity_()
 	{
 		this(0);
 	}
-	
+
 	public void setId(int id)
 	{
 		this.id = id;
 	}
-	
+
 	public int getId()
 	{
 		return id;

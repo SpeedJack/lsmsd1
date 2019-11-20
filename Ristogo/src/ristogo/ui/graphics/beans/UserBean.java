@@ -15,7 +15,7 @@ public class UserBean extends EntityBean
 		this.username = new SimpleStringProperty(username);
 		this.owner = new SimpleBooleanProperty(owner);
 	}
-	
+
 	public static UserBean fromEntity(User user)
 	{
 		return new UserBean(user.getId(), user.getUsername(), user.isOwner());
