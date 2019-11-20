@@ -30,7 +30,8 @@ import ristogo.config.Configuration;
 import ristogo.net.Protocol;
 import ristogo.ui.graphics.config.GUIConfig;
 
-public class LoginDialog extends Dialog<User>{
+public class LoginDialog extends Dialog<User>
+{
 	public LoginDialog()
 	{
 
@@ -45,17 +46,14 @@ public class LoginDialog extends Dialog<User>{
 		dialogPane.setStyle(GUIConfig.getInvertedCSSBgColor());
 
 		setTitle("RistoGo - Login");
-		setHeaderText("Welcome to Ristogo!\n" +
-			"The application that allows you to book tables\n" +
+		setHeaderText("Welcome to Ristogo!\n" + "The application that allows you to book tables\n" +
 			"at your favorite restaurants!");
 
 		dialogPane.getStyleClass().remove("alert");
 
 		GridPane header = (GridPane)dialogPane.lookup(".header-panel");
-		header.setStyle(GUIConfig.getInvertedCSSBgColor() +
-						GUIConfig.getCSSFontFamily() +
-						GUIConfig.getInvertedCSSFgColor() +
-						"-fx-wrap-text: true ;");
+		header.setStyle(GUIConfig.getInvertedCSSBgColor() + GUIConfig.getCSSFontFamily() +
+			GUIConfig.getInvertedCSSFgColor() + "-fx-wrap-text: true ;");
 
 		header.lookup(".label").setStyle("-fx-text-fill: " + config.getBgColorName() + ";");
 
@@ -100,17 +98,14 @@ public class LoginDialog extends Dialog<User>{
 		grid.add(password, 1, 1);
 
 		Button registerButton = new Button("Register");
-		registerButton.setStyle(GUIConfig.getCSSFontFamily()
-							    +GUIConfig.getCSSBgColor()
-								+GUIConfig.getCSSFgColor()
-								+GUIConfig.getCSSFontSizeNormal());
-		HBox registerBox=new HBox();
+		registerButton.setStyle(GUIConfig.getCSSFontFamily() + GUIConfig.getCSSBgColor() +
+			GUIConfig.getCSSFgColor() + GUIConfig.getCSSFontSizeNormal());
+		HBox registerBox = new HBox();
 		registerBox.getChildren().add(registerButton);
 		registerBox.setAlignment(Pos.BASELINE_RIGHT);
 
-
 		VBox content = new VBox(10);
-		content.getChildren().addAll(grid,error, registerBox);
+		content.getChildren().addAll(grid, error, registerBox);
 		dialogPane.setContent(content);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////BUTTONS////////////////////////////////////////////////////////
@@ -118,14 +113,12 @@ public class LoginDialog extends Dialog<User>{
 		dialogPane.getButtonTypes().addAll(loginButtonType, ButtonType.CLOSE);
 
 		ButtonBar buttonBar = (ButtonBar)dialogPane.lookup(".button-bar");
-		buttonBar.getButtons().forEach(b -> b.setStyle(GUIConfig.getCSSFontFamily()
-														+GUIConfig.getCSSBgColor()
-														+GUIConfig.getCSSFgColor()
-														+GUIConfig.getCSSFontSizeNormal()));
+		buttonBar.getButtons().forEach(b -> b.setStyle(GUIConfig.getCSSFontFamily() +
+			GUIConfig.getCSSBgColor() + GUIConfig.getCSSFgColor() + GUIConfig.getCSSFontSizeNormal()));
 
 		Node closeButton = getDialogPane().lookupButton(ButtonType.CLOSE);
-        closeButton.managedProperty().bind(closeButton.visibleProperty());
-        closeButton.setVisible(false);
+		closeButton.managedProperty().bind(closeButton.visibleProperty());
+		closeButton.setVisible(false);
 
 		Node loginButton = getDialogPane().lookupButton(loginButtonType);
 		loginButton.setDisable(true);
@@ -135,31 +128,30 @@ public class LoginDialog extends Dialog<User>{
 		Platform.runLater(() -> username.requestFocus());
 
 		registerButton.setOnAction((ActionEvent ev) -> {
-											RegisterDialog register = new RegisterDialog();
-											register.showAndWait();
-											while(register.getResult() != 0) {
-												register.showAndWait();
-											}
-						    		});
+			RegisterDialog register = new RegisterDialog();
+			register.showAndWait();
+			while (register.getResult() != 0) {
+				register.showAndWait();
+			}
+		});
 
 		setResultConverter(dialogButton -> {
-		    if (dialogButton == loginButtonType) {
-		    	try {
-					ResponseMessage res = Protocol.getProtocol().performLogin(new Customer(username.getText(), password.getText()));
+			if (dialogButton == loginButtonType) {
+				try {
+					ResponseMessage res = Protocol.getProtocol()
+						.performLogin(new Customer(username.getText(), password.getText()));
 					if (!res.isSuccess()) {
 						error.setVisible(true);
 						return new Customer(-1, "");
-					}
-					else {
+					} else {
 						return (User)res.getEntity();
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-		    }
+			}
 			return null;
 		});
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}
-
 }

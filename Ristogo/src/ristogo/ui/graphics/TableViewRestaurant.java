@@ -1,6 +1,5 @@
 package ristogo.ui.graphics;
 
-
 import java.io.IOException;
 
 import javafx.collections.FXCollections;
@@ -16,17 +15,14 @@ import ristogo.config.Configuration;
 import ristogo.net.Protocol;
 import ristogo.ui.graphics.beans.RestaurantBean;
 
-
-
-public class TableViewRestaurant extends TableView<RestaurantBean> {
-
+public class TableViewRestaurant extends TableView<RestaurantBean>
+{
 	final ObservableList<RestaurantBean> restaurantList;
 	private TableColumn<RestaurantBean, String> nameColumn;
 	private TableColumn<RestaurantBean, Genre> typeColumn;
 	private TableColumn<RestaurantBean, Price> priceColumn;
 	private TableColumn<RestaurantBean, String> cityColumn;
 	private TableColumn<RestaurantBean, String> addressColumn;
-
 
 	@SuppressWarnings("unchecked")
 	public TableViewRestaurant()
@@ -39,7 +35,6 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
 		String font = Configuration.getConfig().getFontName();
 		double dimC = Configuration.getConfig().getFontSize();
 		String textColor = Configuration.getConfig().getFgColorName();
-
 
 		nameColumn = new TableColumn<RestaurantBean, String>("Name");
 		nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -83,31 +78,34 @@ public class TableViewRestaurant extends TableView<RestaurantBean> {
 
 	}
 
- 	public String getSelectionName() {
- 		return this.getSelectionModel().getSelectedItem().getName();
- 	}
+	public String getSelectionName()
+	{
+		return this.getSelectionModel().getSelectedItem().getName();
+	}
 
- 	public String getSelectionDescription() {
- 		return this.getSelectionModel().getSelectedItem().getDescription();
- 	}
+	public String getSelectionDescription()
+	{
+		return this.getSelectionModel().getSelectedItem().getDescription();
+	}
 
- 	public OpeningHours getSelectionHours() {
- 		return this.getSelectionModel().getSelectedItem().getOpeningHours();
- 	}
+	public OpeningHours getSelectionHours()
+	{
+		return this.getSelectionModel().getSelectedItem().getOpeningHours();
+	}
 
-   public void listRestaurants(){
-	   restaurantList.clear();
-	   try {
-		ResponseMessage res = Protocol.getProtocol().getRestaurants();
-		if(res.isSuccess()) {
-			for (Entity entity: res.getEntities()) {
-				Restaurant restaurant = (Restaurant)entity;
-				restaurantList.add(RestaurantBean.fromEntity(restaurant));
+	public void listRestaurants()
+	{
+		restaurantList.clear();
+		try {
+			ResponseMessage res = Protocol.getProtocol().getRestaurants();
+			if (res.isSuccess()) {
+				for (Entity entity : res.getEntities()) {
+					Restaurant restaurant = (Restaurant)entity;
+					restaurantList.add(RestaurantBean.fromEntity(restaurant));
+				}
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-	   } catch (IOException e) {
-		   e.printStackTrace();
-	   }
-   }
-
+	}
 }

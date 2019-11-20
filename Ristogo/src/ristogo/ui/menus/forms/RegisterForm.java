@@ -35,7 +35,4 @@ public class RegisterForm extends TextForm
 		}
 		return true;
 	}
-
-
-
 }

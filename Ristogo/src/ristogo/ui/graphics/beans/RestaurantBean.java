@@ -134,5 +134,4 @@ public class RestaurantBean extends EntityBean
 	{
 		this.openingHours.set(openingHours);
 	}
-
 }

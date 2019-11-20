@@ -36,5 +36,4 @@ public class ReservationEditForm extends TextForm
 		reservation.setSeats(Integer.parseInt(response.get(2)));
 		return response;
 	}
-
 }

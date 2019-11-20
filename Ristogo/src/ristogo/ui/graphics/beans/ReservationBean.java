@@ -84,5 +84,4 @@ public class ReservationBean extends EntityBean
 	{
 		this.restaurantName.set(restaurantName);
 	}
-
 }

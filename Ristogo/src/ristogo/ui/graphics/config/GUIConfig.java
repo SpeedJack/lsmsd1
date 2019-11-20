@@ -19,7 +19,6 @@ public class GUIConfig
 		return config.getFontSize() - 2;
 	}
 
-
 	public static double getFontSizeSmall()
 	{
 		return config.getFontSize() - 1;
@@ -30,22 +29,22 @@ public class GUIConfig
 		return config.getFontSize();
 	}
 
-	public static double getFontSizeLarge() {
+	public static double getFontSizeLarge()
+	{
 
-		return config.getFontSize() +1;
+		return config.getFontSize() + 1;
 	}
 
-	public static double getFontSizeBig() {
+	public static double getFontSizeBig()
+	{
 
-		return config.getFontSize() +2;
+		return config.getFontSize() + 2;
 	}
-
 
 	public static double getFontSizeHuge()
 	{
 		return config.getFontSize() + 5;
 	}
-
 
 	public static double getTitleFontSize()
 	{
@@ -57,19 +56,23 @@ public class GUIConfig
 		return getFontSizeBig();
 	}
 
-	public static double getFormTitleFontSize() {
+	public static double getFormTitleFontSize()
+	{
 		return getFontSizeLarge();
 	}
 
-	public static double getFormSubtitleFontSize() {
+	public static double getFormSubtitleFontSize()
+	{
 		return getFontSizeSmall();
 	}
+
 	public static double getTextFontSize()
 	{
 		return getFontSizeTiny();
 	}
 
-	public static double getVeryTinyTextFontSize() {
+	public static double getVeryTinyTextFontSize()
+	{
 
 		return getFontSizeVeryTiny();
 	}
@@ -119,12 +122,10 @@ public class GUIConfig
 		return Font.font(config.getFontName(), FontWeight.BOLD, getVeryTinyTextFontSize());
 	}
 
-
 	public static Font getButtonFont()
 	{
 		return Font.font(config.getFontName(), FontWeight.BOLD, getButtonFontSize());
 	}
-
 
 	public static Color getFgColor()
 	{
@@ -223,13 +224,11 @@ public class GUIConfig
 
 	public static String getCSSButtonStyle()
 	{
-		return getCSSFontFamily() + getCSSBgColor() +
-			getCSSFgColor() + getCSSButtonFontSize();
+		return getCSSFontFamily() + getCSSBgColor() + getCSSFgColor() + getCSSButtonFontSize();
 	}
 
 	public static String getCSSDialogHeaderStyle()
 	{
-		return getCSSFontFamily() + getCSSBgColor() + getCSSFgColor() +
-			"-fx-wrap-text: true;";
+		return getCSSFontFamily() + getCSSBgColor() + getCSSFgColor() + "-fx-wrap-text: true;";
 	}
 }

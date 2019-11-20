@@ -70,5 +70,4 @@ public class LoginMenu extends Menu
 		Console.println("Successfully logged in as " + loggedUser.getUsername() + "!");
 		new UserMenu().show();
 	}
-
 }

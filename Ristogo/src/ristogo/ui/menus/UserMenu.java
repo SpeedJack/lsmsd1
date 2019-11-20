@@ -51,5 +51,4 @@ public class UserMenu extends Menu
 	{
 		new RestaurantListMenu().show();
 	}
-
 }

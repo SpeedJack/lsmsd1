@@ -20,7 +20,6 @@ import ristogo.ui.menus.LoginMenu;
 
 public class Ristogo
 {
-
 	public static void main(String[] args)
 	{
 		Logger.getLogger(Ristogo.class.getName()).entering(Ristogo.class.getName(), "main", args);

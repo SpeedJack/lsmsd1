@@ -52,7 +52,6 @@ public class ReservationForm extends TextForm
 			}
 		default:
 			return true;
-
 		}
 	}
 }

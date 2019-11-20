@@ -30,7 +30,6 @@ import ristogo.server.storage.entities.User_;
 
 public class KVDBManager implements AutoCloseable
 {
-
 	private static KVDBManager instance;
 	private static DB db;
 	private static final ThreadLocal<WriteBatch> threadLocal;
@@ -528,5 +527,4 @@ public class KVDBManager implements AutoCloseable
 			Logger.getLogger(KVDBManager.class.getName()).warning("Can not close KVDBManager.");
 		}
 	}
-
 }

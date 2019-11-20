@@ -17,5 +17,4 @@ public class LoginForm extends TextForm
 		fields.add(new FormField("PASSWORD", true, this::validatePassword));
 		return fields;
 	}
-
 }

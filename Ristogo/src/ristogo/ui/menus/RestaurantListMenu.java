@@ -59,5 +59,4 @@ public class RestaurantListMenu extends Menu
 		Console.println("Table successfully reserved!");
 		Console.newLine();
 	}
-
 }

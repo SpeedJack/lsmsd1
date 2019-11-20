@@ -53,5 +53,4 @@ public class RestaurantForm extends TextForm
 		restaurant.setOpeningHours(OpeningHours.valueOf(response.get(7)));
 		return response;
 	}
-
 }

@@ -20,7 +20,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-
 import ristogo.common.entities.Customer;
 import ristogo.common.entities.Owner;
 import ristogo.common.entities.Restaurant;
@@ -30,15 +29,15 @@ import ristogo.net.Protocol;
 
 import ristogo.ui.graphics.config.GUIConfig;
 
-public class RegisterDialog extends Dialog<Integer> {
-
+public class RegisterDialog extends Dialog<Integer>
+{
 	private TextField username;
 	private PasswordField password;
 	private ChoiceBox<String> cb;
 	private Label error;
 
-	public RegisterDialog(){
-
+	public RegisterDialog()
+	{
 
 		DialogPane dialogPane = getDialogPane();
 		Stage stage = (Stage)dialogPane.getScene().getWindow();
@@ -52,10 +51,8 @@ public class RegisterDialog extends Dialog<Integer> {
 		dialogPane.getStyleClass().remove("alert");
 
 		GridPane header = (GridPane)dialogPane.lookup(".header-panel");
-		header.setStyle(GUIConfig.getInvertedCSSBgColor() +
-				GUIConfig.getCSSFontFamily() +
-				GUIConfig.getInvertedCSSFgColor() +
-				"-fx-wrap-text: true ;");
+		header.setStyle(GUIConfig.getInvertedCSSBgColor() + GUIConfig.getCSSFontFamily() +
+			GUIConfig.getInvertedCSSFgColor() + "-fx-wrap-text: true ;");
 
 		header.lookup(".label").setStyle(GUIConfig.getCSSFgColor());
 
@@ -107,9 +104,8 @@ public class RegisterDialog extends Dialog<Integer> {
 		grid.add(cb, 1, 2);
 
 		VBox content = new VBox(10);
-		content.getChildren().addAll(grid,error);
+		content.getChildren().addAll(grid, error);
 		dialogPane.setContent(content);
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -117,10 +113,8 @@ public class RegisterDialog extends Dialog<Integer> {
 		dialogPane.getButtonTypes().addAll(registerButtonType, ButtonType.CANCEL);
 
 		ButtonBar buttonBar = (ButtonBar)dialogPane.lookup(".button-bar");
-		buttonBar.getButtons().forEach(b -> b.setStyle(GUIConfig.getCSSFontFamily()
-														+GUIConfig.getCSSBgColor()
-														+GUIConfig.getCSSFgColor()
-														+GUIConfig.getCSSFontSizeNormal()));
+		buttonBar.getButtons().forEach(b -> b.setStyle(GUIConfig.getCSSFontFamily() +
+			GUIConfig.getCSSBgColor() + GUIConfig.getCSSFgColor() + GUIConfig.getCSSFontSizeNormal()));
 
 		Node registerButton = dialogPane.lookupButton(registerButtonType);
 		registerButton.setDisable(true);
@@ -130,30 +124,30 @@ public class RegisterDialog extends Dialog<Integer> {
 
 		Platform.runLater(() -> username.requestFocus());
 		setResultConverter(dialogButton -> {
-			 		if (dialogButton == registerButtonType) {
-			 			try {
-			 				String us = username.getText();
-			 				String pswd = password.getText();
-			 				UserType type = UserType.valueOf(cb.getValue().toUpperCase());
-			 				ResponseMessage res = null;
-			 				if(type == UserType.CUSTOMER) {
-			 						res = Protocol.getProtocol().registerUser(new Customer(us, pswd));
-			 				} else {
-			 					res = Protocol.getProtocol().registerUser(new Owner(us, pswd), new Restaurant(us));
-			 				}
-			 				if (!res.isSuccess()) {
-			 					error.setVisible(true);
-			 					error.setText(res.getErrorMsg());
-			 					return -1;
-			 				}
-			 				return 0;
-			 			}catch(NullPointerException | IOException e) {
-			 				e.getMessage();
-			 				//GESTIRE MESSAGGIO ERRORE
-			 			}
-			 		}
+			if (dialogButton == registerButtonType) {
+				try {
+					String us = username.getText();
+					String pswd = password.getText();
+					UserType type = UserType.valueOf(cb.getValue().toUpperCase());
+					ResponseMessage res = null;
+					if (type == UserType.CUSTOMER) {
+						res = Protocol.getProtocol().registerUser(new Customer(us, pswd));
+					} else {
+						res = Protocol.getProtocol().registerUser(new Owner(us, pswd),
+							new Restaurant(us));
+					}
+					if (!res.isSuccess()) {
+						error.setVisible(true);
+						error.setText(res.getErrorMsg());
+						return -1;
+					}
 					return 0;
-			});
-}
-
+				} catch (NullPointerException | IOException e) {
+					e.getMessage();
+					// GESTIRE MESSAGGIO ERRORE
+				}
+			}
+			return 0;
+		});
+	}
 }

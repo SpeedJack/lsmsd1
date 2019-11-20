@@ -21,11 +21,8 @@ import ristogo.common.entities.User;
 import ristogo.common.entities.enums.OpeningHours;
 import ristogo.ui.graphics.config.GUIConfig;
 
-
-
 public class RistogoGUI extends Application
 {
-
 	private HBox applicationInterface;
 	private static User loggedUser;
 	private static Restaurant myRestaurant;
@@ -37,23 +34,22 @@ public class RistogoGUI extends Application
 		LoginDialog login = new LoginDialog();
 		login.showAndWait();
 
-		while(login.getResult() != null && login.getResult().getId() == -1) {
+		while (login.getResult() != null && login.getResult().getId() == -1) {
 			login.showAndWait();
 		}
 		loggedUser = login.getResult();
-		if(loggedUser!= null) {
-			if(loggedUser.isOwner()) {
+		if (loggedUser != null) {
+			if (loggedUser.isOwner()) {
 				buildRestaurantOwnerInterface();
-			}
-			else {
+			} else {
 				buildCostumerInterface();
 			}
 			Scene scene = new Scene(new Group(applicationInterface));
 			scene.setFill(GUIConfig.getBgColor());
 
 			stage.setOnCloseRequest((WindowEvent ev) -> {
-											//logout
-										});
+				// logout
+			});
 			stage.setTitle("RistoGo");
 			stage.setResizable(true);
 			stage.setScene(scene);
@@ -67,16 +63,15 @@ public class RistogoGUI extends Application
 		Application.launch(args);
 	}
 
-
-	private void buildCostumerInterface() {
-
+	private void buildCostumerInterface()
+	{
 
 		GridPane title = generateTitle();
 
-	    TableViewReservation reservation = new TableViewReservation(true);
-	    reservation.listReservations(true);
+		TableViewReservation reservation = new TableViewReservation(true);
+		reservation.listReservations(true);
 
-	    BookForm bookForm = new BookForm(reservation::listReservations);
+		BookForm bookForm = new BookForm(reservation::listReservations);
 
 		Label subTitle = new Label("List of Restaurant");
 		subTitle.setFont(GUIConfig.getFormTitleFont());
@@ -86,7 +81,7 @@ public class RistogoGUI extends Application
 		TableViewRestaurant restaurant = new TableViewRestaurant();
 		restaurant.listRestaurants();
 
-	    Label description = new Label("Description: ");
+		Label description = new Label("Description: ");
 		TextArea descriptionField = new TextArea();
 		description.setFont(GUIConfig.getBoldVeryTinyTextFont());
 		description.setTextFill(GUIConfig.getFgColor());
@@ -96,55 +91,51 @@ public class RistogoGUI extends Application
 		descriptionField.setMaxSize(480, 100);
 
 		HBox descriptionBox = new HBox(20);
-		descriptionBox.getChildren().addAll(description,descriptionField);
+		descriptionBox.getChildren().addAll(description, descriptionField);
 
 		Label subTitle2 = new Label("My Reservation");
 		subTitle2.setFont(GUIConfig.getFormTitleFont());
 		subTitle2.setTextFill(GUIConfig.getFgColor());
 		subTitle2.setStyle("-fx-underline: true;");
 
-	    restaurant.setOnMouseClicked((e) -> {
-	    	try {
-	    		bookForm.getDelRes().setDisable(true);
-		    	bookForm.fillOutForm(restaurant.getSelectionName(), restaurant.getSelectionHours());
-		    	descriptionField.setText(restaurant.getSelectionDescription());
-		    	bookForm.setIdResToReserve(restaurant.getSelectionModel().getSelectedItem().getId());
-	    	}catch(NullPointerException ex) {
-	    		//do nothing
-	    	}
+		restaurant.setOnMouseClicked((e) -> {
+			try {
+				bookForm.getDelRes().setDisable(true);
+				bookForm.fillOutForm(restaurant.getSelectionName(), restaurant.getSelectionHours());
+				descriptionField.setText(restaurant.getSelectionDescription());
+				bookForm.setIdResToReserve(restaurant.getSelectionModel().getSelectedItem().getId());
+			} catch (NullPointerException ex) {
+				// do nothing
+			}
 		});
 
-	    reservation.setOnMouseClicked((e) -> {
-	    							try {
-		    							bookForm.getDelRes().setDisable(false);
-		    							bookForm.fillOutForm("", OpeningHours.BOTH);
-		    							bookForm.setIdResToDelete(reservation.getSelectionModel().getSelectedItem().getId());
-	    							}catch(NullPointerException ex){
-	    								//do nothing
-	    							}
-	    							});
+		reservation.setOnMouseClicked((e) -> {
+			try {
+				bookForm.getDelRes().setDisable(false);
+				bookForm.fillOutForm("", OpeningHours.BOTH);
+				bookForm.setIdResToDelete(reservation.getSelectionModel().getSelectedItem().getId());
+			} catch (NullPointerException ex) {
+				// do nothing
+			}
+		});
 
 		VBox leftPart = new VBox(10);
-		leftPart.getChildren().addAll(title,bookForm);
+		leftPart.getChildren().addAll(title, bookForm);
 		leftPart.setPrefSize(400, 600);
-		leftPart.setStyle("-fx-padding: 7;" +
-                "-fx-border-width: 2;" +
-                "-fx-border-insets: 3;" +
-                "-fx-border-radius: 10;" );
+		leftPart.setStyle("-fx-padding: 7;" + "-fx-border-width: 2;" + "-fx-border-insets: 3;" +
+			"-fx-border-radius: 10;");
 		VBox rightPart = new VBox(10);
-		rightPart.getChildren().addAll(subTitle,restaurant, descriptionBox, subTitle2, reservation);
+		rightPart.getChildren().addAll(subTitle, restaurant, descriptionBox, subTitle2, reservation);
 		rightPart.setPrefSize(600, 600);
-		rightPart.setStyle("-fx-padding: 7;" +
-	                "-fx-border-width: 2;" +
-	                "-fx-border-insets: 3;" +
-	                "-fx-border-radius: 10;" );
+		rightPart.setStyle("-fx-padding: 7;" + "-fx-border-width: 2;" + "-fx-border-insets: 3;" +
+			"-fx-border-radius: 10;");
 
 		applicationInterface.getChildren().addAll(leftPart, rightPart);
 		applicationInterface.setPrefSize(1000, 600);
 	}
 
-	private void buildRestaurantOwnerInterface() {
-
+	private void buildRestaurantOwnerInterface()
+	{
 
 		GridPane title = generateTitle();
 		ModifyRestaurantForm modifyForm = new ModifyRestaurantForm();
@@ -154,42 +145,37 @@ public class RistogoGUI extends Application
 		subTitle.setFont(GUIConfig.getFormTitleFont());
 		subTitle.setTextFill(GUIConfig.getFgColor());
 
+		TableViewReservation reservation = new TableViewReservation(false);
+		reservation.listReservations(false);
 
-	    TableViewReservation reservation = new TableViewReservation(false);
-	    reservation.listReservations(false);
+		Button refresh = new Button("Refresh");
+		refresh.setFont(GUIConfig.getButtonFont());
+		refresh.setTextFill(GUIConfig.getInvertedFgColor());
+		refresh.setStyle(GUIConfig.getInvertedCSSBgColorButton());
 
-	   	Button refresh = new Button("Refresh");
-    	refresh.setFont(GUIConfig.getButtonFont());
-    	refresh.setTextFill(GUIConfig.getInvertedFgColor());
-    	refresh.setStyle(GUIConfig.getInvertedCSSBgColorButton() );
-
-	   	refresh.setOnAction((ActionEvent ev) -> {
-	   											reservation.listReservations(false);
-	   											});
+		refresh.setOnAction((ActionEvent ev) -> {
+			reservation.listReservations(false);
+		});
 
 		VBox leftPart = new VBox(10);
-		leftPart.getChildren().addAll(title,modifyForm);
+		leftPart.getChildren().addAll(title, modifyForm);
 		leftPart.setPrefSize(400, 600);
-		leftPart.setStyle("-fx-padding: 7;" +
-                "-fx-border-width: 2;" +
-                "-fx-border-insets: 3;" +
-                "-fx-border-radius: 10;" );
+		leftPart.setStyle("-fx-padding: 7;" + "-fx-border-width: 2;" + "-fx-border-insets: 3;" +
+			"-fx-border-radius: 10;");
 		VBox rightPart = new VBox(10);
 		rightPart.getChildren().addAll(subTitle, reservation, refresh);
 		rightPart.setAlignment(Pos.CENTER);
 		rightPart.setPrefSize(600, 600);
-		rightPart.setStyle("-fx-padding: 7;" +
-	                "-fx-border-width: 2;" +
-	                "-fx-border-insets: 3;" +
-	                "-fx-border-radius: 10;" );
+		rightPart.setStyle("-fx-padding: 7;" + "-fx-border-width: 2;" + "-fx-border-insets: 3;" +
+			"-fx-border-radius: 10;");
 
 		applicationInterface.getChildren().addAll(leftPart, rightPart);
 		applicationInterface.setPrefSize(1000, 600);
 
 	}
 
-	private GridPane generateTitle() {
-
+	private GridPane generateTitle()
+	{
 
 		Label title = new Label("RistoGo");
 		title.setFont(GUIConfig.getTitleFont());
@@ -220,19 +206,23 @@ public class RistogoGUI extends Application
 		return grid;
 	}
 
-	public static User getLoggedUser() {
+	public static User getLoggedUser()
+	{
 		return loggedUser;
 	}
 
-	public static void setLoggedUser(User loggedUser) {
+	public static void setLoggedUser(User loggedUser)
+	{
 		RistogoGUI.loggedUser = loggedUser;
 	}
 
-	public static Restaurant getMyRestaurant() {
+	public static Restaurant getMyRestaurant()
+	{
 		return myRestaurant;
 	}
 
-	public static void setMyRestaurant(Restaurant myRestaurant) {
+	public static void setMyRestaurant(Restaurant myRestaurant)
+	{
 		RistogoGUI.myRestaurant = myRestaurant;
 	}
 }

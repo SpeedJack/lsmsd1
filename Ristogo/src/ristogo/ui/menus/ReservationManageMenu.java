@@ -62,5 +62,4 @@ public class ReservationManageMenu extends Menu
 		}
 		Console.println("Reservation successfully deleted!");
 	}
-
 }

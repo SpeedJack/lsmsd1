@@ -4,7 +4,6 @@ import org.iq80.leveldb.DBComparator;
 
 public class EntityDBComparator implements DBComparator
 {
-
 	@Override
 	public int compare(byte[] arg0, byte[] arg1)
 	{
@@ -50,5 +49,4 @@ public class EntityDBComparator implements DBComparator
 	{
 		return key;
 	}
-
 }

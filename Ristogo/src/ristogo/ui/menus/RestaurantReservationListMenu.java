@@ -52,5 +52,4 @@ public class RestaurantReservationListMenu extends Menu
 		Console.println("Reservation details:");
 		Console.println(reservation.toString());
 	}
-
 }
