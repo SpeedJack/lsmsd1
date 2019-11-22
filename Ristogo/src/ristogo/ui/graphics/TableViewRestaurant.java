@@ -108,7 +108,6 @@ public class TableViewRestaurant extends TableView<RestaurantBean>
 		}
 	}
 
-//Da Modificare
 	public void listRestaurants(String findCity)
 	{
 		restaurantList.clear();
@@ -117,7 +116,9 @@ public class TableViewRestaurant extends TableView<RestaurantBean>
 			if(findCity == null) {
 				res = Protocol.getInstance().getRestaurants();
 			} else {
-				//res = Protocol.getProtocol().
+				Restaurant restaurant = new Restaurant();
+				restaurant.setCity(findCity);
+				res = Protocol.getInstance().getRestaurants(restaurant);
 			}
 			if (res.isSuccess())
 				for (Entity entity : res.getEntities()) {

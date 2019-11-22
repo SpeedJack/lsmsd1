@@ -1,5 +1,7 @@
 package ristogo.ui.graphics;
 
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -20,6 +22,7 @@ import javafx.stage.WindowEvent;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
 import ristogo.common.entities.enums.OpeningHours;
+import ristogo.net.Protocol;
 import ristogo.ui.graphics.config.GUIConfig;
 
 public class RistogoGUI extends Application
@@ -46,7 +49,11 @@ public class RistogoGUI extends Application
 		scene.setFill(GUIConfig.getBgColor());
 
 		stage.setOnCloseRequest((WindowEvent ev) -> {
-			// logout
+			try {
+					Protocol.getInstance().performLogout();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		});
 		stage.setTitle("RistoGo");
 		stage.setResizable(true);
