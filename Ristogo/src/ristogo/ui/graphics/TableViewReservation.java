@@ -37,19 +37,16 @@ public class TableViewReservation extends TableView<ReservationBean>
 		setMinWidth(600);
 		setMaxWidth(600);
 
-		if (isCustomer) {
+		if (isCustomer)
 			setMaxHeight((Configuration.getConfig().getnumberRowsDisplayable() - 2) * getFixedCellSize());
-		} else {
+		else
 			setMaxHeight(Configuration.getConfig().getnumberRowsDisplayable() * getFixedCellSize());
-		}
 
 		nameColumn = new TableColumn<ReservationBean, String>("Name");
-		if (isCustomer) {
-
+		if (isCustomer)
 			nameColumn.setCellValueFactory(new PropertyValueFactory<>("restaurantName"));
-		} else {
+		else
 			nameColumn.setCellValueFactory(new PropertyValueFactory<>("userName"));
-		}
 		nameColumn.setStyle(
 			"-fx-font-family: " + font + "; -fx-font-size: " + dimC + "; -fx-color: " + textColor + ";");
 
@@ -87,17 +84,15 @@ public class TableViewReservation extends TableView<ReservationBean>
 		reservationList.clear();
 		try {
 			ResponseMessage res;
-			if (isCostumer) {
+			if (isCostumer)
 				res = Protocol.getProtocol().getOwnActiveReservations();
-			} else {
+			else
 				res = Protocol.getProtocol().getReservations(RistogoGUI.getMyRestaurant());
-			}
-			if (res.isSuccess()) {
+			if (res.isSuccess())
 				for (Entity entity : res.getEntities()) {
 					Reservation reservation = (Reservation)entity;
 					reservationList.add(ReservationBean.fromEntity(reservation));
 				}
-			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

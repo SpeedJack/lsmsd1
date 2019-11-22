@@ -130,26 +130,22 @@ public class LoginDialog extends Dialog<User>
 		registerButton.setOnAction((ActionEvent ev) -> {
 			RegisterDialog register = new RegisterDialog();
 			register.showAndWait();
-			while (register.getResult() != 0) {
+			while (register.getResult() != 0)
 				register.showAndWait();
-			}
 		});
 
 		setResultConverter(dialogButton -> {
-			if (dialogButton == loginButtonType) {
+			if (dialogButton == loginButtonType)
 				try {
 					ResponseMessage res = Protocol.getProtocol()
 						.performLogin(new Customer(username.getText(), password.getText()));
-					if (!res.isSuccess()) {
-						error.setVisible(true);
-						return new Customer(-1, "");
-					} else {
+					if (res.isSuccess())
 						return (User)res.getEntity();
-					}
+					error.setVisible(true);
+					return new Customer(-1, "");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			}
 			return null;
 		});
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

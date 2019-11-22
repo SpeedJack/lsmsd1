@@ -35,28 +35,24 @@ public class RistogoGUI extends Application
 		LoginDialog login = new LoginDialog();
 		login.showAndWait();
 
-		while (login.getResult() != null && login.getResult().getId() == -1) {
+		while (login.getResult() == null || login.getResult().getId() == -1)
 			login.showAndWait();
-		}
 		loggedUser = login.getResult();
-		if (loggedUser != null) {
-			if (loggedUser.isOwner()) {
-				buildRestaurantOwnerInterface();
-			} else {
-				buildCostumerInterface();
-			}
-			Scene scene = new Scene(new Group(applicationInterface));
-			scene.setFill(GUIConfig.getBgColor());
+		if (loggedUser.isOwner())
+			buildRestaurantOwnerInterface();
+		else
+			buildCostumerInterface();
+		Scene scene = new Scene(new Group(applicationInterface));
+		scene.setFill(GUIConfig.getBgColor());
 
-			stage.setOnCloseRequest((WindowEvent ev) -> {
-				// logout
-			});
-			stage.setTitle("RistoGo");
-			stage.setResizable(true);
-			stage.setScene(scene);
-			stage.getIcons().add(new Image("/resources/logo.png"));
-			stage.show();
-		}
+		stage.setOnCloseRequest((WindowEvent ev) -> {
+			// logout
+		});
+		stage.setTitle("RistoGo");
+		stage.setResizable(true);
+		stage.setScene(scene);
+		stage.getIcons().add(new Image("/resources/logo.png"));
+		stage.show();
 	}
 
 	public static void launch(String... args)

@@ -98,12 +98,11 @@ public class TableViewRestaurant extends TableView<RestaurantBean>
 		restaurantList.clear();
 		try {
 			ResponseMessage res = Protocol.getProtocol().getRestaurants();
-			if (res.isSuccess()) {
+			if (res.isSuccess())
 				for (Entity entity : res.getEntities()) {
 					Restaurant restaurant = (Restaurant)entity;
 					restaurantList.add(RestaurantBean.fromEntity(restaurant));
 				}
-			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -117,16 +116,14 @@ public class TableViewRestaurant extends TableView<RestaurantBean>
 			ResponseMessage res = null;
 			if(findCity == null) {
 				res = Protocol.getProtocol().getRestaurants();
-			}
-			else {
+			} else {
 				//res = Protocol.getProtocol().
 			}
-			if (res.isSuccess()) {
+			if (res.isSuccess())
 				for (Entity entity : res.getEntities()) {
 					Restaurant restaurant = (Restaurant)entity;
 					restaurantList.add(RestaurantBean.fromEntity(restaurant));
 				}
-			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

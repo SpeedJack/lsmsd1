@@ -218,13 +218,12 @@ public class BookForm extends VBox
 		try {
 			nameField.setText(name);
 			hourField.getItems().clear();
-			if (hour.equals(OpeningHours.BOTH)) {
+			if (hour.equals(OpeningHours.BOTH))
 				hourField.getItems().addAll("Lunch", "Dinner");
-			} else if (hour.equals(OpeningHours.LUNCH)) {
+			else if (hour.equals(OpeningHours.LUNCH))
 				hourField.getItems().add("Lunch");
-			} else {
+			else
 				hourField.getItems().add("Dinner");
-			}
 		} catch (NullPointerException npe) {
 			// do nothing
 		}

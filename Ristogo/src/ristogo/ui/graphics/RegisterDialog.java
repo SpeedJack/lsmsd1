@@ -38,7 +38,6 @@ public class RegisterDialog extends Dialog<Integer>
 
 	public RegisterDialog()
 	{
-
 		DialogPane dialogPane = getDialogPane();
 		Stage stage = (Stage)dialogPane.getScene().getWindow();
 		stage.getIcons().add(new Image(this.getClass().getResource("/resources/logo.png").toString()));
@@ -124,18 +123,17 @@ public class RegisterDialog extends Dialog<Integer>
 
 		Platform.runLater(() -> username.requestFocus());
 		setResultConverter(dialogButton -> {
-			if (dialogButton == registerButtonType) {
+			if (dialogButton == registerButtonType)
 				try {
 					String us = username.getText();
 					String pswd = password.getText();
 					UserType type = UserType.valueOf(cb.getValue().toUpperCase());
 					ResponseMessage res = null;
-					if (type == UserType.CUSTOMER) {
+					if (type == UserType.CUSTOMER)
 						res = Protocol.getProtocol().registerUser(new Customer(us, pswd));
-					} else {
+					else
 						res = Protocol.getProtocol().registerUser(new Owner(us, pswd),
 							new Restaurant(us));
-					}
 					if (!res.isSuccess()) {
 						error.setVisible(true);
 						error.setText(res.getErrorMsg());
@@ -146,7 +144,6 @@ public class RegisterDialog extends Dialog<Integer>
 					e.getMessage();
 					// GESTIRE MESSAGGIO ERRORE
 				}
-			}
 			return 0;
 		});
 	}

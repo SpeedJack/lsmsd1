@@ -178,7 +178,6 @@ public class ModifyRestaurantForm extends VBox
 			if (res.isSuccess()) {
 				Restaurant r = (Restaurant)res.getEntity();
 				RistogoGUI.setMyRestaurant(r);
-				;
 				if (r.getName() != null) {
 					idOwnRestaurant = r.getId();
 					nameField.setText(r.getName());
@@ -189,13 +188,12 @@ public class ModifyRestaurantForm extends VBox
 					descField.setText(r.getDescription());
 					seatsField.setText(Integer.toString(r.getSeats()));
 				}
-				if (r.getOpeningHours().equals(OpeningHours.LUNCH)) {
+				if (r.getOpeningHours().equals(OpeningHours.LUNCH))
 					hourField.getSelectionModel().select("Lunch");
-				} else if (r.getOpeningHours().equals(OpeningHours.DINNER)) {
+				else if (r.getOpeningHours().equals(OpeningHours.DINNER))
 					hourField.getSelectionModel().select("Dinner");
-				} else {
+				else
 					hourField.getSelectionModel().select("Lunch/Dinner");
-				}
 			}
 		} catch (NullPointerException | IOException e) {
 
