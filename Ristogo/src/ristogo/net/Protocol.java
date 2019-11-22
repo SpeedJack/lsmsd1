@@ -23,7 +23,7 @@ public class Protocol implements AutoCloseable
 	private Socket socket = null;
 	private DataInputStream inputStream = null;
 	private DataOutputStream outputStream = null;
-	private static Protocol protocol = null;
+	private static Protocol instance = null;
 
 	private Protocol() throws IOException
 	{
@@ -34,11 +34,11 @@ public class Protocol implements AutoCloseable
 		Logger.getLogger(Protocol.class.getName()).info("Connected to " + config.getServerIp() + ":" + config.getServerPort() + ".");
 	}
 
-	public static Protocol getProtocol() throws IOException{
-		if(protocol == null) {
-			protocol = new Protocol();
-		}
-		return protocol;
+	public static Protocol getInstance() throws IOException
+	{
+		if(instance == null)
+			instance = new Protocol();
+		return instance;
 	}
 
 

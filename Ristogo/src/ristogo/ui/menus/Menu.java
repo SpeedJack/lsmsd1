@@ -20,7 +20,7 @@ public abstract class Menu
 
 	static {
 		try {
-			protocol = Protocol.getProtocol();
+			protocol = Protocol.getInstance();
 		} catch (IOException ex) {
 			Logger.getLogger(Ristogo.class.getName()).log(Level.SEVERE, null, ex);
 			System.exit(1);

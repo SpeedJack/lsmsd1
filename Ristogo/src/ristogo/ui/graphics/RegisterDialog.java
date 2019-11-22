@@ -130,9 +130,9 @@ public class RegisterDialog extends Dialog<Integer>
 					UserType type = UserType.valueOf(cb.getValue().toUpperCase());
 					ResponseMessage res = null;
 					if (type == UserType.CUSTOMER)
-						res = Protocol.getProtocol().registerUser(new Customer(us, pswd));
+						res = Protocol.getInstance().registerUser(new Customer(us, pswd));
 					else
-						res = Protocol.getProtocol().registerUser(new Owner(us, pswd),
+						res = Protocol.getInstance().registerUser(new Owner(us, pswd),
 							new Restaurant(us));
 					if (!res.isSuccess()) {
 						error.setVisible(true);

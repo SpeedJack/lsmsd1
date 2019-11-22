@@ -137,7 +137,7 @@ public class LoginDialog extends Dialog<User>
 		setResultConverter(dialogButton -> {
 			if (dialogButton == loginButtonType)
 				try {
-					ResponseMessage res = Protocol.getProtocol()
+					ResponseMessage res = Protocol.getInstance()
 						.performLogin(new Customer(username.getText(), password.getText()));
 					if (res.isSuccess())
 						return (User)res.getEntity();

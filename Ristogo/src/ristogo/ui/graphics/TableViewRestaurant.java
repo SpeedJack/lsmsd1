@@ -97,7 +97,7 @@ public class TableViewRestaurant extends TableView<RestaurantBean>
 	{
 		restaurantList.clear();
 		try {
-			ResponseMessage res = Protocol.getProtocol().getRestaurants();
+			ResponseMessage res = Protocol.getInstance().getRestaurants();
 			if (res.isSuccess())
 				for (Entity entity : res.getEntities()) {
 					Restaurant restaurant = (Restaurant)entity;
@@ -115,7 +115,7 @@ public class TableViewRestaurant extends TableView<RestaurantBean>
 		try {
 			ResponseMessage res = null;
 			if(findCity == null) {
-				res = Protocol.getProtocol().getRestaurants();
+				res = Protocol.getInstance().getRestaurants();
 			} else {
 				//res = Protocol.getProtocol().
 			}

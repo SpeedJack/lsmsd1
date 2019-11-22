@@ -128,7 +128,7 @@ public class BookForm extends VBox
 				Reservation reserv = new Reservation(RistogoGUI.getLoggedUser().getUsername(), n, d, h,
 					0);
 				Restaurant rest = new Restaurant(idRestoReserve);
-				ResponseMessage res = Protocol.getProtocol().checkSeats(reserv, rest);
+				ResponseMessage res = Protocol.getInstance().checkSeats(reserv, rest);
 				if (res.isSuccess()) {
 					Restaurant r = (Restaurant)res.getEntity();
 					if (r.getSeats() > 0) {
@@ -159,7 +159,7 @@ public class BookForm extends VBox
 				Reservation reserv = new Reservation(RistogoGUI.getLoggedUser().getUsername(), n, d, h,
 					s);
 				Restaurant rest = new Restaurant(idRestoReserve);
-				ResponseMessage res = Protocol.getProtocol().reserve(reserv, rest);
+				ResponseMessage res = Protocol.getInstance().reserve(reserv, rest);
 				if (res.isSuccess()) {
 					listReservation.accept(true);
 				} else {
@@ -180,7 +180,7 @@ public class BookForm extends VBox
 		delRes.setOnAction((ActionEvent ev) -> {
 			try {
 
-				ResponseMessage res = Protocol.getProtocol()
+				ResponseMessage res = Protocol.getInstance()
 					.deleteReservation(new Reservation(idRestoDelete));
 				if (res.isSuccess()) {
 					listReservation.accept(true);

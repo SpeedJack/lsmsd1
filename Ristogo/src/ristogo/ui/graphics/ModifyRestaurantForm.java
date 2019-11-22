@@ -141,7 +141,7 @@ public class ModifyRestaurantForm extends VBox
 					h = OpeningHours.BOTH;
 				}
 
-				ResponseMessage res = Protocol.getProtocol()
+				ResponseMessage res = Protocol.getInstance()
 					.editRestaurant(new Restaurant(idOwnRestaurant, n,
 						RistogoGUI.getLoggedUser().getUsername(), g, p, ct, add, d, s, h));
 				if (!res.isSuccess()) {
@@ -174,7 +174,7 @@ public class ModifyRestaurantForm extends VBox
 	public void getOwnRestaurant()
 	{
 		try {
-			ResponseMessage res = Protocol.getProtocol().getOwnRestaurant();
+			ResponseMessage res = Protocol.getInstance().getOwnRestaurant();
 			if (res.isSuccess()) {
 				Restaurant r = (Restaurant)res.getEntity();
 				RistogoGUI.setMyRestaurant(r);
