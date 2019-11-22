@@ -52,6 +52,7 @@ public class KVDBManager implements AutoCloseable
 
 	private KVDBManager() throws IOException
 	{
+		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "<init>");
 		Options options = new Options();
 		options.cacheSize(100 * 1024 * 1024);
 		options.compressionType(CompressionType.NONE);
@@ -64,6 +65,7 @@ public class KVDBManager implements AutoCloseable
 			}
 		});
 		db = factory.open(new File("kvdb"), options);
+		Logger.getLogger(KVDBManager.class.getName()).exiting(KVDBManager.class.getName(), "<init>");
 	}
 
 	public static KVDBManager getInstance()
@@ -88,9 +90,11 @@ public class KVDBManager implements AutoCloseable
 
 	public void populateDB(List<Entity_> entities)
 	{
+		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "populateDB");
 		for (Entity_ entity: entities)
 			insert(entity);
 		setInitialized();
+		Logger.getLogger(KVDBManager.class.getName()).exiting(KVDBManager.class.getName(), "populateDB");
 	}
 
 	private static String capitalizeFirst(String str)
@@ -118,6 +122,7 @@ public class KVDBManager implements AutoCloseable
 				continue;
 			return method;
 		}
+		Logger.getLogger(KVDBManager.class.getName()).warning("Field " + field.getName() + " in entity " + entityClass.getName() + " has no setter.");
 		return null;
 	}
 
@@ -134,6 +139,7 @@ public class KVDBManager implements AutoCloseable
 				continue;
 			return method;
 		}
+		Logger.getLogger(KVDBManager.class.getName()).warning("Field " + field.getName() + " in entity " + entityClass.getName() + " has no getter.");
 		return null;
 	}
 
@@ -148,9 +154,8 @@ public class KVDBManager implements AutoCloseable
 		}
 		try {
 			return entityClass.getDeclaredField(attributeName);
-		} catch (NoSuchFieldException | SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (NoSuchFieldException | SecurityException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).warning("Field " + attributeName + " in entity " + entityClass.getName() + " does not exists.");
 			return null;
 		}
 	}
@@ -170,9 +175,8 @@ public class KVDBManager implements AutoCloseable
 				entityId = Integer.parseInt(key[1]);
 				entities.add(get(entityClass, entityId));
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 			return new ArrayList<Entity_>();
 		}
 		return entities;
@@ -207,9 +211,8 @@ public class KVDBManager implements AutoCloseable
 				restaurants.add((Restaurant_)get(Restaurant_.class, entityId));
 				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 			return new ArrayList<Restaurant_>();
 		}
 		return restaurants;
@@ -233,9 +236,8 @@ public class KVDBManager implements AutoCloseable
 					return (Restaurant_)get(Restaurant_.class, entityId);
 				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 		}
 		return null;
 	}
@@ -289,9 +291,8 @@ public class KVDBManager implements AutoCloseable
 					reservations.add((Reservation_)get(Reservation_.class, entityId));
 				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 			return new ArrayList<Reservation_>();
 		}
 		return reservations;
@@ -343,9 +344,8 @@ public class KVDBManager implements AutoCloseable
 					reservations.add((Reservation_)get(Reservation_.class, entityId));
 				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 			return new ArrayList<Reservation_>();
 		}
 		return reservations;
@@ -368,9 +368,8 @@ public class KVDBManager implements AutoCloseable
 				}
 				iterator.next();
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 		}
 		return null;
 	}
@@ -388,8 +387,7 @@ public class KVDBManager implements AutoCloseable
 			entity = entityClass.getConstructor().newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 			| InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
+			Logger.getLogger(KVDBManager.class.getName()).severe("Error during initialization of entity: " + ex.getMessage());
 			return null;
 		}
 		entity.setId(entityId);
@@ -422,13 +420,11 @@ public class KVDBManager implements AutoCloseable
 					attributeSetter.invoke(entity, attributeValue);
 				} catch (IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-					// TODO Auto-generated catch block
-					ex.printStackTrace();
+					Logger.getLogger(KVDBManager.class.getName()).severe("Error while setting entity's fields: " + ex.getMessage());
 				}
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 			return null;
 		}
 		return found ? entity : null;
@@ -459,9 +455,8 @@ public class KVDBManager implements AutoCloseable
 			return;
 		try {
 				getWriteBatch().close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).severe("Can not close write batch: " + ex.getMessage());
 		} finally {
 			setWriteBatch(null);
 		}
@@ -518,7 +513,7 @@ public class KVDBManager implements AutoCloseable
 				}
 			} catch (IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException ex) {
-				ex.printStackTrace();
+				Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading entity's fields: " + ex.getMessage());
 				continue;
 			}
 			String key = entityName + ":" + entityId + ":" + attributeName;
