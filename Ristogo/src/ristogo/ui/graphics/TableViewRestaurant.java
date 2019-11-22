@@ -108,4 +108,27 @@ public class TableViewRestaurant extends TableView<RestaurantBean>
 			e.printStackTrace();
 		}
 	}
+
+//Da Modificare
+	public void listRestaurants(String findCity)
+	{
+		restaurantList.clear();
+		try {
+			ResponseMessage res = null;
+			if(findCity == null) {
+				res = Protocol.getProtocol().getRestaurants();
+			}
+			else {
+				//res = Protocol.getProtocol().
+			}
+			if (res.isSuccess()) {
+				for (Entity entity : res.getEntities()) {
+					Restaurant restaurant = (Restaurant)entity;
+					restaurantList.add(RestaurantBean.fromEntity(restaurant));
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -73,10 +74,23 @@ public class RistogoGUI extends Application
 
 		BookForm bookForm = new BookForm(reservation::listReservations);
 
-		Label subTitle = new Label("List of Restaurant");
+		Label subTitle = new Label("List of Restaurant: you can find restaurants searching by city");
 		subTitle.setFont(GUIConfig.getFormTitleFont());
 		subTitle.setTextFill(GUIConfig.getFgColor());
 		subTitle.setStyle("-fx-underline: true;");
+		
+		TextField findCityField = new TextField();
+		findCityField.setPromptText("insert a name of a city");
+		findCityField.setMinSize(200, 30);
+		findCityField.setMaxSize(200, 30);
+		Button find = new Button("Find");
+		find.setFont(GUIConfig.getButtonFont());
+		find.setTextFill(GUIConfig.getInvertedFgColor());
+		find.setStyle(GUIConfig.getInvertedCSSBgColorButton());
+		
+		HBox findBox = new HBox(10);
+		findBox.getChildren().addAll(findCityField, find);
+		
 
 		TableViewRestaurant restaurant = new TableViewRestaurant();
 		restaurant.listRestaurants();
@@ -118,6 +132,16 @@ public class RistogoGUI extends Application
 				// do nothing
 			}
 		});
+		
+		find.setOnAction((ActionEvent ev) -> {
+			try {
+				String c = findCityField.getText();
+				restaurant.listRestaurants(c);
+			} catch (NullPointerException ex) {
+				restaurant.listRestaurants(null);
+			}
+			
+		});
 
 		VBox leftPart = new VBox(10);
 		leftPart.getChildren().addAll(title, bookForm);
@@ -125,7 +149,7 @@ public class RistogoGUI extends Application
 		leftPart.setStyle("-fx-padding: 7;" + "-fx-border-width: 2;" + "-fx-border-insets: 3;" +
 			"-fx-border-radius: 10;");
 		VBox rightPart = new VBox(10);
-		rightPart.getChildren().addAll(subTitle, restaurant, descriptionBox, subTitle2, reservation);
+		rightPart.getChildren().addAll(subTitle,findBox, restaurant, descriptionBox, subTitle2, reservation);
 		rightPart.setPrefSize(600, 600);
 		rightPart.setStyle("-fx-padding: 7;" + "-fx-border-width: 2;" + "-fx-border-insets: 3;" +
 			"-fx-border-radius: 10;");
