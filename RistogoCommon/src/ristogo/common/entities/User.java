@@ -121,7 +121,7 @@ public abstract class User extends Entity
 
 	public static boolean validatePasswordHash(String passwordHash)
 	{
-		return passwordHash.matches("^[a-fA-F0-9]{64}$");
+		return passwordHash != null && passwordHash.matches("^[a-fA-F0-9]{64}$");
 	}
 
 	public boolean isOwner()

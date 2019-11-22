@@ -12,6 +12,8 @@ import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 
+import org.hibernate.Hibernate;
+
 import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.kvdb.KVDBManager;
 
@@ -105,7 +107,7 @@ public abstract class EntityManager implements AutoCloseable
 			detach(entity);
 			return entity;
 		}
-		return (Entity_)getEM().find(entityClass, entityId);
+		return getEM().find(entityClass, entityId);
 	}
 
 	public void update(Entity_ entity)
@@ -133,7 +135,7 @@ public abstract class EntityManager implements AutoCloseable
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "delete", new Object[]{entityClass, entityId});
 		try {
 			beginTransaction();
-			Entity_ entity = (Entity_)getEM().getReference(entityClass, entityId);
+			Entity_ entity = getEM().getReference(entityClass, entityId);
 			remove(entity);
 			commitTransaction();
 		} catch (PersistenceException ex) {
@@ -143,12 +145,22 @@ public abstract class EntityManager implements AutoCloseable
 		}
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "delete", new Object[]{entityClass, entityId});
 	}
+	
+	public void refresh(List<? extends Entity_> entities)
+	{
+		for (Entity_ entity: entities)
+			refresh(entity);
+	}
 
 	public void refresh(Entity_ entity)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "refresh", entity);
 		if (!isLevelDBEnabled())
-			getEM().refresh(entity);
+			try {
+				getEM().refresh(entity);
+			} catch (IllegalArgumentException ex) {
+				Logger.getLogger(EntityManager.class.getName()).warning(ex.getMessage());
+			}
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "refresh", entity);
 	}
 
@@ -207,12 +219,13 @@ public abstract class EntityManager implements AutoCloseable
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "merge", entity);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void remove(Entity_ entity)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "remove", entity);
 		getEM().remove(entity);
 		if (isLevelDBEnabled())
-			getLevelDBManager().remove(entity);
+			getLevelDBManager().remove(Hibernate.getClass(entity), entity.getId());
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "remove", entity);
 	}
 

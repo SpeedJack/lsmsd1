@@ -406,6 +406,7 @@ public class Client extends Thread
 		if (!hasRestaurant(loggedUser, restaurant.getId()))
 			return new ResponseMessage("You can only view reservations for restaurants that you own.");
 		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		restaurantManager.refresh(restaurant_);
 		if (restaurant_ == null)
 			return new ResponseMessage("Can not find the specified restaurant.");
 		List<Reservation_> reservations = reservationManager.getActiveReservations(restaurant_);
