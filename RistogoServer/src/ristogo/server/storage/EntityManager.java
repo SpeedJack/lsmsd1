@@ -15,6 +15,8 @@ import javax.persistence.PersistenceException;
 import org.hibernate.Hibernate;
 
 import ristogo.server.storage.entities.Entity_;
+import ristogo.server.storage.entities.Reservation_;
+import ristogo.server.storage.entities.Restaurant_;
 import ristogo.server.storage.kvdb.KVDBManager;
 
 public abstract class EntityManager implements AutoCloseable
@@ -224,8 +226,15 @@ public abstract class EntityManager implements AutoCloseable
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "remove", entity);
 		getEM().remove(entity);
-		if (isLevelDBEnabled())
-			getLevelDBManager().remove(Hibernate.getClass(entity), entity.getId());
+		if (isLevelDBEnabled()) {
+			Class<? extends Entity_> entityClass = Hibernate.getClass(entity);
+			getLevelDBManager().remove(entityClass, entity.getId());
+			if (entityClass.equals(Restaurant_.class)) {
+				List<Reservation_> reservations = getLevelDBManager().getActiveReservationsByRestaurant(entity.getId());
+				for (Reservation_ reservation: reservations)
+					getLevelDBManager().remove(reservation);
+			}
+		}
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "remove", entity);
 	}
 
