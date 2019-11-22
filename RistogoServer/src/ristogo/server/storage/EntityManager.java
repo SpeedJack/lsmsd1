@@ -147,7 +147,7 @@ public abstract class EntityManager implements AutoCloseable
 		}
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "delete", new Object[]{entityClass, entityId});
 	}
-	
+
 	public void refresh(List<? extends Entity_> entities)
 	{
 		for (Entity_ entity: entities)

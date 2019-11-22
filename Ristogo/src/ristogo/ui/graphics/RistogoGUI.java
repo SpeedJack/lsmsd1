@@ -78,7 +78,7 @@ public class RistogoGUI extends Application
 		subTitle.setFont(GUIConfig.getFormTitleFont());
 		subTitle.setTextFill(GUIConfig.getFgColor());
 		subTitle.setStyle("-fx-underline: true;");
-		
+
 		TextField findCityField = new TextField();
 		findCityField.setPromptText("insert a name of a city");
 		findCityField.setMinSize(200, 30);
@@ -87,10 +87,10 @@ public class RistogoGUI extends Application
 		find.setFont(GUIConfig.getButtonFont());
 		find.setTextFill(GUIConfig.getInvertedFgColor());
 		find.setStyle(GUIConfig.getInvertedCSSBgColorButton());
-		
+
 		HBox findBox = new HBox(10);
 		findBox.getChildren().addAll(findCityField, find);
-		
+
 
 		TableViewRestaurant restaurant = new TableViewRestaurant();
 		restaurant.listRestaurants();
@@ -132,7 +132,7 @@ public class RistogoGUI extends Application
 				// do nothing
 			}
 		});
-		
+
 		find.setOnAction((ActionEvent ev) -> {
 			try {
 				String c = findCityField.getText();
@@ -140,7 +140,7 @@ public class RistogoGUI extends Application
 			} catch (NullPointerException ex) {
 				restaurant.listRestaurants(null);
 			}
-			
+
 		});
 
 		VBox leftPart = new VBox(10);

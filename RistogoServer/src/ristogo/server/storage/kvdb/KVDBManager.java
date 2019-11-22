@@ -181,7 +181,7 @@ public class KVDBManager implements AutoCloseable
 		}
 		return entities;
 	}
-	
+
 	public List<Restaurant_> getRestaurantsByCity(String city)
 	{
 		String entityName = Restaurant_.class.getAnnotation(Table.class).name();

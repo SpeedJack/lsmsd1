@@ -32,7 +32,7 @@ public class RestaurantManager extends EntityManager
 			return getLevelDBManager().getRestaurantByOwner(owner.getId());
 		return owner.getRestaurant();
 	}
-	
+
 	public List<Restaurant_> getRestaurantsByCity(String city)
 	{
 		Logger.getLogger(RestaurantManager.class.getName()).entering(RestaurantManager.class.getName(), "getAll");
