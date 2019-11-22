@@ -21,6 +21,11 @@ public class Restaurant extends Entity
 	protected int seats;
 	protected OpeningHours openingHours;
 	protected List<Reservation> activeReservations = new ArrayList<>();
+	
+	public Restaurant()
+	{
+		super();
+	}
 
 	public Restaurant(int id)
 	{

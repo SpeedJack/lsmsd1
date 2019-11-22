@@ -15,15 +15,27 @@ import ristogo.ui.menus.forms.ReservationForm;
 
 public class RestaurantListMenu extends Menu
 {
+	protected Restaurant restaurant;
+
 	public RestaurantListMenu()
 	{
 		super("Select the restaurant");
 	}
 
+	public RestaurantListMenu(Restaurant restaurant)
+	{
+		this();
+		this.restaurant = restaurant;
+	}
+
 	@Override
 	protected SortedSet<MenuEntry> getMenu()
 	{
-		ResponseMessage resMsg = protocol.getRestaurants();
+		ResponseMessage resMsg;
+		if (restaurant == null)
+			resMsg = protocol.getRestaurants();
+		else
+			resMsg = protocol.getRestaurants(restaurant);
 		SortedSet<MenuEntry> menu = new TreeSet<>();
 		int i = 1;
 		if (!resMsg.isSuccess()) {
@@ -35,7 +47,7 @@ public class RestaurantListMenu extends Menu
 		} else {
 			for (Entity entity: resMsg.getEntities()) {
 				Restaurant restaurant = (Restaurant)entity;
-				menu.add(new MenuEntry(i, restaurant.getName(), this::handleRestaurantSelection, restaurant));
+				menu.add(new MenuEntry(i, restaurant.getName(), true, this::handleRestaurantSelection, restaurant));
 				i++;
 			}
 		}

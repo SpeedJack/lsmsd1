@@ -8,7 +8,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
+
+import org.hibernate.criterion.MatchMode;
 
 import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.entities.Restaurant_;
@@ -38,12 +41,16 @@ public class RestaurantManager extends EntityManager
 		Logger.getLogger(RestaurantManager.class.getName()).entering(RestaurantManager.class.getName(), "getAll");
 		if (isLevelDBEnabled())
 			return getLevelDBManager().getRestaurantsByCity(city);
+		city = "%" + city + "%";
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Restaurant_> cq = cb.createQuery(Restaurant_.class);
 		Root<Restaurant_> from = cq.from(Restaurant_.class);
-		cq.select(from);
+		CriteriaQuery<Restaurant_> select = cq.select(from);
+		ParameterExpression<String> cityPar = cb.parameter(String.class);
+		select.where(cb.like(from.get("city"), cityPar));
 		TypedQuery<Restaurant_> query = em.createQuery(cq);
+		query.setParameter(cityPar, city);
 		Logger.getLogger(RestaurantManager.class.getName()).exiting(RestaurantManager.class.getName(), "getAll");
 		try {
 			return query.getResultList();

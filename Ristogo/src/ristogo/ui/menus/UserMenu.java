@@ -49,6 +49,14 @@ public class UserMenu extends Menu
 
 	private void handleReserve(MenuEntry entry)
 	{
-		new RestaurantListMenu().show();
+		Console.println("Search Restaurants. Insert the name of a city (or leave blank to search for all restaurants):");
+		String city = Console.askString("City");
+		if (city == null) {
+			new RestaurantListMenu().show();
+			return;
+		}
+		Restaurant restaurant = new Restaurant();
+		restaurant.setCity(city);
+		new RestaurantListMenu(restaurant).show();
 	}
 }

@@ -97,6 +97,11 @@ public class Protocol implements AutoCloseable
 	{
 		return sendRequest(ActionRequest.LIST_RESTAURANTS);
 	}
+	
+	public ResponseMessage getRestaurants(Restaurant restaurant)
+	{
+		return sendRequest(ActionRequest.LIST_RESTAURANTS, restaurant);
+	}
 
 	public ResponseMessage reserve(Reservation reservation, Restaurant restaurant)
 	{
