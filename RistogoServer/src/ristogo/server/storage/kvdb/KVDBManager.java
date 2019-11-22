@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import javax.persistence.Table;
 
@@ -176,6 +177,43 @@ public class KVDBManager implements AutoCloseable
 		}
 		return entities;
 	}
+	
+	public List<Restaurant_> getRestaurantsByCity(String city)
+	{
+		String entityName = Restaurant_.class.getAnnotation(Table.class).name();
+		List<Restaurant_> restaurants = new ArrayList<Restaurant_>();
+		int entityId = 0;
+		String foundCity = null;
+		try (DBIterator iterator = db.iterator()) {
+			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext();) {
+				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
+				if (!key[0].equals(entityName))
+					break;
+				if (Integer.parseInt(key[1]) != entityId) {
+					foundCity = null;
+				}
+				entityId = Integer.parseInt(key[1]);
+				if (key[2].equals("city")) {
+					foundCity = asString(iterator.peekNext().getValue());
+					if (!Pattern.compile(Pattern.quote(city), Pattern.CASE_INSENSITIVE).matcher(foundCity).find()) {
+						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+						continue;
+					}
+				}
+				if (foundCity == null) {
+					iterator.next();
+					continue;
+				}
+				restaurants.add((Restaurant_)get(Restaurant_.class, entityId));
+				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new ArrayList<Restaurant_>();
+		}
+		return restaurants;
+	}
 
 	public Restaurant_ getRestaurantByOwner(int ownerId)
 	{
@@ -242,9 +280,6 @@ public class KVDBManager implements AutoCloseable
 						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
 						continue;
 					}
-				} else {
-					iterator.next();
-					continue;
 				}
 				if (foundId == -1 || foundDate == null) {
 					iterator.next();
@@ -299,9 +334,6 @@ public class KVDBManager implements AutoCloseable
 						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
 						continue;
 					}
-				} else {
-					iterator.next();
-					continue;
 				}
 				if (foundId == -1 || foundDate == null || foundTime == null) {
 					iterator.next();

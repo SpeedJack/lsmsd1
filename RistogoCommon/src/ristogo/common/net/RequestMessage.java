@@ -61,8 +61,9 @@ public class RequestMessage extends Message
 				else if (entity instanceof Restaurant)
 					hasRestaurant = true;
 			return hasReservation & hasRestaurant;
-		case LOGOUT:
 		case LIST_RESTAURANTS:
+			return (getEntityCount() == 0) || (getEntityCount() == 1 && getEntity() instanceof Restaurant);
+		case LOGOUT:
 		case GET_OWN_RESTAURANT:
 		case LIST_OWN_RESERVATIONS:
 			return getEntityCount() == 0;

@@ -310,7 +310,13 @@ public class Client extends Thread
 
 	private ResponseMessage handleListRestaurants(RequestMessage reqMsg)
 	{
-		List<Restaurant_> restaurants = restaurantManager.getAll();
+		List<Restaurant_> restaurants;
+		if (reqMsg.getEntityCount() > 0) {
+			Restaurant restaurant = (Restaurant)reqMsg.getEntity();
+			restaurants = restaurantManager.getRestaurantsByCity(restaurant.getCity());
+		} else {
+			restaurants = restaurantManager.getAll();
+		}
 		ResponseMessage resMsg = new ResponseMessage();
 		for (Restaurant_ restaurant: restaurants)
 			resMsg.addEntity(restaurant.toCommonEntity());
