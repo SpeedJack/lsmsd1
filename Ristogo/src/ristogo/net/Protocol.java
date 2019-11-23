@@ -34,10 +34,15 @@ public class Protocol implements AutoCloseable
 		Logger.getLogger(Protocol.class.getName()).info("Connected to " + config.getServerIp() + ":" + config.getServerPort() + ".");
 	}
 
-	public static Protocol getInstance() throws IOException
+	public static Protocol getInstance()
 	{
 		if(instance == null)
-			instance = new Protocol();
+			try {
+				instance = new Protocol();
+			} catch (IOException ex) {
+				Logger.getLogger(Protocol.class.getName()).severe("Unhable to connect to server: " + ex.getMessage());
+				System.exit(1);
+			}
 		return instance;
 	}
 

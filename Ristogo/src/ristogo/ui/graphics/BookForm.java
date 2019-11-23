@@ -1,8 +1,6 @@
 package ristogo.ui.graphics;
 
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.function.Consumer;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
@@ -34,7 +32,7 @@ public class BookForm extends VBox
 	private int idRestoDelete;
 	private int idRestoReserve;
 
-	public BookForm(Consumer<Boolean> listReservation)
+	public BookForm(Runnable listReservation)
 	{
 
 		super(20);
@@ -146,7 +144,7 @@ public class BookForm extends VBox
 					System.out.println(res.getErrorMsg());
 				}
 
-			} catch (NullPointerException | IOException e) {
+			} catch (NullPointerException e) {
 				e.getMessage();
 			}
 		});
@@ -161,7 +159,7 @@ public class BookForm extends VBox
 				Restaurant rest = new Restaurant(idRestoReserve);
 				ResponseMessage res = Protocol.getInstance().reserve(reserv, rest);
 				if (res.isSuccess()) {
-					listReservation.accept(true);
+					listReservation.run();
 				} else {
 					error.setText("Error: " + res.getErrorMsg());
 					error.setVisible(true);
@@ -170,7 +168,7 @@ public class BookForm extends VBox
 				}
 				book.setDisable(true);
 
-			} catch (NullPointerException | IOException e) {
+			} catch (NullPointerException e) {
 				e.getMessage();
 				error.setText("Error: fill out the entire form to be able to book");
 				error.setVisible(true);
@@ -183,14 +181,14 @@ public class BookForm extends VBox
 				ResponseMessage res = Protocol.getInstance()
 					.deleteReservation(new Reservation(idRestoDelete));
 				if (res.isSuccess()) {
-					listReservation.accept(true);
+					listReservation.run();
 					delRes.setDisable(true);
 				} else {
 					error.setText("Error: " + res.getErrorMsg());
 					error.setVisible(true);
 
 				}
-			} catch (NullPointerException | IOException e) {
+			} catch (NullPointerException e) {
 				e.getMessage();
 				delRes.setDisable(true);
 			}

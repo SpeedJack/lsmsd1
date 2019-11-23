@@ -1,8 +1,9 @@
 package ristogo.ui.graphics;
 
-import java.io.IOException;
+import java.util.Optional;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -27,33 +28,26 @@ import ristogo.ui.graphics.config.GUIConfig;
 
 public class RistogoGUI extends Application
 {
-	private HBox applicationInterface;
 	private static User loggedUser;
 	private static Restaurant myRestaurant;
 
 	@Override
-	public void start(Stage stage) throws Exception
+	public void start(Stage stage)
 	{
-		applicationInterface = new HBox(10);
 		LoginDialog login = new LoginDialog();
-		login.showAndWait();
-
-		while (login.getResult() == null || login.getResult().getId() == -1)
-			login.showAndWait();
-		loggedUser = login.getResult();
-		if (loggedUser.isOwner())
-			buildRestaurantOwnerInterface();
-		else
-			buildCostumerInterface();
+		Optional<User> result = login.showAndWait();
+		result.ifPresentOrElse(
+			data -> { loggedUser = data; },
+			() -> { Platform.exit(); }
+		);
+		
+		HBox applicationInterface;
+		applicationInterface = loggedUser.isOwner() ? buildOwnerInterface() : buildCustomerInterface();
 		Scene scene = new Scene(new Group(applicationInterface));
 		scene.setFill(GUIConfig.getBgColor());
 
 		stage.setOnCloseRequest((WindowEvent ev) -> {
-			try {
-					Protocol.getInstance().performLogout();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			Protocol.getInstance().performLogout();
 		});
 		stage.setTitle("RistoGo");
 		stage.setResizable(true);
@@ -62,20 +56,16 @@ public class RistogoGUI extends Application
 		stage.show();
 	}
 
-	public static void launch(String... args)
+	private HBox buildCustomerInterface()
 	{
-		Application.launch(args);
-	}
-
-	private void buildCostumerInterface()
-	{
+		HBox applicationInterface = new HBox(10);
 
 		GridPane title = generateTitle();
 
-		TableViewReservation reservation = new TableViewReservation(true);
-		reservation.listReservations(true);
+		TableViewReservation reservationsTable = new TableViewReservation(true);
+		reservationsTable.listReservations();
 
-		BookForm bookForm = new BookForm(reservation::listReservations);
+		BookForm bookForm = new BookForm(reservationsTable::listReservations);
 
 		Label subTitle = new Label("List of Restaurant: you can find restaurants searching by city");
 		subTitle.setFont(GUIConfig.getFormTitleFont());
@@ -116,21 +106,17 @@ public class RistogoGUI extends Application
 		subTitle2.setStyle("-fx-underline: true;");
 
 		restaurant.setOnMouseClicked((e) -> {
-			try {
-				bookForm.getDelRes().setDisable(true);
-				bookForm.fillOutForm(restaurant.getSelectionName(), restaurant.getSelectionHours());
-				descriptionField.setText(restaurant.getSelectionDescription());
-				bookForm.setIdResToReserve(restaurant.getSelectionModel().getSelectedItem().getId());
-			} catch (NullPointerException ex) {
-				// do nothing
-			}
+			bookForm.getDelRes().setDisable(true);
+			bookForm.fillOutForm(restaurant.getSelectionName(), restaurant.getSelectionHours());
+			descriptionField.setText(restaurant.getSelectionDescription());
+			bookForm.setIdResToReserve(restaurant.getSelectionModel().getSelectedItem().getId());
 		});
 
-		reservation.setOnMouseClicked((e) -> {
+		reservationsTable.setOnMouseClicked((e) -> {
 			try {
 				bookForm.getDelRes().setDisable(false);
 				bookForm.fillOutForm("", OpeningHours.BOTH);
-				bookForm.setIdResToDelete(reservation.getSelectionModel().getSelectedItem().getId());
+				bookForm.setIdResToDelete(reservationsTable.getSelectionModel().getSelectedItem().getId());
 			} catch (NullPointerException ex) {
 				// do nothing
 			}
@@ -152,17 +138,20 @@ public class RistogoGUI extends Application
 		leftPart.setStyle("-fx-padding: 7;" + "-fx-border-width: 2;" + "-fx-border-insets: 3;" +
 			"-fx-border-radius: 10;");
 		VBox rightPart = new VBox(10);
-		rightPart.getChildren().addAll(subTitle,findBox, restaurant, descriptionBox, subTitle2, reservation);
+		rightPart.getChildren().addAll(subTitle,findBox, restaurant, descriptionBox, subTitle2, reservationsTable);
 		rightPart.setPrefSize(600, 600);
 		rightPart.setStyle("-fx-padding: 7;" + "-fx-border-width: 2;" + "-fx-border-insets: 3;" +
 			"-fx-border-radius: 10;");
 
 		applicationInterface.getChildren().addAll(leftPart, rightPart);
 		applicationInterface.setPrefSize(1000, 600);
+
+		return applicationInterface;
 	}
 
-	private void buildRestaurantOwnerInterface()
+	private HBox buildOwnerInterface()
 	{
+		HBox applicationInterface = new HBox(10);
 
 		GridPane title = generateTitle();
 		ModifyRestaurantForm modifyForm = new ModifyRestaurantForm();
@@ -173,7 +162,7 @@ public class RistogoGUI extends Application
 		subTitle.setTextFill(GUIConfig.getFgColor());
 
 		TableViewReservation reservation = new TableViewReservation(false);
-		reservation.listReservations(false);
+		reservation.listReservations();
 
 		Button refresh = new Button("Refresh");
 		refresh.setFont(GUIConfig.getButtonFont());
@@ -181,7 +170,7 @@ public class RistogoGUI extends Application
 		refresh.setStyle(GUIConfig.getInvertedCSSBgColorButton());
 
 		refresh.setOnAction((ActionEvent ev) -> {
-			reservation.listReservations(false);
+			reservation.listReservations();
 		});
 
 		VBox leftPart = new VBox(10);
@@ -199,6 +188,7 @@ public class RistogoGUI extends Application
 		applicationInterface.getChildren().addAll(leftPart, rightPart);
 		applicationInterface.setPrefSize(1000, 600);
 
+		return applicationInterface;
 	}
 
 	private GridPane generateTitle()
@@ -251,5 +241,10 @@ public class RistogoGUI extends Application
 	public static void setMyRestaurant(Restaurant myRestaurant)
 	{
 		RistogoGUI.myRestaurant = myRestaurant;
+	}
+	
+	public static void launch(String... args)
+	{
+		Application.launch(args);
 	}
 }

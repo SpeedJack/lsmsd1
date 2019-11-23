@@ -60,6 +60,11 @@ public class GUIConfig
 	{
 		return getFontSizeLarge();
 	}
+	
+	public static double getTableTextFontSize()
+	{
+		return getFontSizeNormal();
+	}
 
 	public static double getFormSubtitleFontSize()
 	{
@@ -146,6 +151,16 @@ public class GUIConfig
 	{
 		return getFgColor();
 	}
+	
+	public static Color getDialogBgColor()
+	{
+		return getInvertedBgColor();
+	}
+	
+	public static Color getDialogFgColor()
+	{
+		return getInvertedFgColor();
+	}
 
 	public static String getCSSBgColor()
 	{
@@ -165,6 +180,16 @@ public class GUIConfig
 	public static String getInvertedCSSFgColor()
 	{
 		return "-fx-text-fill: " + config.getBgColorName() + ";";
+	}
+	
+	public static String getCSSDialogBgColor()
+	{
+		return getInvertedCSSBgColor();
+	}
+	
+	public static String getCSSDialogFgColor()
+	{
+		return getInvertedCSSFgColor();
 	}
 
 	public static String getInvertedCSSBgColorButton()
@@ -221,14 +246,44 @@ public class GUIConfig
 	{
 		return "-fx-font-size: " + getButtonFontSize() + "px;";
 	}
+	
+	public static String getCSSTableTextFontSize()
+	{
+		return "-fx-font-size: " + getTableTextFontSize() + "px;";
+	}
 
-	public static String getCSSButtonStyle()
+	public static String getCSSDialogButtonStyle()
 	{
 		return getCSSFontFamily() + getCSSBgColor() + getCSSFgColor() + getCSSButtonFontSize();
 	}
 
 	public static String getCSSDialogHeaderStyle()
 	{
-		return getCSSFontFamily() + getCSSBgColor() + getCSSFgColor() + "-fx-wrap-text: true;";
+		return getCSSFontFamily() + getInvertedCSSBgColor() + getInvertedCSSFgColor() + "-fx-wrap-text: true;";
+	}
+	
+	public static String getCSSTableColumnStyle(boolean alignCenter)
+	{
+		return getCSSFontFamily() + getCSSTableTextFontSize() + getCSSFgColor() + (alignCenter ? "-fx-alignment: CENTER;" : "");
+	}
+	
+	public static String getCSSTableColumnStyle()
+	{
+		return getCSSTableColumnStyle(true);
+	}
+	
+	public static double getMaxRowDisplayable(boolean isOwner)
+	{
+		return config.getNumberRowsDisplayable() - (isOwner ? 0 : 2);
+	}
+	
+	public static double getDialogLabelFontSize()
+	{
+		return getFontSizeBig();
+	}
+	
+	public static Font getDialogLabelFont()
+	{
+		return Font.font(config.getFontName(), FontWeight.BOLD, getDialogLabelFontSize());
 	}
 }

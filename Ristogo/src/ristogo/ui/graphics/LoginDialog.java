@@ -1,153 +1,184 @@
 package ristogo.ui.graphics;
 
-import java.io.IOException;
-
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import ristogo.common.entities.*;
-
+import ristogo.common.entities.Customer;
+import ristogo.common.entities.Owner;
+import ristogo.common.entities.Restaurant;
+import ristogo.common.entities.User;
 import ristogo.common.net.ResponseMessage;
-import ristogo.config.Configuration;
 import ristogo.net.Protocol;
 import ristogo.ui.graphics.config.GUIConfig;
+import ristogo.ui.graphics.controls.DialogLabel;
+import ristogo.ui.graphics.controls.DialogPasswordField;
+import ristogo.ui.graphics.controls.DialogTextField;
 
 public class LoginDialog extends Dialog<User>
 {
+	private boolean registering;
+	private final Button okButton;
+	private final Button switchButton;
+	private final DialogLabel usernameLabel = new DialogLabel("Username: ");
+	private final DialogLabel passwordLabel = new DialogLabel("Password: ");
+	private final DialogLabel confirmLabel = new DialogLabel("Confirm: ");
+	private final DialogLabel typeLabel = new DialogLabel("Type: ");
+	private final DialogLabel errorLabel = new DialogLabel("Fill out the form.");
+	private final DialogTextField usernameField = new DialogTextField("Username");
+	private final DialogPasswordField passwordField = new DialogPasswordField("Password");
+	private final DialogPasswordField confirmField = new DialogPasswordField("Confirm password");
+	private final ChoiceBox<String> typeSelector = new ChoiceBox<String>();
+	private User loggedUser;
+	
 	public LoginDialog()
 	{
-
-//////////////////////HEADER/////////////////////////////////////////////////////////////////////////////
-
-		Configuration config = Configuration.getConfig();
 		DialogPane dialogPane = getDialogPane();
-
 		Stage stage = (Stage)dialogPane.getScene().getWindow();
-		stage.getIcons().add(new Image(this.getClass().getResource("/resources/logo.png").toString()));
-
-		dialogPane.setStyle(GUIConfig.getInvertedCSSBgColor());
-
-		setTitle("RistoGo - Login");
-		setHeaderText("Welcome to Ristogo!\n" + "The application that allows you to book tables\n" +
-			"at your favorite restaurants!");
-
+		stage.getIcons().add(new Image(getClass().getResourceAsStream("/resources/logo.png")));
+		dialogPane.setStyle(GUIConfig.getCSSDialogBgColor());
 		dialogPane.getStyleClass().remove("alert");
 
+		setTitle("RistoGo - Login");
+		setHeaderText("Welcome to Ristogo!\nThe application that allows you to book tables at your favorite restaurants!");
 		GridPane header = (GridPane)dialogPane.lookup(".header-panel");
-		header.setStyle(GUIConfig.getInvertedCSSBgColor() + GUIConfig.getCSSFontFamily() +
-			GUIConfig.getInvertedCSSFgColor() + "-fx-wrap-text: true ;");
-
-		header.lookup(".label").setStyle("-fx-text-fill: " + config.getBgColorName() + ";");
-
+		header.setStyle(GUIConfig.getCSSDialogHeaderStyle());
+		header.lookup(".label").setStyle(GUIConfig.getCSSDialogFgColor());
 		ImageView img = new ImageView(this.getClass().getResource("/resources/whiteLogo.png").toString());
 		img.setFitHeight(50);
 		img.setFitWidth(50);
 		setGraphic(img);
-/////////////////////////////////////////////////////////////////////////////////////////////////////////7
-////////////////////////////CONTENUTO//////////////////////////////////////////////////////////////////
-
-		Label l1 = new Label("Name: ");
-		TextField username = new TextField();
-		username.setPromptText("Username");
-		Label l2 = new Label("Password: ");
-		PasswordField password = new PasswordField();
-		password.setPromptText("Password");
-
-		l1.setFont(GUIConfig.getFormTitleFont());
-		l1.setTextFill(GUIConfig.getBgColor());
-		username.setFont(GUIConfig.getTextFont());
-		username.setMaxWidth(200);
-
-		l2.setFont(GUIConfig.getFormTitleFont());
-		l2.setTextFill(GUIConfig.getBgColor());
-		password.setFont(GUIConfig.getTextFont());
-		password.setMaxWidth(200);
-
-		Label error = new Label("Error: Login Failed. Retry");
-		error.setFont(GUIConfig.getFormTitleFont());
-		error.setTextFill(GUIConfig.getBgColor());
-		error.setStyle("-fx-background-color:   red;");
-		error.setVisible(false);
-
+		
+		errorLabel.setStyle("-fx-background-color: red;");
+		typeSelector.getItems().addAll("Customer", "Owner");
+		confirmLabel.setVisible(false); confirmField.setVisible(false);
+		typeLabel.setVisible(false); typeSelector.setVisible(false);
+		typeSelector.setValue("Customer");
+		
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(20, 150, 10, 10));
-
-		grid.add(l1, 0, 0);
-		grid.add(username, 1, 0);
-		grid.add(l2, 0, 1);
-		grid.add(password, 1, 1);
-
-		Button registerButton = new Button("Register");
-		registerButton.setStyle(GUIConfig.getCSSFontFamily() + GUIConfig.getCSSBgColor() +
-			GUIConfig.getCSSFgColor() + GUIConfig.getCSSFontSizeNormal());
-		HBox registerBox = new HBox();
-		registerBox.getChildren().add(registerButton);
-		registerBox.setAlignment(Pos.BASELINE_RIGHT);
-
-		VBox content = new VBox(10);
-		content.getChildren().addAll(grid, error, registerBox);
-		dialogPane.setContent(content);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////BUTTONS////////////////////////////////////////////////////////
-		ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
-		dialogPane.getButtonTypes().addAll(loginButtonType, ButtonType.CLOSE);
-
+		grid.add(usernameLabel, 0, 0); grid.add(usernameField, 1, 0);
+		grid.add(passwordLabel, 0, 1); grid.add(passwordField, 1, 1);
+		grid.add(confirmLabel, 0, 2); grid.add(confirmField, 1, 2);
+		grid.add(typeLabel, 0, 3); grid.add(typeSelector, 1, 3);
+		grid.add(errorLabel, 0, 4, 2, 1);
+		
+		ButtonType okButtonType = new ButtonType("Login", ButtonData.OK_DONE);
+		ButtonType switchButtonType = new ButtonType("Register", ButtonData.OTHER);
+		dialogPane.getButtonTypes().addAll(okButtonType, switchButtonType, ButtonType.CLOSE);
+		
+		okButton = (Button)dialogPane.lookupButton(okButtonType);
+		switchButton = (Button)dialogPane.lookupButton(switchButtonType);
+		
+		okButton.addEventFilter(ActionEvent.ACTION, this::filterOkButtonAction);
+		switchButton.addEventFilter(ActionEvent.ACTION, this::filterSwitchButtonAction);
+		okButton.setDisable(true);
+		
+		usernameField.textProperty().addListener(this::textChangeListener);
+		passwordField.textProperty().addListener(this::textChangeListener);
+		confirmField.textProperty().addListener(this::textChangeListener);
+		
 		ButtonBar buttonBar = (ButtonBar)dialogPane.lookup(".button-bar");
-		buttonBar.getButtons().forEach(b -> b.setStyle(GUIConfig.getCSSFontFamily() +
-			GUIConfig.getCSSBgColor() + GUIConfig.getCSSFgColor() + GUIConfig.getCSSFontSizeNormal()));
-
-		Node closeButton = getDialogPane().lookupButton(ButtonType.CLOSE);
-		closeButton.managedProperty().bind(closeButton.visibleProperty());
-		closeButton.setVisible(false);
-
-		Node loginButton = getDialogPane().lookupButton(loginButtonType);
-		loginButton.setDisable(true);
-		username.textProperty().addListener((observable, oldValue, newValue) -> {
-			loginButton.setDisable(newValue.trim().isEmpty());
-		});
-		Platform.runLater(() -> username.requestFocus());
-
-		registerButton.setOnAction((ActionEvent ev) -> {
-			RegisterDialog register = new RegisterDialog();
-			register.showAndWait();
-			while (register.getResult() != 0)
-				register.showAndWait();
-		});
-
-		setResultConverter(dialogButton -> {
-			if (dialogButton == loginButtonType)
-				try {
-					ResponseMessage res = Protocol.getInstance()
-						.performLogin(new Customer(username.getText(), password.getText()));
-					if (res.isSuccess())
-						return (User)res.getEntity();
-					error.setVisible(true);
-					return new Customer(-1, "");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+		buttonBar.getButtons().forEach(b -> b.setStyle(GUIConfig.getCSSDialogButtonStyle()));
+		
+		dialogPane.setContent(grid);
+		
+		Platform.runLater(() -> usernameField.requestFocus());
+		
+		this.setResultConverter(button -> {
+			if (button == okButtonType)
+				return loggedUser;
 			return null;
 		});
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	}
+	
+	private void filterOkButtonAction(ActionEvent event)
+	{
+		Protocol protocol = Protocol.getInstance();
+		ResponseMessage resMsg;
+		String username = usernameField.getText();
+		String password = passwordField.getText();
+		if (registering) {
+			if (typeSelector.getValue().equals("Owner"))
+				resMsg = protocol.registerUser(new Owner(username, password), new Restaurant(username));
+			else
+				resMsg = protocol.registerUser(new Customer(username, password));
+			if (!resMsg.isSuccess()) {
+				showError(resMsg.getErrorMsg());
+				event.consume();
+				return;
+			}
+		}
+		resMsg = protocol.performLogin(new Customer(username, password));
+		if (!resMsg.isSuccess()) {
+			showError(resMsg.getErrorMsg());
+			event.consume();
+			return;
+		}
+		loggedUser = (User)resMsg.getEntity();
+	}
+
+	private void textChangeListener(ObservableValue<? extends String> observable, String oldValue, String newValue)
+	{
+		validateFields();
+	}
+
+	private void validateFields()
+	{
+		String username = usernameField.getText();
+		String password = passwordField.getText();
+		String confirm = confirmField.getText();
+		if (!User.validateUsername(username))
+			showError("Invalid username.");
+		else if (!User.validatePassword(password))
+			showError("Invalid password.");
+		else if (registering && !confirm.equals(password))
+			showError("Passwords do not match.");
+		else
+			hideError();
+	}
+
+	private void showError(String message)
+	{
+		errorLabel.setText(message);
+		errorLabel.setVisible(true);
+		okButton.setDisable(true);
+	}
+
+	private void hideError()
+	{
+		errorLabel.setVisible(false);
+		okButton.setDisable(false);
+	}
+
+	private void filterSwitchButtonAction(ActionEvent event)
+	{
+		registering = !registering;
+		if (registering) {
+			switchButton.setText("Login");
+			okButton.setText("Register");
+			confirmLabel.setVisible(true); confirmField.setVisible(true);
+			typeLabel.setVisible(true); typeSelector.setVisible(true);
+		} else {
+			switchButton.setText("Register");
+			okButton.setText("Login");
+			confirmLabel.setVisible(false); confirmField.setVisible(false);
+			typeLabel.setVisible(false); typeSelector.setVisible(false);
+		}
+		validateFields();
+		event.consume();
 	}
 }

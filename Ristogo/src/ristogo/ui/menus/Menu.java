@@ -1,11 +1,7 @@
 package ristogo.ui.menus;
 
-import java.io.IOException;
 import java.util.SortedSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import ristogo.Ristogo;
 import ristogo.common.entities.Reservation;
 import ristogo.common.entities.User;
 import ristogo.net.Protocol;
@@ -15,17 +11,8 @@ public abstract class Menu
 {
 	protected String prompt;
 	protected abstract SortedSet<MenuEntry> getMenu();
-	protected static Protocol protocol;
+	protected static Protocol protocol = Protocol.getInstance();
 	protected static User loggedUser;
-
-	static {
-		try {
-			protocol = Protocol.getInstance();
-		} catch (IOException ex) {
-			Logger.getLogger(Ristogo.class.getName()).log(Level.SEVERE, null, ex);
-			System.exit(1);
-		}
-	}
 
 	protected MenuEntry printMenu()
 	{

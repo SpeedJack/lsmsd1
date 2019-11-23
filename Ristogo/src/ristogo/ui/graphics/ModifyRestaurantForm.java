@@ -1,14 +1,16 @@
 package ristogo.ui.graphics;
 
-import java.io.IOException;
-
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-
-import ristogo.common.entities.*;
-import ristogo.common.entities.enums.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import ristogo.common.entities.Restaurant;
+import ristogo.common.entities.enums.Genre;
 import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.Price;
 import ristogo.common.net.ResponseMessage;
@@ -150,7 +152,7 @@ public class ModifyRestaurantForm extends VBox
 					getOwnRestaurant();
 				}
 
-			} catch (NullPointerException | IOException e) {
+			} catch (NullPointerException e) {
 				e.getMessage();
 				error.setText("Error: fill out the entire form to be able to commit");
 				error.setVisible(true);
@@ -195,7 +197,7 @@ public class ModifyRestaurantForm extends VBox
 				else
 					hourField.getSelectionModel().select("Lunch/Dinner");
 			}
-		} catch (NullPointerException | IOException e) {
+		} catch (NullPointerException e) {
 
 		}
 	}

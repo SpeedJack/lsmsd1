@@ -159,7 +159,7 @@ public class Configuration implements Serializable
 		return bgColorName;
 	}
 
-	public int getnumberRowsDisplayable()
+	public int getNumberRowsDisplayable()
 	{
 		return numberRowsDisplayable;
 	}

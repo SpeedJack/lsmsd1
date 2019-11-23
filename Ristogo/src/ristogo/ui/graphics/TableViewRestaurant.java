@@ -1,7 +1,5 @@
 package ristogo.ui.graphics;
 
-import java.io.IOException;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
@@ -9,7 +7,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import ristogo.common.entities.Entity;
 import ristogo.common.entities.Restaurant;
-import ristogo.common.entities.enums.*;
+import ristogo.common.entities.enums.Genre;
+import ristogo.common.entities.enums.OpeningHours;
+import ristogo.common.entities.enums.Price;
 import ristogo.common.net.ResponseMessage;
 import ristogo.config.Configuration;
 import ristogo.net.Protocol;
@@ -29,7 +29,7 @@ public class TableViewRestaurant extends TableView<RestaurantBean>
 	{
 		setEditable(true);
 		setFixedCellSize(35);
-		setMaxHeight(Configuration.getConfig().getnumberRowsDisplayable() * getFixedCellSize());
+		setMaxHeight(Configuration.getConfig().getNumberRowsDisplayable() * getFixedCellSize());
 		setMinWidth(600);
 		setMaxWidth(600);
 		String font = Configuration.getConfig().getFontName();
@@ -96,37 +96,29 @@ public class TableViewRestaurant extends TableView<RestaurantBean>
 	public void listRestaurants()
 	{
 		restaurantList.clear();
-		try {
-			ResponseMessage res = Protocol.getInstance().getRestaurants();
-			if (res.isSuccess())
-				for (Entity entity : res.getEntities()) {
-					Restaurant restaurant = (Restaurant)entity;
-					restaurantList.add(RestaurantBean.fromEntity(restaurant));
-				}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		ResponseMessage res = Protocol.getInstance().getRestaurants();
+		if (res.isSuccess())
+			for (Entity entity : res.getEntities()) {
+				Restaurant restaurant = (Restaurant)entity;
+				restaurantList.add(RestaurantBean.fromEntity(restaurant));
+			}
 	}
 
 	public void listRestaurants(String findCity)
 	{
 		restaurantList.clear();
-		try {
-			ResponseMessage res = null;
-			if(findCity == null) {
-				res = Protocol.getInstance().getRestaurants();
-			} else {
-				Restaurant restaurant = new Restaurant();
-				restaurant.setCity(findCity);
-				res = Protocol.getInstance().getRestaurants(restaurant);
-			}
-			if (res.isSuccess())
-				for (Entity entity : res.getEntities()) {
-					Restaurant restaurant = (Restaurant)entity;
-					restaurantList.add(RestaurantBean.fromEntity(restaurant));
-				}
-		} catch (IOException e) {
-			e.printStackTrace();
+		ResponseMessage res = null;
+		if(findCity == null) {
+			res = Protocol.getInstance().getRestaurants();
+		} else {
+			Restaurant restaurant = new Restaurant();
+			restaurant.setCity(findCity);
+			res = Protocol.getInstance().getRestaurants(restaurant);
 		}
+		if (res.isSuccess())
+			for (Entity entity : res.getEntities()) {
+				Restaurant restaurant = (Restaurant)entity;
+				restaurantList.add(RestaurantBean.fromEntity(restaurant));
+			}
 	}
 }
