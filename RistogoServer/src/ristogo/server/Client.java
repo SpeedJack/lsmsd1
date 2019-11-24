@@ -431,7 +431,14 @@ public class Client extends Thread
 				reservation = (Reservation)entity;
 			else if (entity instanceof Restaurant)
 				restaurant = (Restaurant)entity;
-		Restaurant_ restaurant_ = restaurantManager.get(restaurant.getId());
+		Restaurant_ restaurant_ = null;
+		if (restaurant == null) {
+			Reservation_ reservation_ = reservationManager.get(reservation.getId());
+			if (reservation_ != null)
+				restaurant_ = reservation_.getRestaurant();
+		} else {
+			restaurant_ = restaurantManager.get(restaurant.getId());
+		}
 		if (restaurant_ == null)
 			return new ResponseMessage("Can not find the specified restaurant.");
 		OpeningHours oh = restaurant_.getOpeningHours();

@@ -53,14 +53,14 @@ public class RequestMessage extends Message
 			return getEntityCount() == 1 && getEntity() instanceof Reservation;
 		case RESERVE:
 		case CHECK_SEATS:
-			if (getEntityCount() != 2)
+			if (getEntityCount() < 1 || getEntityCount() > 2)
 				return false;
 			for (Entity entity: getEntities())
 				if (entity instanceof Reservation)
 					hasReservation = true;
 				else if (entity instanceof Restaurant)
 					hasRestaurant = true;
-			return hasReservation & hasRestaurant;
+			return (getEntityCount() == 2 && hasReservation && hasRestaurant) || (getEntityCount() == 1 && hasReservation);
 		case LIST_RESTAURANTS:
 			return (getEntityCount() == 0) || (getEntityCount() == 1 && getEntity() instanceof Restaurant);
 		case LOGOUT:

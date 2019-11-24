@@ -31,8 +31,6 @@ public class LoginDialog extends Dialog<User>
 	private boolean registering;
 	private final Button okButton;
 	private final Button switchButton;
-	private final DialogLabel usernameLabel = new DialogLabel("Username: ");
-	private final DialogLabel passwordLabel = new DialogLabel("Password: ");
 	private final DialogLabel confirmLabel = new DialogLabel("Confirm: ");
 	private final DialogLabel typeLabel = new DialogLabel("Type: ");
 	private final DialogLabel errorLabel = new DialogLabel("Fill out the form.");
@@ -65,6 +63,9 @@ public class LoginDialog extends Dialog<User>
 		confirmLabel.setVisible(false); confirmField.setVisible(false);
 		typeLabel.setVisible(false); typeSelector.setVisible(false);
 		typeSelector.setValue("Customer");
+		
+		DialogLabel usernameLabel = new DialogLabel("Username: ");
+		DialogLabel passwordLabel = new DialogLabel("Password: ");
 		
 		GridPane grid = new GridPane();
 		grid.setHgap(10);

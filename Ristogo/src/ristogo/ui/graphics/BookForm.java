@@ -18,6 +18,8 @@ import ristogo.common.entities.enums.ReservationTime;
 import ristogo.common.net.ResponseMessage;
 import ristogo.net.Protocol;
 import ristogo.ui.graphics.config.GUIConfig;
+import ristogo.ui.graphics.controls.FormButton;
+import ristogo.ui.graphics.controls.FormLabel;
 
 public class BookForm extends VBox
 {
@@ -25,40 +27,49 @@ public class BookForm extends VBox
 	private DatePicker dateField;
 	private ChoiceBox<String> hourField;
 	private ChoiceBox<Integer> seatsField;
-	private Button check;
-	private Button book;
-	private Button delRes;
+	private FormButton checkButton;
+	private FormButton bookButton;
+	private FormButton deleteButton;
+	
+	private Label errorLabel = new Label();
 
-	private int idRestoDelete;
-	private int idRestoReserve;
+	private Restaurant restaurant;
+	private Reservation reservation;
 
-	public BookForm(Runnable listReservation)
+	public BookForm(Runnable onAction)
 	{
 
 		super(20);
 
 		Label title = new Label("Book a table");
 		Label subTitle = new Label("To select a restaurant click on the table on the side");
-		title.setStyle("-fx-underline: true;");
+		title.setStyle(GUIConfig.getCSSFormTitleStyle());
 		title.setFont(GUIConfig.getFormTitleFont());
 		title.setTextFill(GUIConfig.getFgColor());
 		subTitle.setFont(GUIConfig.getFormSubtitleFont());
 		subTitle.setTextFill(GUIConfig.getFgColor());
 
-		Label name = new Label("Name of Restaurant: ");
+		FormLabel nameLabel = new FormLabel("Name of Restaurant: ");
+		FormLabel dateLabel = new FormLabel("Date of Reservation: ");
+		FormLabel hourLabel = new FormLabel("Booking Time: ");
+		FormLabel seatsLabel = new FormLabel("Seats: ");
+		
+		errorLabel.setFont(GUIConfig.getTextFont());
+		errorLabel.setTextFill(GUIConfig.getInvertedFgColor());
+		errorLabel.setStyle("-fx-background-color: red;");
+		errorLabel.setVisible(false);
+		
 		nameField = new TextField();
-		name.setFont(GUIConfig.getBoldTextFont());
-		name.setTextFill(GUIConfig.getFgColor());
-		nameField.setEditable(false);
-
-		HBox nameBox = new HBox(20);
-		nameBox.getChildren().addAll(name, nameField);
-
-		Label date = new Label("Date of Reservation: ");
-		date.setFont(GUIConfig.getBoldTextFont());
-		date.setTextFill(GUIConfig.getFgColor());
 		dateField = new DatePicker();
+		hourField = new ChoiceBox<String>();
+		
+		checkButton = new FormButton("Check");
+		bookButton = new FormButton("Book");
+		deleteButton = new FormButton("Delete");
+		
+		nameField.setEditable(false);
 		dateField.setDayCellFactory(picker -> new DateCell() { // Disable all past dates
+			@Override
 			public void updateItem(LocalDate date, boolean empty)
 			{
 				super.updateItem(date, empty);
@@ -67,88 +78,33 @@ public class BookForm extends VBox
 				setDisable(empty || date.compareTo(today) < 0);
 			}
 		});
-
-		HBox dateBox = new HBox(20);
-		dateBox.getChildren().addAll(date, dateField);
-
-		Label hour = new Label("Booking Time: ");
-		hour.setFont(GUIConfig.getBoldTextFont());
-		hour.setTextFill(GUIConfig.getFgColor());
-		hourField = new ChoiceBox<String>();
 		hourField.setMinSize(70, 25);
 		hourField.setMaxSize(70, 25);
-
-		HBox hourBox = new HBox(20);
-		hourBox.getChildren().addAll(hour, hourField);
-
-		check = new Button("Check");
-		check.setFont(GUIConfig.getButtonFont());
-		check.setTextFill(GUIConfig.getInvertedFgColor());
-		check.setStyle(GUIConfig.getInvertedCSSBgColorButton());
-
-		Label seats = new Label("Seats: ");
-		seats.setFont(GUIConfig.getBoldTextFont());
-		seats.setTextFill(GUIConfig.getFgColor());
 		seatsField = new ChoiceBox<Integer>();
 		seatsField.setDisable(true);
+		bookButton.setDisable(true);
+		deleteButton.setDisable(true);
 
+		HBox nameBox = new HBox(20);
+		HBox dateBox = new HBox(20);
+		HBox hourBox = new HBox(20);
 		HBox seatsBox = new HBox(20);
-		seatsBox.getChildren().addAll(seats, seatsField);
-
-		////////////////// error/////////////////////////////////////////////////////
-		Label error = new Label();
-		error.setFont(GUIConfig.getTextFont());
-		error.setTextFill(GUIConfig.getInvertedFgColor());
-		error.setStyle("-fx-background-color:   red;");
-		error.setVisible(false);
-		///////////////////////////////////////////////////////////////////////////////
-
-		book = new Button("Book");
-		book.setFont(GUIConfig.getButtonFont());
-		book.setTextFill(GUIConfig.getInvertedFgColor());
-		book.setStyle(GUIConfig.getInvertedCSSBgColorButton());
-		book.setDisable(true);
-
-		delRes = new Button("Del. Res.");
-		delRes.setFont(GUIConfig.getButtonFont());
-		delRes.setTextFill(GUIConfig.getInvertedFgColor());
-		delRes.setStyle(GUIConfig.getInvertedCSSBgColorButton());
-		delRes.setDisable(true);
-
 		HBox buttonBox = new HBox(20);
-		buttonBox.getChildren().addAll(book, delRes);
-
-		check.setOnAction((ActionEvent ev) -> {
-			try {
-				String n = nameField.getText();
-				LocalDate d = dateField.getValue();
-				ReservationTime h = ReservationTime.valueOf(hourField.getValue().toUpperCase());
-				Reservation reserv = new Reservation(RistogoGUI.getLoggedUser().getUsername(), n, d, h,
-					0);
-				Restaurant rest = new Restaurant(idRestoReserve);
-				ResponseMessage res = Protocol.getInstance().checkSeats(reserv, rest);
-				if (res.isSuccess()) {
-					Restaurant r = (Restaurant)res.getEntity();
-					if (r.getSeats() > 0) {
-						seatsField.getItems().clear();
-						for (int i = 1; i <= r.getSeats(); i++) {
-							seatsField.getItems().add(i);
-							seatsField.setDisable(false);
-							book.setDisable(false);
-						}
-					} else {
-						error.setText("Error: No more seats for this date/hour");
-						error.setVisible(true);
-					}
-				} else {
-					System.out.println(res.getErrorMsg());
-				}
-
-			} catch (NullPointerException e) {
-				e.getMessage();
-			}
-		});
-		book.setOnAction((ActionEvent ev) -> {
+		
+		nameBox.getChildren().addAll(nameLabel, nameField);
+		dateBox.getChildren().addAll(dateLabel, dateField);
+		hourBox.getChildren().addAll(hourLabel, hourField);
+		seatsBox.getChildren().addAll(seatsLabel, seatsField);
+		buttonBox.getChildren().addAll(bookButton, deleteButton);
+		
+		getChildren().addAll(title, subTitle, nameBox, dateBox, hourBox,
+			checkButton, seatsBox, errorLabel, buttonBox);
+		setStyle(GUIConfig.getCSSFormBoxStyle());
+		
+		
+		
+		checkButton.setOnAction(this::handleCheckButtonAction);
+		bookButton.setOnAction((ActionEvent ev) -> {
 			try {
 				String n = nameField.getText();
 				LocalDate d = dateField.getValue();
@@ -159,86 +115,129 @@ public class BookForm extends VBox
 				Restaurant rest = new Restaurant(idRestoReserve);
 				ResponseMessage res = Protocol.getInstance().reserve(reserv, rest);
 				if (res.isSuccess()) {
-					listReservation.run();
+					onAction.run();
 				} else {
-					error.setText("Error: " + res.getErrorMsg());
-					error.setVisible(true);
+					errorLabel.setText("Error: " + res.getErrorMsg());
+					errorLabel.setVisible(true);
 					seatsField.getItems().clear();
 
 				}
-				book.setDisable(true);
+				bookButton.setDisable(true);
 
 			} catch (NullPointerException e) {
 				e.getMessage();
-				error.setText("Error: fill out the entire form to be able to book");
-				error.setVisible(true);
+				errorLabel.setText("Error: fill out the entire form to be able to book");
+				errorLabel.setVisible(true);
 			}
 		});
 
-		delRes.setOnAction((ActionEvent ev) -> {
+		deleteButton.setOnAction((ActionEvent ev) -> {
 			try {
 
 				ResponseMessage res = Protocol.getInstance()
 					.deleteReservation(new Reservation(idRestoDelete));
 				if (res.isSuccess()) {
-					listReservation.run();
-					delRes.setDisable(true);
+					onAction.run();
+					deleteButton.setDisable(true);
 				} else {
-					error.setText("Error: " + res.getErrorMsg());
-					error.setVisible(true);
+					errorLabel.setText("Error: " + res.getErrorMsg());
+					errorLabel.setVisible(true);
 
 				}
 			} catch (NullPointerException e) {
 				e.getMessage();
-				delRes.setDisable(true);
+				deleteButton.setDisable(true);
 			}
 		});
 
 		dateField.setOnAction((ActionEvent ev) -> {
 			seatsField.setDisable(true);
-			book.setDisable(true);
+			bookButton.setDisable(true);
 		});
 
 		hourField.setOnAction((ActionEvent ev) -> {
 			seatsField.setDisable(true);
-			book.setDisable(true);
+			bookButton.setDisable(true);
 		});
 
-		this.getChildren().addAll(title, subTitle, nameBox, dateBox, hourBox, check, seatsBox, error,
-			buttonBox);
-		this.setStyle("-fx-padding: 7;" + "-fx-border-style: solid inside;" + "-fx-border-width: 2;" +
-			"-fx-border-insets: 3;" + "-fx-border-radius: 10;" + "-fx-border-color: " + "D9561D" + ";");
-
 	}
-
-	public void fillOutForm(String name, OpeningHours hour)
+	
+	private void handleCheckButtonAction(ActionEvent event)
 	{
-		try {
-			nameField.setText(name);
-			hourField.getItems().clear();
-			if (hour.equals(OpeningHours.BOTH))
-				hourField.getItems().addAll("Lunch", "Dinner");
-			else if (hour.equals(OpeningHours.LUNCH))
-				hourField.getItems().add("Lunch");
-			else
-				hourField.getItems().add("Dinner");
-		} catch (NullPointerException npe) {
-			// do nothing
+		ResponseMessage resMsg;
+		if (restaurant == null)
+			resMsg = Protocol.getInstance().checkSeats(reservation);
+		else
+			resMsg = Protocol.getInstance().checkSeats(reservation, restaurant);
+		if (!resMsg.isSuccess()) {
+			showError(resMsg.getErrorMsg());
+			return;
+		}
+		int maxSeats = ((Restaurant)resMsg.getEntity()).getSeats();
+		seatsField.getItems().clear();
+		if (maxSeats > 0) {
+			for (int i = 1; i < maxSeats; i++)
+				seatsField.getItems().add(i);
+			seatsField.setDisable(false);
+			bookButton.setDisable(false);
 		}
 	}
-
-	public Button getDelRes()
+	
+	private void showError(String message)
 	{
-		return delRes;
+		errorLabel.setText(message);
+		errorLabel.setVisible(true);
 	}
-
-	public void setIdResToDelete(int id)
+	
+	private void hideError()
 	{
-		this.idRestoDelete = id;
+		errorLabel.setVisible(false);
 	}
-
-	public void setIdResToReserve(int id)
+	
+	private Reservation getReservation()
 	{
-		this.idRestoReserve = id;
+		if (reservation == null)
+			reservation = new Reservation();
+		reservation.setRestaurantName(nameField.getText());
+		reservation.setDate(dateField.getValue());
+		reservation.setTime(ReservationTime.valueOf(hourField.getValue().toUpperCase()));
+		Integer seats = seatsField.getValue();
+		if (seats != null)
+			reservation.setSeats(seats);
+		return reservation;
+	}
+	
+	public void fillForm(Restaurant restaurant)
+	{
+		this.restaurant = restaurant;
+		reservation = null;
+		nameField.setText(restaurant.getName());
+		dateField.setValue(null);
+		hourField.getItems().clear();
+		switch(restaurant.getOpeningHours()) {
+		case BOTH:
+			hourField.getItems().addAll(OpeningHours.LUNCH.toString(), OpeningHours.DINNER.toString());
+			break;
+		default:
+			hourField.getItems().add(restaurant.getOpeningHours().toString());
+		}
+		seatsField.getSelectionModel().clearSelection();
+		seatsField.setValue(null);
+		bookButton.setText("Book");
+		deleteButton.setDisable(true);
+		bookButton.setDisable(true);
+	}
+	
+	public void fillForm(Reservation reservation)
+	{
+		this.reservation = reservation;
+		restaurant = null;
+		nameField.setText(reservation.getRestaurantName());
+		dateField.setValue(reservation.getDate());
+		hourField.setValue(reservation.getTime().toString());
+		seatsField.setValue(reservation.getSeats());
+		bookButton.setText("Save");
+		deleteButton.setDisable(false);
+		bookButton.setDisable(false);
 	}
 }

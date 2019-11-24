@@ -127,6 +127,11 @@ public class Protocol implements AutoCloseable
 	{
 		return sendRequest(ActionRequest.CHECK_SEATS, reservation, restaurant);
 	}
+	
+	public ResponseMessage checkSeats(Reservation reservation)
+	{
+		return sendRequest(ActionRequest.CHECK_SEATS, reservation);
+	}
 
 	private ResponseMessage sendRequest(ActionRequest actionRequest, Entity... entities)
 	{

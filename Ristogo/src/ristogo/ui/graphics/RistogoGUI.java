@@ -62,7 +62,7 @@ public class RistogoGUI extends Application
 
 		GridPane title = generateTitle();
 
-		TableViewReservation reservationsTable = new TableViewReservation(true);
+		TableViewReservation reservationsTable = new TableViewReservation(loggedUser.isOwner());
 		reservationsTable.listReservations();
 
 		BookForm bookForm = new BookForm(reservationsTable::listReservations);
@@ -106,16 +106,14 @@ public class RistogoGUI extends Application
 		subTitle2.setStyle("-fx-underline: true;");
 
 		restaurant.setOnMouseClicked((e) -> {
-			bookForm.getDelRes().setDisable(true);
-			bookForm.fillOutForm(restaurant.getSelectionName(), restaurant.getSelectionHours());
+			bookForm.fillForm(restaurant.getSelectionName(), restaurant.getSelectionHours());
 			descriptionField.setText(restaurant.getSelectionDescription());
 			bookForm.setIdResToReserve(restaurant.getSelectionModel().getSelectedItem().getId());
 		});
 
 		reservationsTable.setOnMouseClicked((e) -> {
 			try {
-				bookForm.getDelRes().setDisable(false);
-				bookForm.fillOutForm("", OpeningHours.BOTH);
+				bookForm.fillForm("", OpeningHours.BOTH);
 				bookForm.setIdResToDelete(reservationsTable.getSelectionModel().getSelectedItem().getId());
 			} catch (NullPointerException ex) {
 				// do nothing
@@ -161,7 +159,7 @@ public class RistogoGUI extends Application
 		subTitle.setFont(GUIConfig.getFormTitleFont());
 		subTitle.setTextFill(GUIConfig.getFgColor());
 
-		TableViewReservation reservation = new TableViewReservation(false);
+		TableViewReservation reservation = new TableViewReservation(loggedUser.isOwner());
 		reservation.listReservations();
 
 		Button refresh = new Button("Refresh");

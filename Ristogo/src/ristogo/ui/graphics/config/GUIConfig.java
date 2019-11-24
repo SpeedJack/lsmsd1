@@ -171,6 +171,11 @@ public class GUIConfig
 	{
 		return "-fx-text-fill: " + config.getFgColorName() + ";";
 	}
+	
+	public static String getCSSBorderColor()
+	{
+		return "-fx-border-color: " + config.getFgColorName() + ";";
+	}
 
 	public static String getInvertedCSSBgColor()
 	{
@@ -272,9 +277,19 @@ public class GUIConfig
 		return getCSSTableColumnStyle(true);
 	}
 	
+	public static String getCSSFormTitleStyle()
+	{
+		return "-fx-underline: true;";
+	}
+	
 	public static double getMaxRowDisplayable(boolean isOwner)
 	{
 		return config.getNumberRowsDisplayable() - (isOwner ? 0 : 2);
+	}
+	
+	public static double getMaxRowDisplayable()
+	{
+		return getMaxRowDisplayable(true);
 	}
 	
 	public static double getDialogLabelFontSize()
@@ -285,5 +300,15 @@ public class GUIConfig
 	public static Font getDialogLabelFont()
 	{
 		return Font.font(config.getFontName(), FontWeight.BOLD, getDialogLabelFontSize());
+	}
+	
+	public static Font getFormLabelFont()
+	{
+		return getBoldTextFont();
+	}
+	
+	public static String getCSSFormBoxStyle()
+	{
+		return "-fx-padding: 7; -fx-border-style: solid inside; -fx-border-width: 2; -fx-border-insets: 3; -fx-border-radius: 10;" + getCSSBorderColor();
 	}
 }

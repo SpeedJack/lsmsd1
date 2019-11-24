@@ -14,7 +14,13 @@ public class Reservation extends Entity
 	protected ReservationTime time;
 	protected int seats;
 
-	public Reservation(int id) {
+	public Reservation()
+	{
+		super();
+	}
+	
+	public Reservation(int id)
+	{
 		super(id);
 	}
 
