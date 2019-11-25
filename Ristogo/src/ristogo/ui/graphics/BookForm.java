@@ -247,6 +247,7 @@ final class BookForm extends VBox
 		dateField.setValue(reservation.getDate());
 		timeField.getItems().addAll(ReservationTime.values());
 		timeField.setValue(reservation.getTime());
+		checkSeats();
 		seatsField.setValue(reservation.getSeats());
 		bookButton.setText("Save");
 		deleteButton.setDisable(false);
