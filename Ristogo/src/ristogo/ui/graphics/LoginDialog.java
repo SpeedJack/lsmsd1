@@ -59,6 +59,7 @@ final class LoginDialog extends Dialog<User>
 		setGraphic(img);
 
 		errorLabel.setStyle("-fx-background-color: red;");
+		errorLabel.setVisible(false);
 		typeSelector.getItems().addAll("Customer", "Owner");
 		confirmLabel.setVisible(false); confirmField.setVisible(false);
 		typeLabel.setVisible(false); typeSelector.setVisible(false);
@@ -142,6 +143,8 @@ final class LoginDialog extends Dialog<User>
 		String username = usernameField.getText();
 		String password = passwordField.getText();
 		String confirm = confirmField.getText();
+		if ((username == null || username.isEmpty()) && (password == null || password.isEmpty()))
+			return;
 		if (!User.validateUsername(username))
 			showError("Invalid username.");
 		else if (!User.validatePassword(password))

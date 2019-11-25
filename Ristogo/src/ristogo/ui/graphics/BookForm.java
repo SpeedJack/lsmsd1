@@ -101,64 +101,59 @@ final class BookForm extends VBox
 
 	private void dateChangeListener(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue)
 	{
-		validate();
+		if (newValue == null || newValue.isBefore(LocalDate.now())) {
+			showError("Invalid date.");
+			return;
+		}
+		checkSeats();
 	}
 
 	private void timeChangeListener(ObservableValue<? extends ReservationTime> observable, ReservationTime oldValue, ReservationTime newValue)
 	{
-		validate();
+		if (newValue == null) {
+			showError("Invalid time.");
+			return;
+		}
+		checkSeats();
 	}
 
 	private void seatsChangeListener(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue)
 	{
-		seatsSelected = true;
-		validate();
+		if (newValue == null) {
+			showError("Select a number of seats.");
+			return;
+		}
+		if (newValue < 1) {
+			showError("The number of seats must be > 0");
+			return;
+		}
+		checkSeats();
 	}
 
-	private void validate()
+	private void checkSeats()
 	{
 		bookButton.setDisable(true);
-		LocalDate date = dateField.getValue();
-		ReservationTime time = timeField.getValue();
-		if (date == null || date.isBefore(LocalDate.now())) {
-			showError("Invalid date.");
+		if (errorLabel.isVisible() || dateField.getValue() == null || timeField.getValue() == null || seatsField.getValue() == null)
+			return;
+		ResponseMessage resMsg;
+		if (restaurant == null)
+			resMsg = Protocol.getInstance().checkSeats(getReservation());
+		else
+			resMsg = Protocol.getInstance().checkSeats(getReservation(), restaurant);
+		if (!resMsg.isSuccess()) {
+			showError(resMsg.getErrorMsg());
 			return;
 		}
-		if (time == null) {
-			showError("Invalid time.");
-			return;
-		}
-		if (seatsSelected) {
-			if (seatsField.getValue() == null) {
-				showError("Select a number of seats.");
-				return;
-			}
-			int seats = seatsField.getValue();
-			if (seats < 1) {
-				showError("The number of seats must be > 0");
-				return;
-			}
+		int maxSeats = ((Restaurant)resMsg.getEntity()).getSeats();
+		seatsField.getItems().clear();
+		seatsSelected = false;
+		if (maxSeats > 0) {
+			for (int i = 1; i < maxSeats; i++)
+				seatsField.getItems().add(i);
+			seatsField.setDisable(false);
 		} else {
-			ResponseMessage resMsg;
-			if (restaurant == null)
-				resMsg = Protocol.getInstance().checkSeats(getReservation());
-			else
-				resMsg = Protocol.getInstance().checkSeats(getReservation(), restaurant);
-			if (!resMsg.isSuccess()) {
-				showError(resMsg.getErrorMsg());
-				return;
-			}
-			int maxSeats = ((Restaurant)resMsg.getEntity()).getSeats();
-			seatsField.getItems().clear();
-			seatsSelected = false;
-			if (maxSeats > 0) {
-				for (int i = 1; i < maxSeats; i++)
-					seatsField.getItems().add(i);
-				seatsField.setDisable(false);
-			} else {
-				showError("The restaurant does not have any available seat for this date/time.");
-				return;
-			}
+			showError("The restaurant does not have any available seat for this date/time.");
+			return;
 		}
 		bookButton.setDisable(false);
 		hideError();

@@ -36,13 +36,13 @@ public final class RistogoGUI extends Application
 	private static ModifyRestaurantForm restaurantForm;
 
 	@Override
-	public void start(Stage stage)
+	public void start(Stage primaryStage)
 	{
 		LoginDialog login = new LoginDialog();
 		Optional<User> result = login.showAndWait();
 		result.ifPresentOrElse(
 			data -> { loggedUser = data; },
-			() -> { Platform.exit(); }
+			() -> { System.exit(0); }
 		);
 
 		HBox applicationInterface;
@@ -51,15 +51,18 @@ public final class RistogoGUI extends Application
 		Scene scene = new Scene(new Group(applicationInterface));
 		scene.setFill(GUIConfig.getBgColor());
 
-		stage.setOnCloseRequest((WindowEvent ev) -> {
-			Protocol.getInstance().performLogout();
-		});
+		primaryStage.setTitle("RistoGo");
+		primaryStage.setResizable(true);
+		primaryStage.setScene(scene);
+		primaryStage.getIcons().add(new Image("/resources/logo.png"));
+		primaryStage.show();
+	}
 
-		stage.setTitle("RistoGo");
-		stage.setResizable(true);
-		stage.setScene(scene);
-		stage.getIcons().add(new Image("/resources/logo.png"));
-		stage.show();
+	@Override
+	public void stop()
+	{
+		Protocol.getInstance().performLogout();
+		System.exit(0);
 	}
 
 	private HBox buildCustomerInterface()
