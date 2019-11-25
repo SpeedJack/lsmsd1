@@ -105,6 +105,7 @@ final class BookForm extends VBox
 			showError("Invalid date.");
 			return;
 		}
+		hideError();
 		checkSeats();
 	}
 
@@ -114,6 +115,7 @@ final class BookForm extends VBox
 			showError("Invalid time.");
 			return;
 		}
+		hideError();
 		checkSeats();
 	}
 
@@ -127,6 +129,7 @@ final class BookForm extends VBox
 			showError("The number of seats must be > 0");
 			return;
 		}
+		hideError();
 	}
 
 	private void checkSeats()
@@ -171,7 +174,11 @@ final class BookForm extends VBox
 
 	private void handleBookButtonAction(ActionEvent event)
 	{
-		ResponseMessage resMsg = Protocol.getInstance().reserve(getReservation(), restaurant);
+		ResponseMessage resMsg;
+		if (restaurant == null)
+			resMsg = Protocol.getInstance().editReservation(getReservation());
+		else
+			resMsg = Protocol.getInstance().reserve(getReservation(), restaurant);
 		if (!resMsg.isSuccess()) {
 			showError(resMsg.getErrorMsg());
 			return;
