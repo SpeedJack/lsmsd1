@@ -191,7 +191,7 @@ public final class RistogoGUI extends Application
 		title.setFont(GUIConfig.getTitleFont());
 		title.setTextFill(GUIConfig.getFgColor());
 
-		ImageView icon = new ImageView(getClass().getResource("resources/logo.png").toString());
+		ImageView icon = new ImageView(getClass().getResource("/resources/logo.png").toString());
 		icon.setFitHeight(30);
 		icon.setFitWidth(30);
 
