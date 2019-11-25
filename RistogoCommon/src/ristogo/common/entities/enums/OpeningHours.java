@@ -16,7 +16,7 @@ public enum OpeningHours
 		case DINNER:
 			return "Dinner";
 		case BOTH:
-			return "Both";
+			return "Lunch/Dinner";
 		default:
 			Logger.getLogger(OpeningHours.class.getName()).severe("Invalid enum value.");
 			return "Unknown";

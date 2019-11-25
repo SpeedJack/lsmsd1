@@ -26,7 +26,7 @@ import ristogo.ui.graphics.controls.DialogLabel;
 import ristogo.ui.graphics.controls.DialogPasswordField;
 import ristogo.ui.graphics.controls.DialogTextField;
 
-public class LoginDialog extends Dialog<User>
+final class LoginDialog extends Dialog<User>
 {
 	private boolean registering;
 	private final Button okButton;
@@ -40,7 +40,7 @@ public class LoginDialog extends Dialog<User>
 	private final ChoiceBox<String> typeSelector = new ChoiceBox<String>();
 	private User loggedUser;
 	
-	public LoginDialog()
+	LoginDialog()
 	{
 		DialogPane dialogPane = getDialogPane();
 		Stage stage = (Stage)dialogPane.getScene().getWindow();

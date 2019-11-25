@@ -6,23 +6,20 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import ristogo.common.entities.Entity;
-import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.enums.Genre;
-import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.Price;
 import ristogo.common.net.ResponseMessage;
 import ristogo.net.Protocol;
-import ristogo.ui.graphics.beans.ReservationBean;
 import ristogo.ui.graphics.beans.RestaurantBean;
 import ristogo.ui.graphics.config.GUIConfig;
 
-public class TableViewRestaurant extends TableView<RestaurantBean>
+final class TableViewRestaurant extends TableView<RestaurantBean>
 {
 	private final ObservableList<RestaurantBean> restaurantList;
 
 	@SuppressWarnings("unchecked")
-	public TableViewRestaurant()
+	TableViewRestaurant()
 	{
 		restaurantList = FXCollections.observableArrayList();
 		
@@ -67,30 +64,32 @@ public class TableViewRestaurant extends TableView<RestaurantBean>
 
 	}
 	
-	public Restaurant getSelectedEntity()
+	Restaurant getSelectedEntity()
 	{
 		RestaurantBean restaurantBean = getSelectionModel().getSelectedItem();
 		return restaurantBean == null ? null : restaurantBean.toEntity();
 	}
 
-	public void refreshRestaurants()
+	void refreshRestaurants()
 	{
 		refreshRestaurants(null);
 	}
 
-	public void refreshRestaurants(String findCity)
+	void refreshRestaurants(String findCity)
 	{
 		restaurantList.clear();
-		ResponseMessage res = null;
+		ResponseMessage resMsg;
 		if(findCity == null) {
-			res = Protocol.getInstance().getRestaurants();
+			resMsg = Protocol.getInstance().getRestaurants();
 		} else {
 			Restaurant restaurant = new Restaurant();
 			restaurant.setCity(findCity);
-			res = Protocol.getInstance().getRestaurants(restaurant);
+			resMsg = Protocol.getInstance().getRestaurants(restaurant);
 		}
-		if (res.isSuccess())
-			for (Entity entity : res.getEntities())
+		if (resMsg.isSuccess())
+			for (Entity entity : resMsg.getEntities())
 				restaurantList.add(RestaurantBean.fromEntity((Restaurant)entity));
+		else
+			new ErrorBox("Error", "An error has occured while fetching the list of restaurants.", resMsg.getErrorMsg()).showAndWait();
 	}
 }

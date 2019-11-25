@@ -16,18 +16,18 @@ import ristogo.net.Protocol;
 import ristogo.ui.graphics.beans.ReservationBean;
 import ristogo.ui.graphics.config.GUIConfig;
 
-public class TableViewReservation extends TableView<ReservationBean>
+final class TableViewReservation extends TableView<ReservationBean>
 {
 	private final ObservableList<ReservationBean> reservationList;
 	private final Restaurant restaurant;
 	
-	public TableViewReservation()
+	TableViewReservation()
 	{
 		this(null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public TableViewReservation(Restaurant restaurant)
+	TableViewReservation(Restaurant restaurant)
 	{
 		this.restaurant = restaurant;
 		reservationList = FXCollections.observableArrayList();
@@ -66,22 +66,24 @@ public class TableViewReservation extends TableView<ReservationBean>
 		setItems(reservationList);
 	}
 	
-	public Reservation getSelectedEntity()
+	Reservation getSelectedEntity()
 	{
 		ReservationBean reservationBean = getSelectionModel().getSelectedItem();
 		return reservationBean == null ? null : reservationBean.toEntity();
 	}
 
-	public void refreshReservations()
+	void refreshReservations()
 	{
 		reservationList.clear();
-		ResponseMessage res;
+		ResponseMessage resMsg;
 		if (restaurant != null)
-			res = Protocol.getInstance().getReservations(restaurant);
+			resMsg = Protocol.getInstance().getReservations(restaurant);
 		else
-			res = Protocol.getInstance().getOwnActiveReservations();
-		if (res.isSuccess())
-			for (Entity entity : res.getEntities())
+			resMsg = Protocol.getInstance().getOwnActiveReservations();
+		if (resMsg.isSuccess())
+			for (Entity entity : resMsg.getEntities())
 				reservationList.add(ReservationBean.fromEntity((Reservation)entity));
+		else
+			new ErrorBox("Error", "An error has occured while fetching the list of reservations.", resMsg.getErrorMsg()).showAndWait();
 	}
 }

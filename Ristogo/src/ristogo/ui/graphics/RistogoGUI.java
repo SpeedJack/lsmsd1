@@ -23,7 +23,6 @@ import javafx.stage.WindowEvent;
 import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
-import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.net.ResponseMessage;
 import ristogo.net.Protocol;
 import ristogo.ui.graphics.config.GUIConfig;
@@ -155,10 +154,9 @@ public class RistogoGUI extends Application
 	{
 		HBox applicationInterface = new HBox(10);
 		
-		getOwnRestaurant();
-
 		GridPane title = generateTitle();
-		ModifyRestaurantForm modifyForm = new ModifyRestaurantForm(loggedUser, restaurant);
+		restaurantForm = new ModifyRestaurantForm(this::getOwnRestaurant);
+		getOwnRestaurant();
 
 		Label subTitle = new Label("List of Reservations at your restaurant");
 		subTitle.setStyle("-fx-underline: true;");
@@ -178,7 +176,7 @@ public class RistogoGUI extends Application
 		});
 
 		VBox leftPart = new VBox(10);
-		leftPart.getChildren().addAll(title, modifyForm);
+		leftPart.getChildren().addAll(title, restaurantForm);
 		leftPart.setPrefSize(400, 600);
 		leftPart.setStyle("-fx-padding: 7;" + "-fx-border-width: 2;" + "-fx-border-insets: 3;" +
 			"-fx-border-radius: 10;");
@@ -238,7 +236,7 @@ public class RistogoGUI extends Application
 			return;
 		ResponseMessage resMsg = Protocol.getInstance().getOwnRestaurant();
 		if (!resMsg.isSuccess()) {
-			new ErrorBox("Error", "An error has occured while trying to get informations about your restaurant.", resMsg.getErrorMsg()).showAndWait();
+			new ErrorBox("Error", "An error has occured while fetching the informations about your restaurant.", resMsg.getErrorMsg()).showAndExit();
 			restaurant = null;
 			return;
 		}

@@ -10,8 +10,8 @@ import ristogo.common.entities.enums.Price;
 
 public class RestaurantBean extends EntityBean
 {
-	private final SimpleStringProperty ownerName;
 	private final SimpleStringProperty name;
+	private final SimpleStringProperty ownerName;
 	private final SimpleObjectProperty<Genre> genre;
 	private final SimpleObjectProperty<Price> price;
 	private final SimpleStringProperty city;
@@ -20,13 +20,13 @@ public class RestaurantBean extends EntityBean
 	private final SimpleIntegerProperty seats;
 	private final SimpleObjectProperty<OpeningHours> openingHours;
 
-	public RestaurantBean(int id, String ownerName, String name, Genre genre,
+	public RestaurantBean(int id, String name, String ownerName, Genre genre,
 		Price price, String city, String address, String description,
 		int seats, OpeningHours openingHours)
 	{
 		super(id);
-		this.ownerName = new SimpleStringProperty(ownerName);
 		this.name = new SimpleStringProperty(name);
+		this.ownerName = new SimpleStringProperty(ownerName);
 		this.genre = new SimpleObjectProperty<Genre>(genre);
 		this.price = new SimpleObjectProperty<Price>(price);
 		this.city = new SimpleStringProperty(city);
@@ -38,8 +38,8 @@ public class RestaurantBean extends EntityBean
 
 	public static RestaurantBean fromEntity(Restaurant restaurant)
 	{
-		return new RestaurantBean(restaurant.getId(), restaurant.getOwnerName(),
-			restaurant.getName(), restaurant.getGenre(), restaurant.getPrice(),
+		return new RestaurantBean(restaurant.getId(), restaurant.getName(),
+			restaurant.getOwnerName(), restaurant.getGenre(), restaurant.getPrice(),
 			restaurant.getCity(), restaurant.getAddress(),
 			restaurant.getDescription(), restaurant.getSeats(),
 			restaurant.getOpeningHours());
@@ -47,7 +47,7 @@ public class RestaurantBean extends EntityBean
 	
 	public Restaurant toEntity()
 	{
-		return new Restaurant(getId(), getOwnerName(), getName(), getGenre(),
+		return new Restaurant(getId(), getName(), getOwnerName(), getGenre(),
 			getPrice(), getCity(), getAddress(), getDescription(),
 			getSeats(), getOpeningHours());
 	}

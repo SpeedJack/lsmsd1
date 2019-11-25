@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
@@ -14,7 +13,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
-import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.ReservationTime;
 import ristogo.common.net.ResponseMessage;
 import ristogo.net.Protocol;
@@ -26,9 +24,9 @@ public class BookForm extends VBox
 {
 	private TextField nameField;
 	private DatePicker dateField;
-	private ChoiceBox<String> timeField;
+	private ChoiceBox<ReservationTime> timeField;
 	private ChoiceBox<Integer> seatsField;
-	private FormButton checkButton;
+	//private FormButton checkButton;
 	private FormButton bookButton;
 	private FormButton deleteButton;
 	
@@ -55,10 +53,10 @@ public class BookForm extends VBox
 		subTitle.setFont(GUIConfig.getFormSubtitleFont());
 		subTitle.setTextFill(GUIConfig.getFgColor());
 
-		FormLabel nameLabel = new FormLabel("Name of Restaurant: ");
-		FormLabel dateLabel = new FormLabel("Date of Reservation: ");
-		FormLabel timeLabel = new FormLabel("Booking Time: ");
-		FormLabel seatsLabel = new FormLabel("Seats: ");
+		FormLabel nameLabel = new FormLabel("Name of Restaurant:");
+		FormLabel dateLabel = new FormLabel("Date of Reservation:");
+		FormLabel timeLabel = new FormLabel("Booking Time:");
+		FormLabel seatsLabel = new FormLabel("Seats:");
 		
 		errorLabel.setFont(GUIConfig.getTextFont());
 		errorLabel.setTextFill(GUIConfig.getInvertedFgColor());
@@ -67,9 +65,9 @@ public class BookForm extends VBox
 		
 		nameField = new TextField();
 		dateField = new DatePicker();
-		timeField = new ChoiceBox<String>();
+		timeField = new ChoiceBox<ReservationTime>();
 		
-		checkButton = new FormButton("Check");
+		//checkButton = new FormButton("Check");
 		bookButton = new FormButton("Book");
 		deleteButton = new FormButton("Delete");
 		
@@ -104,12 +102,12 @@ public class BookForm extends VBox
 		buttonBox.getChildren().addAll(bookButton, deleteButton);
 		
 		getChildren().addAll(title, subTitle, nameBox, dateBox, timeBox,
-			checkButton, seatsBox, errorLabel, buttonBox);
+			seatsBox, errorLabel, buttonBox);
 		setStyle(GUIConfig.getCSSFormBoxStyle());
 		
 		
 		
-		checkButton.setOnAction(this::handleCheckButtonAction);
+		//checkButton.setOnAction(this::handleCheckButtonAction);
 		bookButton.setOnAction(this::handleBookButtonAction);
 		deleteButton.setOnAction(this::handleDeleteButtonAction);
 		
@@ -123,7 +121,7 @@ public class BookForm extends VBox
 		validate();
 	}
 	
-	private void timeChangeListener(ObservableValue<? extends String> observable, String oldValue, String newValue)
+	private void timeChangeListener(ObservableValue<? extends ReservationTime> observable, ReservationTime oldValue, ReservationTime newValue)
 	{
 		validate();
 	}
@@ -137,23 +135,18 @@ public class BookForm extends VBox
 	private void validate()
 	{
 		bookButton.setDisable(true);
-		checkButton.setDisable(true);
+		//checkButton.setDisable(true);
 		LocalDate date = dateField.getValue();
-		String timeStr = timeField.getValue();
+		ReservationTime time = timeField.getValue();
 		if (date == null || date.isBefore(LocalDate.now())) {
 			showError("Invalid date.");
 			return;
 		}
-		
-		try {
-			if (timeStr == null || timeStr.isEmpty())
-				throw new IllegalArgumentException();
-			ReservationTime.valueOf(timeStr.toUpperCase());
-		} catch (IllegalArgumentException ex) {
+		if (time == null) {
 			showError("Invalid time.");
 			return;
 		}
-		checkButton.setDisable(false);
+		//checkButton.setDisable(false);
 		if (seatsSelected) {
 			if (seatsField.getValue() == null) {
 				showError("Select a number of seats.");
@@ -162,6 +155,27 @@ public class BookForm extends VBox
 			int seats = seatsField.getValue();
 			if (seats < 1) {
 				showError("The number of seats must be > 0");
+				return;
+			}
+		} else {
+			ResponseMessage resMsg;
+			if (restaurant == null)
+				resMsg = Protocol.getInstance().checkSeats(getReservation());
+			else
+				resMsg = Protocol.getInstance().checkSeats(getReservation(), restaurant);
+			if (!resMsg.isSuccess()) {
+				showError(resMsg.getErrorMsg());
+				return;
+			}
+			int maxSeats = ((Restaurant)resMsg.getEntity()).getSeats();
+			seatsField.getItems().clear();
+			seatsSelected = false;
+			if (maxSeats > 0) {
+				for (int i = 1; i < maxSeats; i++)
+					seatsField.getItems().add(i);
+				seatsField.setDisable(false);
+			} else {
+				showError("The restaurant does not have any available seat for this date/time.");
 				return;
 			}
 		}
@@ -223,7 +237,7 @@ public class BookForm extends VBox
 		seatsField.setDisable(true);
 		seatsSelected = false;
 		bookButton.setText("Book");
-		checkButton.setDisable(true);
+		//checkButton.setDisable(true);
 		deleteButton.setDisable(true);
 		bookButton.setDisable(true);
 		restaurant = null;
@@ -250,7 +264,7 @@ public class BookForm extends VBox
 			reservation = new Reservation();
 		reservation.setRestaurantName(nameField.getText());
 		reservation.setDate(dateField.getValue());
-		reservation.setTime(ReservationTime.valueOf(timeField.getValue().toUpperCase()));
+		reservation.setTime(timeField.getValue());
 		Integer seats = seatsField.getValue();
 		if (seats != null)
 			reservation.setSeats(seats);
@@ -264,10 +278,10 @@ public class BookForm extends VBox
 		nameField.setText(restaurant.getName());
 		switch(restaurant.getOpeningHours()) {
 		case BOTH:
-			timeField.getItems().addAll(OpeningHours.LUNCH.toString(), OpeningHours.DINNER.toString());
+			timeField.getItems().addAll(ReservationTime.LUNCH, ReservationTime.DINNER);
 			break;
 		default:
-			timeField.getItems().add(restaurant.getOpeningHours().toString());
+			timeField.getItems().add(restaurant.getOpeningHours().toReservationTime());
 		}
 	}
 	
@@ -277,7 +291,8 @@ public class BookForm extends VBox
 		this.reservation = reservation;
 		nameField.setText(reservation.getRestaurantName());
 		dateField.setValue(reservation.getDate());
-		timeField.setValue(reservation.getTime().toString());
+		timeField.getItems().addAll(ReservationTime.values());
+		timeField.setValue(reservation.getTime());
 		seatsField.setValue(reservation.getSeats());
 		bookButton.setText("Save");
 		deleteButton.setDisable(false);
