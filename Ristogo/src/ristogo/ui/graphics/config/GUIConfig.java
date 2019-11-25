@@ -309,6 +309,36 @@ public class GUIConfig
 	
 	public static String getCSSFormBoxStyle()
 	{
-		return "-fx-padding: 7; -fx-border-style: solid inside; -fx-border-width: 2; -fx-border-insets: 3; -fx-border-radius: 10;" + getCSSBorderColor();
+		return getCSSPadding() + getCSSBorderDim() + getCSSBorderStyle() + getCSSBorderColor();
+	}
+	
+	public static Font getUsernameFont()
+	{
+		return Font.font(config.getFontName(), FontWeight.BOLD, getFontSizeBig());
+	}
+	
+	public static Font getWelcomeFont()
+	{
+		return getSubtitleFont();
+	}
+	
+	public static String getCSSInterfacePartStyle()
+	{
+		return getCSSPadding() + getCSSBorderDim();
+	}
+	
+	public static String getCSSPadding()
+	{
+		return "-fx-padding: 7;";
+	}
+	
+	public static String getCSSBorderStyle()
+	{
+		return "-fx-border-style: solid inside;";
+	}
+	
+	public static String getCSSBorderDim()
+	{
+		return "-fx-border-width: 2; -fx-border-insets: 3; -fx-border-radius: 10;";
 	}
 }

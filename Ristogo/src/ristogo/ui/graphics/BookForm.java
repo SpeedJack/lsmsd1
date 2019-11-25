@@ -20,28 +20,23 @@ import ristogo.ui.graphics.config.GUIConfig;
 import ristogo.ui.graphics.controls.FormButton;
 import ristogo.ui.graphics.controls.FormLabel;
 
-public class BookForm extends VBox
+final class BookForm extends VBox
 {
-	private TextField nameField;
-	private DatePicker dateField;
-	private ChoiceBox<ReservationTime> timeField;
-	private ChoiceBox<Integer> seatsField;
-	//private FormButton checkButton;
-	private FormButton bookButton;
-	private FormButton deleteButton;
-	
-	private Runnable onAction;
-	
-	private Label errorLabel = new Label();
-	
-	private boolean seatsSelected;
+	private final TextField nameField = new TextField();
+	private final DatePicker dateField = new DatePicker();
+	private final ChoiceBox<ReservationTime> timeField = new ChoiceBox<ReservationTime>();
+	private final ChoiceBox<Integer> seatsField = new ChoiceBox<Integer>();
+	private final FormButton bookButton = new FormButton("Book");
+	private final FormButton deleteButton = new FormButton("Delete");
+	private final Label errorLabel = new Label();
 
+	private Runnable onAction;
+	private boolean seatsSelected;
 	private Restaurant restaurant;
 	private Reservation reservation;
 
-	public BookForm(Runnable onAction)
+	BookForm(Runnable onAction)
 	{
-
 		super(20);
 		this.onAction = onAction;
 
@@ -63,14 +58,6 @@ public class BookForm extends VBox
 		errorLabel.setStyle("-fx-background-color: red;");
 		errorLabel.setVisible(false);
 		
-		nameField = new TextField();
-		dateField = new DatePicker();
-		timeField = new ChoiceBox<ReservationTime>();
-		
-		//checkButton = new FormButton("Check");
-		bookButton = new FormButton("Book");
-		deleteButton = new FormButton("Delete");
-		
 		nameField.setEditable(false);
 		dateField.setDayCellFactory(picker -> new DateCell() { // Disable all past dates
 			@Override
@@ -84,7 +71,6 @@ public class BookForm extends VBox
 		});
 		timeField.setMinSize(70, 25);
 		timeField.setMaxSize(70, 25);
-		seatsField = new ChoiceBox<Integer>();
 		seatsField.setDisable(true);
 		bookButton.setDisable(true);
 		deleteButton.setDisable(true);
@@ -105,9 +91,6 @@ public class BookForm extends VBox
 			seatsBox, errorLabel, buttonBox);
 		setStyle(GUIConfig.getCSSFormBoxStyle());
 		
-		
-		
-		//checkButton.setOnAction(this::handleCheckButtonAction);
 		bookButton.setOnAction(this::handleBookButtonAction);
 		deleteButton.setOnAction(this::handleDeleteButtonAction);
 		
@@ -135,7 +118,6 @@ public class BookForm extends VBox
 	private void validate()
 	{
 		bookButton.setDisable(true);
-		//checkButton.setDisable(true);
 		LocalDate date = dateField.getValue();
 		ReservationTime time = timeField.getValue();
 		if (date == null || date.isBefore(LocalDate.now())) {
@@ -146,7 +128,6 @@ public class BookForm extends VBox
 			showError("Invalid time.");
 			return;
 		}
-		//checkButton.setDisable(false);
 		if (seatsSelected) {
 			if (seatsField.getValue() == null) {
 				showError("Select a number of seats.");
@@ -194,27 +175,6 @@ public class BookForm extends VBox
 		onAction.run();
 	}
 	
-	private void handleCheckButtonAction(ActionEvent event)
-	{
-		ResponseMessage resMsg;
-		if (restaurant == null)
-			resMsg = Protocol.getInstance().checkSeats(getReservation());
-		else
-			resMsg = Protocol.getInstance().checkSeats(getReservation(), restaurant);
-		if (!resMsg.isSuccess()) {
-			showError(resMsg.getErrorMsg());
-			return;
-		}
-		int maxSeats = ((Restaurant)resMsg.getEntity()).getSeats();
-		seatsField.getItems().clear();
-		seatsSelected = false;
-		if (maxSeats > 0) {
-			for (int i = 1; i < maxSeats; i++)
-				seatsField.getItems().add(i);
-			seatsField.setDisable(false);
-		}
-	}
-	
 	private void handleBookButtonAction(ActionEvent event)
 	{
 		ResponseMessage resMsg = Protocol.getInstance().reserve(getReservation(), restaurant);
@@ -237,7 +197,6 @@ public class BookForm extends VBox
 		seatsField.setDisable(true);
 		seatsSelected = false;
 		bookButton.setText("Book");
-		//checkButton.setDisable(true);
 		deleteButton.setDisable(true);
 		bookButton.setDisable(true);
 		restaurant = null;
@@ -271,7 +230,7 @@ public class BookForm extends VBox
 		return reservation;
 	}
 	
-	public void fill(Restaurant restaurant)
+	void fill(Restaurant restaurant)
 	{
 		reset();
 		this.restaurant = restaurant;
@@ -285,7 +244,7 @@ public class BookForm extends VBox
 		}
 	}
 	
-	public void fill(Reservation reservation)
+	void fill(Reservation reservation)
 	{
 		reset();
 		this.reservation = reservation;

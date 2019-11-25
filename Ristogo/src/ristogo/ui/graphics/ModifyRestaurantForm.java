@@ -29,11 +29,10 @@ final class ModifyRestaurantForm extends VBox
 	private final TextArea descriptionField = new TextArea();
 	private final Spinner<Integer> seatsField = new Spinner<Integer>(0, Integer.MAX_VALUE, 0, 1);
 	private final ChoiceBox<OpeningHours> hourField = new ChoiceBox<OpeningHours>();
-	
 	private final FormButton commitButton = new FormButton("Commit");
 	private final Label errorLabel = new Label();
+
 	private final Runnable onAction;
-	
 	private Restaurant restaurant;
 
 	ModifyRestaurantForm(Runnable onAction)
