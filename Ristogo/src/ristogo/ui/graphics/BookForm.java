@@ -127,13 +127,12 @@ final class BookForm extends VBox
 			showError("The number of seats must be > 0");
 			return;
 		}
-		checkSeats();
 	}
 
 	private void checkSeats()
 	{
 		bookButton.setDisable(true);
-		if (errorLabel.isVisible() || dateField.getValue() == null || timeField.getValue() == null || seatsField.getValue() == null)
+		if (errorLabel.isVisible() || dateField.getValue() == null || timeField.getValue() == null)
 			return;
 		ResponseMessage resMsg;
 		if (restaurant == null)
