@@ -2,6 +2,8 @@ package ristogo.ui.graphics.beans;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import ristogo.common.entities.Customer;
+import ristogo.common.entities.Owner;
 import ristogo.common.entities.User;
 
 public class UserBean extends EntityBean
@@ -19,6 +21,11 @@ public class UserBean extends EntityBean
 	public static UserBean fromEntity(User user)
 	{
 		return new UserBean(user.getId(), user.getUsername(), user.isOwner());
+	}
+	
+	public User toEntity()
+	{
+		return isOwner() ? new Owner(getId(), getUsername()) : new Customer(getId(), getUsername());
 	}
 
 	public String getUsername()

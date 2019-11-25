@@ -34,6 +34,12 @@ public class ReservationBean extends EntityBean
 			reservation.getRestaurantName(), reservation.getDate(),
 			reservation.getTime(), reservation.getSeats());
 	}
+	
+	public Reservation toEntity()
+	{
+		return new Reservation(getId(), getUserName(), getRestaurantName(),
+			getDate(), getTime(), getSeats());
+	}
 
 	public LocalDate getDate()
 	{

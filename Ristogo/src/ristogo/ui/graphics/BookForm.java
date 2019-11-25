@@ -2,6 +2,7 @@ package ristogo.ui.graphics;
 
 import java.time.LocalDate;
 
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -25,13 +26,17 @@ public class BookForm extends VBox
 {
 	private TextField nameField;
 	private DatePicker dateField;
-	private ChoiceBox<String> hourField;
+	private ChoiceBox<String> timeField;
 	private ChoiceBox<Integer> seatsField;
 	private FormButton checkButton;
 	private FormButton bookButton;
 	private FormButton deleteButton;
 	
+	private Runnable onAction;
+	
 	private Label errorLabel = new Label();
+	
+	private boolean seatsSelected;
 
 	private Restaurant restaurant;
 	private Reservation reservation;
@@ -40,6 +45,7 @@ public class BookForm extends VBox
 	{
 
 		super(20);
+		this.onAction = onAction;
 
 		Label title = new Label("Book a table");
 		Label subTitle = new Label("To select a restaurant click on the table on the side");
@@ -51,7 +57,7 @@ public class BookForm extends VBox
 
 		FormLabel nameLabel = new FormLabel("Name of Restaurant: ");
 		FormLabel dateLabel = new FormLabel("Date of Reservation: ");
-		FormLabel hourLabel = new FormLabel("Booking Time: ");
+		FormLabel timeLabel = new FormLabel("Booking Time: ");
 		FormLabel seatsLabel = new FormLabel("Seats: ");
 		
 		errorLabel.setFont(GUIConfig.getTextFont());
@@ -61,7 +67,7 @@ public class BookForm extends VBox
 		
 		nameField = new TextField();
 		dateField = new DatePicker();
-		hourField = new ChoiceBox<String>();
+		timeField = new ChoiceBox<String>();
 		
 		checkButton = new FormButton("Check");
 		bookButton = new FormButton("Book");
@@ -78,8 +84,8 @@ public class BookForm extends VBox
 				setDisable(empty || date.compareTo(today) < 0);
 			}
 		});
-		hourField.setMinSize(70, 25);
-		hourField.setMaxSize(70, 25);
+		timeField.setMinSize(70, 25);
+		timeField.setMaxSize(70, 25);
 		seatsField = new ChoiceBox<Integer>();
 		seatsField.setDisable(true);
 		bookButton.setDisable(true);
@@ -87,111 +93,155 @@ public class BookForm extends VBox
 
 		HBox nameBox = new HBox(20);
 		HBox dateBox = new HBox(20);
-		HBox hourBox = new HBox(20);
+		HBox timeBox = new HBox(20);
 		HBox seatsBox = new HBox(20);
 		HBox buttonBox = new HBox(20);
 		
 		nameBox.getChildren().addAll(nameLabel, nameField);
 		dateBox.getChildren().addAll(dateLabel, dateField);
-		hourBox.getChildren().addAll(hourLabel, hourField);
+		timeBox.getChildren().addAll(timeLabel, timeField);
 		seatsBox.getChildren().addAll(seatsLabel, seatsField);
 		buttonBox.getChildren().addAll(bookButton, deleteButton);
 		
-		getChildren().addAll(title, subTitle, nameBox, dateBox, hourBox,
+		getChildren().addAll(title, subTitle, nameBox, dateBox, timeBox,
 			checkButton, seatsBox, errorLabel, buttonBox);
 		setStyle(GUIConfig.getCSSFormBoxStyle());
 		
 		
 		
 		checkButton.setOnAction(this::handleCheckButtonAction);
-		bookButton.setOnAction((ActionEvent ev) -> {
-			try {
-				String n = nameField.getText();
-				LocalDate d = dateField.getValue();
-				ReservationTime h = ReservationTime.valueOf(hourField.getValue().toUpperCase());
-				int s = seatsField.getValue();
-				Reservation reserv = new Reservation(RistogoGUI.getLoggedUser().getUsername(), n, d, h,
-					s);
-				Restaurant rest = new Restaurant(idRestoReserve);
-				ResponseMessage res = Protocol.getInstance().reserve(reserv, rest);
-				if (res.isSuccess()) {
-					onAction.run();
-				} else {
-					errorLabel.setText("Error: " + res.getErrorMsg());
-					errorLabel.setVisible(true);
-					seatsField.getItems().clear();
-
-				}
-				bookButton.setDisable(true);
-
-			} catch (NullPointerException e) {
-				e.getMessage();
-				errorLabel.setText("Error: fill out the entire form to be able to book");
-				errorLabel.setVisible(true);
+		bookButton.setOnAction(this::handleBookButtonAction);
+		deleteButton.setOnAction(this::handleDeleteButtonAction);
+		
+		dateField.valueProperty().addListener(this::dateChangeListener);
+		timeField.valueProperty().addListener(this::timeChangeListener);
+		seatsField.valueProperty().addListener(this::seatsChangeListener);
+	}
+	
+	private void dateChangeListener(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue)
+	{
+		validate();
+	}
+	
+	private void timeChangeListener(ObservableValue<? extends String> observable, String oldValue, String newValue)
+	{
+		validate();
+	}
+	
+	private void seatsChangeListener(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue)
+	{
+		seatsSelected = true;
+		validate();
+	}
+	
+	private void validate()
+	{
+		bookButton.setDisable(true);
+		checkButton.setDisable(true);
+		LocalDate date = dateField.getValue();
+		String timeStr = timeField.getValue();
+		if (date == null || date.isBefore(LocalDate.now())) {
+			showError("Invalid date.");
+			return;
+		}
+		
+		try {
+			if (timeStr == null || timeStr.isEmpty())
+				throw new IllegalArgumentException();
+			ReservationTime.valueOf(timeStr.toUpperCase());
+		} catch (IllegalArgumentException ex) {
+			showError("Invalid time.");
+			return;
+		}
+		checkButton.setDisable(false);
+		if (seatsSelected) {
+			if (seatsField.getValue() == null) {
+				showError("Select a number of seats.");
+				return;
 			}
-		});
-
-		deleteButton.setOnAction((ActionEvent ev) -> {
-			try {
-
-				ResponseMessage res = Protocol.getInstance()
-					.deleteReservation(new Reservation(idRestoDelete));
-				if (res.isSuccess()) {
-					onAction.run();
-					deleteButton.setDisable(true);
-				} else {
-					errorLabel.setText("Error: " + res.getErrorMsg());
-					errorLabel.setVisible(true);
-
-				}
-			} catch (NullPointerException e) {
-				e.getMessage();
-				deleteButton.setDisable(true);
+			int seats = seatsField.getValue();
+			if (seats < 1) {
+				showError("The number of seats must be > 0");
+				return;
 			}
-		});
-
-		dateField.setOnAction((ActionEvent ev) -> {
-			seatsField.setDisable(true);
-			bookButton.setDisable(true);
-		});
-
-		hourField.setOnAction((ActionEvent ev) -> {
-			seatsField.setDisable(true);
-			bookButton.setDisable(true);
-		});
-
+		}
+		bookButton.setDisable(false);
+		hideError();
+	}
+	
+	private void handleDeleteButtonAction(ActionEvent event)
+	{
+		ResponseMessage resMsg = Protocol.getInstance().deleteReservation(reservation);
+		if (!resMsg.isSuccess()) {
+			showError(resMsg.getErrorMsg());
+			return;
+		}
+		reset();
+		onAction.run();
 	}
 	
 	private void handleCheckButtonAction(ActionEvent event)
 	{
 		ResponseMessage resMsg;
 		if (restaurant == null)
-			resMsg = Protocol.getInstance().checkSeats(reservation);
+			resMsg = Protocol.getInstance().checkSeats(getReservation());
 		else
-			resMsg = Protocol.getInstance().checkSeats(reservation, restaurant);
+			resMsg = Protocol.getInstance().checkSeats(getReservation(), restaurant);
 		if (!resMsg.isSuccess()) {
 			showError(resMsg.getErrorMsg());
 			return;
 		}
 		int maxSeats = ((Restaurant)resMsg.getEntity()).getSeats();
 		seatsField.getItems().clear();
+		seatsSelected = false;
 		if (maxSeats > 0) {
 			for (int i = 1; i < maxSeats; i++)
 				seatsField.getItems().add(i);
 			seatsField.setDisable(false);
-			bookButton.setDisable(false);
 		}
+	}
+	
+	private void handleBookButtonAction(ActionEvent event)
+	{
+		ResponseMessage resMsg = Protocol.getInstance().reserve(getReservation(), restaurant);
+		if (!resMsg.isSuccess()) {
+			showError(resMsg.getErrorMsg());
+			return;
+		}
+		reset();
+		onAction.run();
+	}
+	
+	private void reset()
+	{
+		hideError();
+		nameField.setText("");
+		dateField.setValue(null);
+		timeField.getItems().clear();
+		seatsField.getSelectionModel().clearSelection();
+		seatsField.setValue(null);
+		seatsField.setDisable(true);
+		seatsSelected = false;
+		bookButton.setText("Book");
+		checkButton.setDisable(true);
+		deleteButton.setDisable(true);
+		bookButton.setDisable(true);
+		restaurant = null;
+		reservation = null;
 	}
 	
 	private void showError(String message)
 	{
 		errorLabel.setText(message);
 		errorLabel.setVisible(true);
+		bookButton.setDisable(true);
 	}
 	
 	private void hideError()
 	{
 		errorLabel.setVisible(false);
+		if (seatsSelected)
+			bookButton.setDisable(false);
 	}
 	
 	private Reservation getReservation()
@@ -200,44 +250,36 @@ public class BookForm extends VBox
 			reservation = new Reservation();
 		reservation.setRestaurantName(nameField.getText());
 		reservation.setDate(dateField.getValue());
-		reservation.setTime(ReservationTime.valueOf(hourField.getValue().toUpperCase()));
+		reservation.setTime(ReservationTime.valueOf(timeField.getValue().toUpperCase()));
 		Integer seats = seatsField.getValue();
 		if (seats != null)
 			reservation.setSeats(seats);
 		return reservation;
 	}
 	
-	public void fillForm(Restaurant restaurant)
+	public void fill(Restaurant restaurant)
 	{
+		reset();
 		this.restaurant = restaurant;
-		reservation = null;
 		nameField.setText(restaurant.getName());
-		dateField.setValue(null);
-		hourField.getItems().clear();
 		switch(restaurant.getOpeningHours()) {
 		case BOTH:
-			hourField.getItems().addAll(OpeningHours.LUNCH.toString(), OpeningHours.DINNER.toString());
+			timeField.getItems().addAll(OpeningHours.LUNCH.toString(), OpeningHours.DINNER.toString());
 			break;
 		default:
-			hourField.getItems().add(restaurant.getOpeningHours().toString());
+			timeField.getItems().add(restaurant.getOpeningHours().toString());
 		}
-		seatsField.getSelectionModel().clearSelection();
-		seatsField.setValue(null);
-		bookButton.setText("Book");
-		deleteButton.setDisable(true);
-		bookButton.setDisable(true);
 	}
 	
-	public void fillForm(Reservation reservation)
+	public void fill(Reservation reservation)
 	{
+		reset();
 		this.reservation = reservation;
-		restaurant = null;
 		nameField.setText(reservation.getRestaurantName());
 		dateField.setValue(reservation.getDate());
-		hourField.setValue(reservation.getTime().toString());
+		timeField.setValue(reservation.getTime().toString());
 		seatsField.setValue(reservation.getSeats());
 		bookButton.setText("Save");
 		deleteButton.setDisable(false);
-		bookButton.setDisable(false);
 	}
 }

@@ -134,10 +134,10 @@ public class LoginDialog extends Dialog<User>
 
 	private void textChangeListener(ObservableValue<? extends String> observable, String oldValue, String newValue)
 	{
-		validateFields();
+		validate();
 	}
 
-	private void validateFields()
+	private void validate()
 	{
 		String username = usernameField.getText();
 		String password = passwordField.getText();
@@ -179,7 +179,7 @@ public class LoginDialog extends Dialog<User>
 			confirmLabel.setVisible(false); confirmField.setVisible(false);
 			typeLabel.setVisible(false); typeSelector.setVisible(false);
 		}
-		validateFields();
+		validate();
 		event.consume();
 	}
 }

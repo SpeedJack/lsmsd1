@@ -9,6 +9,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import ristogo.common.entities.Entity;
 import ristogo.common.entities.Reservation;
+import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.enums.ReservationTime;
 import ristogo.common.net.ResponseMessage;
 import ristogo.net.Protocol;
@@ -18,22 +19,27 @@ import ristogo.ui.graphics.config.GUIConfig;
 public class TableViewReservation extends TableView<ReservationBean>
 {
 	private final ObservableList<ReservationBean> reservationList;
-	private final boolean isOwner;
+	private final Restaurant restaurant;
+	
+	public TableViewReservation()
+	{
+		this(null);
+	}
 
 	@SuppressWarnings("unchecked")
-	public TableViewReservation(boolean isOwner)
+	public TableViewReservation(Restaurant restaurant)
 	{
-		this.isOwner = isOwner;
+		this.restaurant = restaurant;
 		reservationList = FXCollections.observableArrayList();
 
 		setEditable(false);
 		setFixedCellSize(35);
 		setMinWidth(600);
 		setMaxWidth(600);
-		setMaxHeight(GUIConfig.getMaxRowDisplayable(isOwner) * getFixedCellSize());
+		setMaxHeight(GUIConfig.getMaxRowDisplayable(restaurant != null) * getFixedCellSize());
 
 		TableColumn<ReservationBean, String> nameColumn = new TableColumn<ReservationBean, String>("Name");
-		nameColumn.setCellValueFactory(new PropertyValueFactory<>(isOwner ? "userName" : "restaurantName"));
+		nameColumn.setCellValueFactory(new PropertyValueFactory<>(restaurant != null ? "userName" : "restaurantName"));
 		nameColumn.setStyle(GUIConfig.getCSSTableColumnStyle(false));
 		nameColumn.setMinWidth(300);
 		nameColumn.setMaxWidth(300);
@@ -59,13 +65,19 @@ public class TableViewReservation extends TableView<ReservationBean>
 		getColumns().addAll(nameColumn, dateColumn, hourColumn, seatsColumn);
 		setItems(reservationList);
 	}
+	
+	public Reservation getSelectedEntity()
+	{
+		ReservationBean reservationBean = getSelectionModel().getSelectedItem();
+		return reservationBean == null ? null : reservationBean.toEntity();
+	}
 
-	public void listReservations()
+	public void refreshReservations()
 	{
 		reservationList.clear();
 		ResponseMessage res;
-		if (isOwner)
-			res = Protocol.getInstance().getReservations(RistogoGUI.getMyRestaurant());
+		if (restaurant != null)
+			res = Protocol.getInstance().getReservations(restaurant);
 		else
 			res = Protocol.getInstance().getOwnActiveReservations();
 		if (res.isSuccess())

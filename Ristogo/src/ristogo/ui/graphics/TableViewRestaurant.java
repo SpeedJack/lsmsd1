@@ -6,12 +6,14 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import ristogo.common.entities.Entity;
+import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.enums.Genre;
 import ristogo.common.entities.enums.OpeningHours;
 import ristogo.common.entities.enums.Price;
 import ristogo.common.net.ResponseMessage;
 import ristogo.net.Protocol;
+import ristogo.ui.graphics.beans.ReservationBean;
 import ristogo.ui.graphics.beans.RestaurantBean;
 import ristogo.ui.graphics.config.GUIConfig;
 
@@ -64,28 +66,19 @@ public class TableViewRestaurant extends TableView<RestaurantBean>
 		setItems(restaurantList);
 
 	}
-
-	public String getSelectionName()
+	
+	public Restaurant getSelectedEntity()
 	{
-		return this.getSelectionModel().getSelectedItem().getName();
+		RestaurantBean restaurantBean = getSelectionModel().getSelectedItem();
+		return restaurantBean == null ? null : restaurantBean.toEntity();
 	}
 
-	public String getSelectionDescription()
+	public void refreshRestaurants()
 	{
-		return this.getSelectionModel().getSelectedItem().getDescription();
+		refreshRestaurants(null);
 	}
 
-	public OpeningHours getSelectionHours()
-	{
-		return this.getSelectionModel().getSelectedItem().getOpeningHours();
-	}
-
-	public void listRestaurants()
-	{
-		listRestaurants(null);
-	}
-
-	public void listRestaurants(String findCity)
+	public void refreshRestaurants(String findCity)
 	{
 		restaurantList.clear();
 		ResponseMessage res = null;

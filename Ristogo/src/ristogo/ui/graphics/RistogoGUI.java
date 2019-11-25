@@ -20,16 +20,20 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;
 import ristogo.common.entities.enums.OpeningHours;
+import ristogo.common.net.ResponseMessage;
 import ristogo.net.Protocol;
 import ristogo.ui.graphics.config.GUIConfig;
 
 public class RistogoGUI extends Application
 {
 	private static User loggedUser;
-	private static Restaurant myRestaurant;
+	private static Restaurant restaurant;
+	
+	private static ModifyRestaurantForm restaurantForm;
 
 	@Override
 	public void start(Stage stage)
@@ -62,10 +66,10 @@ public class RistogoGUI extends Application
 
 		GridPane title = generateTitle();
 
-		TableViewReservation reservationsTable = new TableViewReservation(loggedUser.isOwner());
-		reservationsTable.listReservations();
+		TableViewReservation reservationsTable = new TableViewReservation();
+		reservationsTable.refreshReservations();
 
-		BookForm bookForm = new BookForm(reservationsTable::listReservations);
+		BookForm bookForm = new BookForm(reservationsTable::refreshReservations);
 
 		Label subTitle = new Label("List of Restaurant: you can find restaurants searching by city");
 		subTitle.setFont(GUIConfig.getFormTitleFont());
@@ -85,8 +89,8 @@ public class RistogoGUI extends Application
 		findBox.getChildren().addAll(findCityField, find);
 
 
-		TableViewRestaurant restaurant = new TableViewRestaurant();
-		restaurant.listRestaurants();
+		TableViewRestaurant restaurantsTable = new TableViewRestaurant();
+		restaurantsTable.refreshRestaurants();
 
 		Label description = new Label("Description: ");
 		TextArea descriptionField = new TextArea();
@@ -105,27 +109,27 @@ public class RistogoGUI extends Application
 		subTitle2.setTextFill(GUIConfig.getFgColor());
 		subTitle2.setStyle("-fx-underline: true;");
 
-		restaurant.setOnMouseClicked((e) -> {
-			bookForm.fillForm(restaurant.getSelectionName(), restaurant.getSelectionHours());
-			descriptionField.setText(restaurant.getSelectionDescription());
-			bookForm.setIdResToReserve(restaurant.getSelectionModel().getSelectedItem().getId());
+		restaurantsTable.setOnMouseClicked((e) -> {
+			Restaurant restaurant = restaurantsTable.getSelectedEntity();
+			if (restaurant == null)
+				return;
+			bookForm.fill(restaurant);
+			descriptionField.setText(restaurant.getDescription());
 		});
 
 		reservationsTable.setOnMouseClicked((e) -> {
-			try {
-				bookForm.fillForm("", OpeningHours.BOTH);
-				bookForm.setIdResToDelete(reservationsTable.getSelectionModel().getSelectedItem().getId());
-			} catch (NullPointerException ex) {
-				// do nothing
-			}
+			Reservation reservation = reservationsTable.getSelectedEntity();
+			if (reservation == null)
+				return;
+			bookForm.fill(reservation);
 		});
 
 		find.setOnAction((ActionEvent ev) -> {
 			try {
 				String c = findCityField.getText();
-				restaurant.listRestaurants(c);
+				restaurantsTable.refreshRestaurants(c);
 			} catch (NullPointerException ex) {
-				restaurant.listRestaurants(null);
+				restaurantsTable.refreshRestaurants(null);
 			}
 
 		});
@@ -136,7 +140,7 @@ public class RistogoGUI extends Application
 		leftPart.setStyle("-fx-padding: 7;" + "-fx-border-width: 2;" + "-fx-border-insets: 3;" +
 			"-fx-border-radius: 10;");
 		VBox rightPart = new VBox(10);
-		rightPart.getChildren().addAll(subTitle,findBox, restaurant, descriptionBox, subTitle2, reservationsTable);
+		rightPart.getChildren().addAll(subTitle,findBox, restaurantsTable, descriptionBox, subTitle2, reservationsTable);
 		rightPart.setPrefSize(600, 600);
 		rightPart.setStyle("-fx-padding: 7;" + "-fx-border-width: 2;" + "-fx-border-insets: 3;" +
 			"-fx-border-radius: 10;");
@@ -150,17 +154,19 @@ public class RistogoGUI extends Application
 	private HBox buildOwnerInterface()
 	{
 		HBox applicationInterface = new HBox(10);
+		
+		getOwnRestaurant();
 
 		GridPane title = generateTitle();
-		ModifyRestaurantForm modifyForm = new ModifyRestaurantForm();
+		ModifyRestaurantForm modifyForm = new ModifyRestaurantForm(loggedUser, restaurant);
 
 		Label subTitle = new Label("List of Reservations at your restaurant");
 		subTitle.setStyle("-fx-underline: true;");
 		subTitle.setFont(GUIConfig.getFormTitleFont());
 		subTitle.setTextFill(GUIConfig.getFgColor());
 
-		TableViewReservation reservation = new TableViewReservation(loggedUser.isOwner());
-		reservation.listReservations();
+		TableViewReservation reservation = new TableViewReservation(restaurant);
+		reservation.refreshReservations();
 
 		Button refresh = new Button("Refresh");
 		refresh.setFont(GUIConfig.getButtonFont());
@@ -168,7 +174,7 @@ public class RistogoGUI extends Application
 		refresh.setStyle(GUIConfig.getInvertedCSSBgColorButton());
 
 		refresh.setOnAction((ActionEvent ev) -> {
-			reservation.listReservations();
+			reservation.refreshReservations();
 		});
 
 		VBox leftPart = new VBox(10);
@@ -220,29 +226,23 @@ public class RistogoGUI extends Application
 
 		return grid;
 	}
-
-	public static User getLoggedUser()
-	{
-		return loggedUser;
-	}
-
-	public static void setLoggedUser(User loggedUser)
-	{
-		RistogoGUI.loggedUser = loggedUser;
-	}
-
-	public static Restaurant getMyRestaurant()
-	{
-		return myRestaurant;
-	}
-
-	public static void setMyRestaurant(Restaurant myRestaurant)
-	{
-		RistogoGUI.myRestaurant = myRestaurant;
-	}
 	
 	public static void launch(String... args)
 	{
 		Application.launch(args);
+	}
+	
+	public void getOwnRestaurant()
+	{
+		if (restaurantForm == null)
+			return;
+		ResponseMessage resMsg = Protocol.getInstance().getOwnRestaurant();
+		if (!resMsg.isSuccess()) {
+			new ErrorBox("Error", "An error has occured while trying to get informations about your restaurant.", resMsg.getErrorMsg()).showAndWait();
+			restaurant = null;
+			return;
+		}
+		restaurant = (Restaurant)resMsg.getEntity();
+		restaurantForm.setRestaurant(restaurant);
 	}
 }
