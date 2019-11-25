@@ -195,7 +195,7 @@ public final class RistogoGUI extends Application
 		icon.setFitHeight(30);
 		icon.setFitWidth(30);
 
-		Label welcomeLabel = new Label("Welcome ");
+		Label welcomeLabel = new Label("Welcome");
 		welcomeLabel.setFont(GUIConfig.getWelcomeFont());
 		welcomeLabel.setTextFill(GUIConfig.getFgColor());
 
