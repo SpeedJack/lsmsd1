@@ -39,7 +39,7 @@ final class LoginDialog extends Dialog<User>
 	private final DialogPasswordField confirmField = new DialogPasswordField("Confirm password");
 	private final ChoiceBox<String> typeSelector = new ChoiceBox<String>();
 	private User loggedUser;
-	
+
 	LoginDialog()
 	{
 		DialogPane dialogPane = getDialogPane();
@@ -57,16 +57,16 @@ final class LoginDialog extends Dialog<User>
 		img.setFitHeight(50);
 		img.setFitWidth(50);
 		setGraphic(img);
-		
+
 		errorLabel.setStyle("-fx-background-color: red;");
 		typeSelector.getItems().addAll("Customer", "Owner");
 		confirmLabel.setVisible(false); confirmField.setVisible(false);
 		typeLabel.setVisible(false); typeSelector.setVisible(false);
 		typeSelector.setValue("Customer");
-		
+
 		DialogLabel usernameLabel = new DialogLabel("Username: ");
 		DialogLabel passwordLabel = new DialogLabel("Password: ");
-		
+
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
@@ -76,36 +76,36 @@ final class LoginDialog extends Dialog<User>
 		grid.add(confirmLabel, 0, 2); grid.add(confirmField, 1, 2);
 		grid.add(typeLabel, 0, 3); grid.add(typeSelector, 1, 3);
 		grid.add(errorLabel, 0, 4, 2, 1);
-		
+
 		ButtonType okButtonType = new ButtonType("Login", ButtonData.OK_DONE);
 		ButtonType switchButtonType = new ButtonType("Register", ButtonData.OTHER);
 		dialogPane.getButtonTypes().addAll(okButtonType, switchButtonType, ButtonType.CLOSE);
-		
+
 		okButton = (Button)dialogPane.lookupButton(okButtonType);
 		switchButton = (Button)dialogPane.lookupButton(switchButtonType);
-		
+
 		okButton.addEventFilter(ActionEvent.ACTION, this::filterOkButtonAction);
 		switchButton.addEventFilter(ActionEvent.ACTION, this::filterSwitchButtonAction);
 		okButton.setDisable(true);
-		
+
 		usernameField.textProperty().addListener(this::textChangeListener);
 		passwordField.textProperty().addListener(this::textChangeListener);
 		confirmField.textProperty().addListener(this::textChangeListener);
-		
+
 		ButtonBar buttonBar = (ButtonBar)dialogPane.lookup(".button-bar");
 		buttonBar.getButtons().forEach(b -> b.setStyle(GUIConfig.getCSSDialogButtonStyle()));
-		
+
 		dialogPane.setContent(grid);
-		
+
 		Platform.runLater(() -> usernameField.requestFocus());
-		
+
 		this.setResultConverter(button -> {
 			if (button == okButtonType)
 				return loggedUser;
 			return null;
 		});
 	}
-	
+
 	private void filterOkButtonAction(ActionEvent event)
 	{
 		Protocol protocol = Protocol.getInstance();

@@ -52,12 +52,12 @@ final class BookForm extends VBox
 		FormLabel dateLabel = new FormLabel("Date of Reservation:");
 		FormLabel timeLabel = new FormLabel("Booking Time:");
 		FormLabel seatsLabel = new FormLabel("Seats:");
-		
+
 		errorLabel.setFont(GUIConfig.getTextFont());
 		errorLabel.setTextFill(GUIConfig.getInvertedFgColor());
 		errorLabel.setStyle("-fx-background-color: red;");
 		errorLabel.setVisible(false);
-		
+
 		nameField.setEditable(false);
 		dateField.setDayCellFactory(picker -> new DateCell() { // Disable all past dates
 			@Override
@@ -80,41 +80,41 @@ final class BookForm extends VBox
 		HBox timeBox = new HBox(20);
 		HBox seatsBox = new HBox(20);
 		HBox buttonBox = new HBox(20);
-		
+
 		nameBox.getChildren().addAll(nameLabel, nameField);
 		dateBox.getChildren().addAll(dateLabel, dateField);
 		timeBox.getChildren().addAll(timeLabel, timeField);
 		seatsBox.getChildren().addAll(seatsLabel, seatsField);
 		buttonBox.getChildren().addAll(bookButton, deleteButton);
-		
+
 		getChildren().addAll(title, subTitle, nameBox, dateBox, timeBox,
 			seatsBox, errorLabel, buttonBox);
 		setStyle(GUIConfig.getCSSFormBoxStyle());
-		
+
 		bookButton.setOnAction(this::handleBookButtonAction);
 		deleteButton.setOnAction(this::handleDeleteButtonAction);
-		
+
 		dateField.valueProperty().addListener(this::dateChangeListener);
 		timeField.valueProperty().addListener(this::timeChangeListener);
 		seatsField.valueProperty().addListener(this::seatsChangeListener);
 	}
-	
+
 	private void dateChangeListener(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue)
 	{
 		validate();
 	}
-	
+
 	private void timeChangeListener(ObservableValue<? extends ReservationTime> observable, ReservationTime oldValue, ReservationTime newValue)
 	{
 		validate();
 	}
-	
+
 	private void seatsChangeListener(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue)
 	{
 		seatsSelected = true;
 		validate();
 	}
-	
+
 	private void validate()
 	{
 		bookButton.setDisable(true);
@@ -163,7 +163,7 @@ final class BookForm extends VBox
 		bookButton.setDisable(false);
 		hideError();
 	}
-	
+
 	private void handleDeleteButtonAction(ActionEvent event)
 	{
 		ResponseMessage resMsg = Protocol.getInstance().deleteReservation(reservation);
@@ -174,7 +174,7 @@ final class BookForm extends VBox
 		reset();
 		onAction.run();
 	}
-	
+
 	private void handleBookButtonAction(ActionEvent event)
 	{
 		ResponseMessage resMsg = Protocol.getInstance().reserve(getReservation(), restaurant);
@@ -185,7 +185,7 @@ final class BookForm extends VBox
 		reset();
 		onAction.run();
 	}
-	
+
 	private void reset()
 	{
 		hideError();
@@ -202,21 +202,21 @@ final class BookForm extends VBox
 		restaurant = null;
 		reservation = null;
 	}
-	
+
 	private void showError(String message)
 	{
 		errorLabel.setText(message);
 		errorLabel.setVisible(true);
 		bookButton.setDisable(true);
 	}
-	
+
 	private void hideError()
 	{
 		errorLabel.setVisible(false);
 		if (seatsSelected)
 			bookButton.setDisable(false);
 	}
-	
+
 	private Reservation getReservation()
 	{
 		if (reservation == null)
@@ -229,7 +229,7 @@ final class BookForm extends VBox
 			reservation.setSeats(seats);
 		return reservation;
 	}
-	
+
 	void fill(Restaurant restaurant)
 	{
 		reset();
@@ -243,7 +243,7 @@ final class BookForm extends VBox
 			timeField.getItems().add(restaurant.getOpeningHours().toReservationTime());
 		}
 	}
-	
+
 	void fill(Reservation reservation)
 	{
 		reset();

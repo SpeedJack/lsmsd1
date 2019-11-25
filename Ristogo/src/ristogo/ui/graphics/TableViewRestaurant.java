@@ -22,7 +22,7 @@ final class TableViewRestaurant extends TableView<RestaurantBean>
 	TableViewRestaurant()
 	{
 		restaurantList = FXCollections.observableArrayList();
-		
+
 		setEditable(false);
 		setFixedCellSize(35);
 		setMinWidth(600);
@@ -34,7 +34,7 @@ final class TableViewRestaurant extends TableView<RestaurantBean>
 		nameColumn.setStyle(GUIConfig.getCSSTableColumnStyle(false));
 		nameColumn.setMinWidth(150);
 		nameColumn.setMaxWidth(150);
-		
+
 		TableColumn<RestaurantBean, Genre> typeColumn = new TableColumn<RestaurantBean, Genre>("Type");
 		typeColumn.setCellValueFactory(new PropertyValueFactory<>("genre"));
 		typeColumn.setStyle(GUIConfig.getCSSTableColumnStyle());
@@ -63,7 +63,7 @@ final class TableViewRestaurant extends TableView<RestaurantBean>
 		setItems(restaurantList);
 
 	}
-	
+
 	Restaurant getSelectedEntity()
 	{
 		RestaurantBean restaurantBean = getSelectionModel().getSelectedItem();

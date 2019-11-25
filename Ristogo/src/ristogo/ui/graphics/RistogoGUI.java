@@ -32,7 +32,7 @@ public final class RistogoGUI extends Application
 {
 	private static User loggedUser;
 	private static Restaurant restaurant;
-	
+
 	private static ModifyRestaurantForm restaurantForm;
 
 	@Override
@@ -44,17 +44,17 @@ public final class RistogoGUI extends Application
 			data -> { loggedUser = data; },
 			() -> { Platform.exit(); }
 		);
-		
+
 		HBox applicationInterface;
 		applicationInterface = loggedUser.isOwner() ? buildOwnerInterface() : buildCustomerInterface();
-		
+
 		Scene scene = new Scene(new Group(applicationInterface));
 		scene.setFill(GUIConfig.getBgColor());
 
 		stage.setOnCloseRequest((WindowEvent ev) -> {
 			Protocol.getInstance().performLogout();
 		});
-		
+
 		stage.setTitle("RistoGo");
 		stage.setResizable(true);
 		stage.setScene(scene);
@@ -136,7 +136,7 @@ public final class RistogoGUI extends Application
 		leftPart.getChildren().addAll(title, bookForm);
 		rightPart.getChildren().addAll(reservationsTableTitle,findBox, restaurantsTable, descriptionBox, restaurantsTableTitle, reservationsTable);
 		applicationInterface.getChildren().addAll(leftPart, rightPart);
-		
+
 		leftPart.setStyle(GUIConfig.getCSSInterfacePartStyle());
 		rightPart.setStyle(GUIConfig.getCSSInterfacePartStyle());
 		leftPart.setPrefSize(400, 600);
@@ -149,7 +149,7 @@ public final class RistogoGUI extends Application
 	private HBox buildOwnerInterface()
 	{
 		HBox applicationInterface = new HBox(10);
-		
+
 		GridPane title = generateTitle();
 		restaurantForm = new ModifyRestaurantForm(this::getOwnRestaurant);
 		getOwnRestaurant();
@@ -174,7 +174,7 @@ public final class RistogoGUI extends Application
 		leftPart.getChildren().addAll(title, restaurantForm);
 		rightPart.getChildren().addAll(reservationsTableTitle, reservationsTable, refreshButton);
 		applicationInterface.getChildren().addAll(leftPart, rightPart);
-		
+
 		leftPart.setStyle(GUIConfig.getCSSInterfacePartStyle());
 		rightPart.setStyle(GUIConfig.getCSSInterfacePartStyle());
 		leftPart.setPrefSize(400, 600);
@@ -215,12 +215,12 @@ public final class RistogoGUI extends Application
 
 		return grid;
 	}
-	
+
 	public static void launch(String... args)
 	{
 		Application.launch(args);
 	}
-	
+
 	private void getOwnRestaurant()
 	{
 		if (restaurantForm == null)

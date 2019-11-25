@@ -60,7 +60,7 @@ public class GUIConfig
 	{
 		return getFontSizeLarge();
 	}
-	
+
 	public static double getTableTextFontSize()
 	{
 		return getFontSizeNormal();
@@ -151,12 +151,12 @@ public class GUIConfig
 	{
 		return getFgColor();
 	}
-	
+
 	public static Color getDialogBgColor()
 	{
 		return getInvertedBgColor();
 	}
-	
+
 	public static Color getDialogFgColor()
 	{
 		return getInvertedFgColor();
@@ -171,7 +171,7 @@ public class GUIConfig
 	{
 		return "-fx-text-fill: " + config.getFgColorName() + ";";
 	}
-	
+
 	public static String getCSSBorderColor()
 	{
 		return "-fx-border-color: " + config.getFgColorName() + ";";
@@ -186,12 +186,12 @@ public class GUIConfig
 	{
 		return "-fx-text-fill: " + config.getBgColorName() + ";";
 	}
-	
+
 	public static String getCSSDialogBgColor()
 	{
 		return getInvertedCSSBgColor();
 	}
-	
+
 	public static String getCSSDialogFgColor()
 	{
 		return getInvertedCSSFgColor();
@@ -251,7 +251,7 @@ public class GUIConfig
 	{
 		return "-fx-font-size: " + getButtonFontSize() + "px;";
 	}
-	
+
 	public static String getCSSTableTextFontSize()
 	{
 		return "-fx-font-size: " + getTableTextFontSize() + "px;";
@@ -266,77 +266,77 @@ public class GUIConfig
 	{
 		return getCSSFontFamily() + getInvertedCSSBgColor() + getInvertedCSSFgColor() + "-fx-wrap-text: true;";
 	}
-	
+
 	public static String getCSSTableColumnStyle(boolean alignCenter)
 	{
 		return getCSSFontFamily() + getCSSTableTextFontSize() + getCSSFgColor() + (alignCenter ? "-fx-alignment: CENTER;" : "");
 	}
-	
+
 	public static String getCSSTableColumnStyle()
 	{
 		return getCSSTableColumnStyle(true);
 	}
-	
+
 	public static String getCSSFormTitleStyle()
 	{
 		return "-fx-underline: true;";
 	}
-	
+
 	public static double getMaxRowDisplayable(boolean isOwner)
 	{
 		return config.getNumberRowsDisplayable() - (isOwner ? 0 : 2);
 	}
-	
+
 	public static double getMaxRowDisplayable()
 	{
 		return getMaxRowDisplayable(true);
 	}
-	
+
 	public static double getDialogLabelFontSize()
 	{
 		return getFontSizeBig();
 	}
-	
+
 	public static Font getDialogLabelFont()
 	{
 		return Font.font(config.getFontName(), FontWeight.BOLD, getDialogLabelFontSize());
 	}
-	
+
 	public static Font getFormLabelFont()
 	{
 		return getBoldTextFont();
 	}
-	
+
 	public static String getCSSFormBoxStyle()
 	{
 		return getCSSPadding() + getCSSBorderDim() + getCSSBorderStyle() + getCSSBorderColor();
 	}
-	
+
 	public static Font getUsernameFont()
 	{
 		return Font.font(config.getFontName(), FontWeight.BOLD, getFontSizeBig());
 	}
-	
+
 	public static Font getWelcomeFont()
 	{
 		return getSubtitleFont();
 	}
-	
+
 	public static String getCSSInterfacePartStyle()
 	{
 		return getCSSPadding() + getCSSBorderDim();
 	}
-	
+
 	public static String getCSSPadding()
 	{
 		return "-fx-padding: 7;";
 	}
-	
+
 	public static String getCSSBorderStyle()
 	{
 		return "-fx-border-style: solid inside;";
 	}
-	
+
 	public static String getCSSBorderDim()
 	{
 		return "-fx-border-width: 2; -fx-border-insets: 3; -fx-border-radius: 10;";

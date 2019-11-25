@@ -22,7 +22,7 @@ public class UserBean extends EntityBean
 	{
 		return new UserBean(user.getId(), user.getUsername(), user.isOwner());
 	}
-	
+
 	public User toEntity()
 	{
 		return isOwner() ? new Owner(getId(), getUsername()) : new Customer(getId(), getUsername());

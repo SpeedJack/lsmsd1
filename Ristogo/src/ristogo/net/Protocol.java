@@ -102,7 +102,7 @@ public class Protocol implements AutoCloseable
 	{
 		return sendRequest(ActionRequest.LIST_RESTAURANTS);
 	}
-	
+
 	public ResponseMessage getRestaurants(Restaurant restaurant)
 	{
 		return sendRequest(ActionRequest.LIST_RESTAURANTS, restaurant);
@@ -127,7 +127,7 @@ public class Protocol implements AutoCloseable
 	{
 		return sendRequest(ActionRequest.CHECK_SEATS, reservation, restaurant);
 	}
-	
+
 	public ResponseMessage checkSeats(Reservation reservation)
 	{
 		return sendRequest(ActionRequest.CHECK_SEATS, reservation);

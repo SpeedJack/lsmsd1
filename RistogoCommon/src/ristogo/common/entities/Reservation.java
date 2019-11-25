@@ -18,7 +18,7 @@ public class Reservation extends Entity
 	{
 		super();
 	}
-	
+
 	public Reservation(int id)
 	{
 		super(id);

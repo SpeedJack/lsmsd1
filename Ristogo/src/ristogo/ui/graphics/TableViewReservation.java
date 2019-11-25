@@ -20,7 +20,7 @@ final class TableViewReservation extends TableView<ReservationBean>
 {
 	private final ObservableList<ReservationBean> reservationList;
 	private final Restaurant restaurant;
-	
+
 	TableViewReservation()
 	{
 		this(null);
@@ -65,7 +65,7 @@ final class TableViewReservation extends TableView<ReservationBean>
 		getColumns().addAll(nameColumn, dateColumn, hourColumn, seatsColumn);
 		setItems(reservationList);
 	}
-	
+
 	Reservation getSelectedEntity()
 	{
 		ReservationBean reservationBean = getSelectionModel().getSelectedItem();

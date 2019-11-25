@@ -12,17 +12,17 @@ final class ErrorBox extends Alert
 		setHeaderText(headerMessage);
 		setContentText(message);
 	}
-	
+
 	ErrorBox(String title, String message)
 	{
 		this(title, null, message);
 	}
-	
+
 	ErrorBox(String message)
 	{
 		this("An error has occured", message);
 	}
-	
+
 	void showAndExit()
 	{
 		showAndWait();

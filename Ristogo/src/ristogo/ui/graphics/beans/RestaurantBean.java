@@ -44,7 +44,7 @@ public class RestaurantBean extends EntityBean
 			restaurant.getDescription(), restaurant.getSeats(),
 			restaurant.getOpeningHours());
 	}
-	
+
 	public Restaurant toEntity()
 	{
 		return new Restaurant(getId(), getName(), getOwnerName(), getGenre(),

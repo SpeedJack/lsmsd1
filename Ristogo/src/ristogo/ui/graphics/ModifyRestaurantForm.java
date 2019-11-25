@@ -54,19 +54,19 @@ final class ModifyRestaurantForm extends VBox
 		FormLabel descriptionLabel = new FormLabel("Description:");
 		FormLabel seatsLabel = new FormLabel("Seats:");
 		FormLabel hourLabel = new FormLabel("Opening Hours:");
-		
+
 		errorLabel.setFont(GUIConfig.getTextFont());
 		errorLabel.setTextFill(GUIConfig.getInvertedFgColor());
 		errorLabel.setStyle("-fx-background-color:   red;");
 		errorLabel.setVisible(false);
-		
+
 		genreField.getItems().addAll(Genre.values());
 		priceField.getItems().addAll(Price.values());
 		descriptionField.setWrapText(true);
 		descriptionField.setMinSize(480, 100);
 		descriptionField.setMaxSize(480, 100);
 		hourField.getItems().addAll(OpeningHours.values());
-		
+
 		HBox nameBox = new HBox(20);
 		HBox typeBox = new HBox(20);
 		HBox costBox = new HBox(20);
@@ -74,7 +74,7 @@ final class ModifyRestaurantForm extends VBox
 		HBox addressBox = new HBox(20);
 		HBox seatsBox = new HBox(20);
 		HBox hourBox = new HBox(20);
-		
+
 		nameBox.getChildren().addAll(nameLabel, nameField);
 		typeBox.getChildren().addAll(typeLabel, genreField);
 		costBox.getChildren().addAll(costLabel, priceField);
@@ -82,12 +82,12 @@ final class ModifyRestaurantForm extends VBox
 		addressBox.getChildren().addAll(addressLabel, addressField);
 		seatsBox.getChildren().addAll(seatsLabel, seatsField);
 		hourBox.getChildren().addAll(hourLabel, hourField);
-		
+
 		getChildren().addAll(title, nameBox, typeBox, costBox, cityBox, addressBox, descriptionLabel, descriptionField,
 			seatsBox, hourBox, errorLabel, commitButton);
 		setStyle(GUIConfig.getCSSFormBoxStyle());
 		setPrefSize(400, 600);
-		
+
 		nameField.textProperty().addListener(this::changeTextListener);
 		cityField.textProperty().addListener(this::changeTextListener);
 		addressField.textProperty().addListener(this::changeTextListener);
@@ -95,17 +95,17 @@ final class ModifyRestaurantForm extends VBox
 
 		commitButton.setOnAction(this::handleCommitButtonAction);
 	}
-	
+
 	private void changeTextListener(ObservableValue<? extends String> observable, String oldValue, String newValue)
 	{
 		validate();
 	}
-	
+
 	private void changeSeatsListener(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue)
 	{
 		validate();
 	}
-	
+
 	private void validate()
 	{
 		String name = nameField.getText();
@@ -130,7 +130,7 @@ final class ModifyRestaurantForm extends VBox
 		}
 		hideError();
 	}
-	
+
 	private void handleCommitButtonAction(ActionEvent event)
 	{
 		restaurant.setName(nameField.getText());
@@ -147,20 +147,20 @@ final class ModifyRestaurantForm extends VBox
 			showError(resMsg.getErrorMsg());
 		onAction.run();
 	}
-	
+
 	private void showError(String message)
 	{
 		errorLabel.setText(message);
 		errorLabel.setVisible(true);
 		commitButton.setDisable(true);
 	}
-	
+
 	private void hideError()
 	{
 		errorLabel.setVisible(false);
 		commitButton.setDisable(false);
 	}
-	
+
 	void setRestaurant(Restaurant restaurant)
 	{
 		this.restaurant = restaurant;
