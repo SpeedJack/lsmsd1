@@ -10,6 +10,6 @@ public class FormButton extends Button
 		super(buttonText);
 		setFont(GUIConfig.getButtonFont());
 		setTextFill(GUIConfig.getInvertedFgColor());
-		setStyle(GUIConfig.getInvertedCSSBgColorButton());
+		setStyle(GUIConfig.getInvertedCSSButtonBgColor());
 	}
 }

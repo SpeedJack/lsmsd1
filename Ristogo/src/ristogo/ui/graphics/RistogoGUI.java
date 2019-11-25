@@ -83,7 +83,7 @@ public final class RistogoGUI extends Application
 		Button find = new Button("Find");
 		find.setFont(GUIConfig.getButtonFont());
 		find.setTextFill(GUIConfig.getInvertedFgColor());
-		find.setStyle(GUIConfig.getInvertedCSSBgColorButton());
+		find.setStyle(GUIConfig.getInvertedCSSButtonBgColor());
 
 		HBox findBox = new HBox(10);
 		findBox.getChildren().addAll(findCityField, find);

@@ -37,7 +37,6 @@ final class ModifyRestaurantForm extends VBox
 
 	ModifyRestaurantForm(Runnable onAction)
 	{
-
 		super(20);
 		this.onAction = onAction;
 
