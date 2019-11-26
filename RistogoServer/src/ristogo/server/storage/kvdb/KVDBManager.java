@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -211,6 +212,9 @@ public class KVDBManager implements AutoCloseable
 				restaurants.add((Restaurant_)get(Restaurant_.class, entityId));
 				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
 			}
+		} catch (NoSuchElementException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: no restaurant.");
+			return new ArrayList<Restaurant_>();
 		} catch (IOException ex) {
 			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 			return new ArrayList<Restaurant_>();
@@ -236,6 +240,9 @@ public class KVDBManager implements AutoCloseable
 					return (Restaurant_)get(Restaurant_.class, entityId);
 				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
 			}
+		} catch (NoSuchElementException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: user " + ownerId + " has not restaurant.");
+			return null;
 		} catch (IOException ex) {
 			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 		}
@@ -291,6 +298,9 @@ public class KVDBManager implements AutoCloseable
 					reservations.add((Reservation_)get(Reservation_.class, entityId));
 				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
 			}
+		} catch (NoSuchElementException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: no reservation found.");
+			return new ArrayList<Reservation_>();
 		} catch (IOException ex) {
 			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 			return new ArrayList<Reservation_>();
@@ -344,6 +354,9 @@ public class KVDBManager implements AutoCloseable
 					reservations.add((Reservation_)get(Reservation_.class, entityId));
 				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
 			}
+		} catch (NoSuchElementException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: no reservation found.");
+			return new ArrayList<Reservation_>();
 		} catch (IOException ex) {
 			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 			return new ArrayList<Reservation_>();
@@ -360,14 +373,18 @@ public class KVDBManager implements AutoCloseable
 				if (!key[0].equals(entityName))
 					break;
 				int entityId = Integer.parseInt(key[1]);
-				if (key[2].equals("username")) {
-					String foundUsername = asString(iterator.peekNext().getValue());
-					if (foundUsername.equals(username))
-						return (User_)get(User_.class, entityId);
-					iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+				if (!key[2].equals("username")) {
+					iterator.next();
+					continue;
 				}
-				iterator.next();
+				String foundUsername = asString(iterator.peekNext().getValue());
+				if (foundUsername.equals(username))
+					return (User_)get(User_.class, entityId);
+				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
 			}
+		} catch (NoSuchElementException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: no such user with username " + username + ".");
+			return null;
 		} catch (IOException ex) {
 			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 		}
