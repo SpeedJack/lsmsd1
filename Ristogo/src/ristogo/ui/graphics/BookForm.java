@@ -189,7 +189,6 @@ final class BookForm extends VBox
 
 	private void reset()
 	{
-		hideError();
 		nameField.setText("");
 		dateField.setValue(null);
 		timeField.getItems().clear();
@@ -202,6 +201,7 @@ final class BookForm extends VBox
 		bookButton.setDisable(true);
 		restaurant = null;
 		reservation = null;
+		hideError();
 	}
 
 	private void showError(String message)
