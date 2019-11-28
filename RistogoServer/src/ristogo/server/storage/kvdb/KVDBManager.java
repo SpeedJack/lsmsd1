@@ -36,20 +36,38 @@ public class KVDBManager implements AutoCloseable
 	private static DB db;
 	private static final ThreadLocal<WriteBatch> threadLocal;
 	private boolean initialized = false;
-
+	
+	/**
+	 * Instantiate a threadLocal to handle the writes in LevelDB via a WriteBatch
+	 */
 	static {
 		threadLocal = new ThreadLocal<WriteBatch>();
 	}
 
+	/**
+	 * Getter for the WriteBatch used to write inside LevelDB
+	 * @return
+	 */
 	private static WriteBatch getWriteBatch()
 	{
 		return threadLocal.get();
 	}
+	
+	/**
+	 * Setter for the WriteBatch used to write inside LevelDB
+	 * @param wb
+	 */
 
 	private static void setWriteBatch(WriteBatch wb)
 	{
 		threadLocal.set(wb);
 	}
+	
+	/**
+	 * Constructor for the class, instantiate the DB via the factory method provided by the API 
+	 * if the kvdb folder doesn't exist create a new database. 
+	 * @throws IOException
+	 */
 
 	private KVDBManager() throws IOException
 	{
@@ -69,6 +87,10 @@ public class KVDBManager implements AutoCloseable
 		Logger.getLogger(KVDBManager.class.getName()).exiting(KVDBManager.class.getName(), "<init>");
 	}
 
+	/**
+	 * Get singleton instance of the KVDBManager
+	 * @return
+	 */
 	public static KVDBManager getInstance()
 	{
 		if (instance == null)
@@ -79,16 +101,28 @@ public class KVDBManager implements AutoCloseable
 		return instance;
 	}
 
+	/**
+	 * Method used to know whether this object is initialized or not
+	 * @return
+	 */
 	public boolean isInitialized()
 	{
 		return initialized;
 	}
+	
+	/**
+	 * Mark object as initialized
+	 */
 
 	public void setInitialized()
 	{
 		initialized = true;
 	}
 
+	/**
+	 * Populate LevelDB With the list of entities 
+	 * @param entities
+	 */
 	public void populateDB(List<Entity_> entities)
 	{
 		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "populateDB");
@@ -98,10 +132,21 @@ public class KVDBManager implements AutoCloseable
 		Logger.getLogger(KVDBManager.class.getName()).exiting(KVDBManager.class.getName(), "populateDB");
 	}
 
+	/**
+	 * Set first letter of str as Uppercase
+	 * @param str
+	 * @return str modified (Capital first letter)
+	 */
 	private static String capitalizeFirst(String str)
 	{
 		return str.substring(0, 1).toUpperCase() + str.substring(1);
 	}
+	
+	/**
+	 * Get the name of an attribute via Java Reflection
+	 * @param field
+	 * @return
+	 */
 
 	public String getAttributeName(Field field)
 	{
@@ -110,6 +155,12 @@ public class KVDBManager implements AutoCloseable
 		return field.getAnnotation(Attribute.class).name();
 	}
 
+	/**
+	 * Get the setter for the field attribute in entityClass Class using Java Reflection
+	 * @param entityClass
+	 * @param field
+	 * @return
+	 */
 	private Method getAttributeSetter(Class<? extends Entity_> entityClass, Field field)
 	{
 		String setterName;
@@ -127,6 +178,12 @@ public class KVDBManager implements AutoCloseable
 		return null;
 	}
 
+	/**
+	 * Get field attribute getter for the entityClass class using Java Reflection
+	 * @param entityClass
+	 * @param field
+	 * @return
+	 */
 	private Method getAttributeGetter(Class<? extends Entity_> entityClass, Field field)
 	{
 		String getterName;
@@ -144,6 +201,12 @@ public class KVDBManager implements AutoCloseable
 		return null;
 	}
 
+	/**
+	 * Get field identified by attributeName in the entityClass Class
+	 * @param entityClass
+	 * @param attributeName
+	 * @return
+	 */
 	private Field getAttributeField(Class<? extends Entity_> entityClass, String attributeName)
 	{
 		Field[] fields = entityClass.getDeclaredFields();
@@ -160,6 +223,10 @@ public class KVDBManager implements AutoCloseable
 			return null;
 		}
 	}
+	
+ /**
+  * Get all entities of a given Class in the DB
+  */
 
 	public List<Entity_> getAll(Class<? extends Entity_> entityClass)
 	{
@@ -182,6 +249,12 @@ public class KVDBManager implements AutoCloseable
 		}
 		return entities;
 	}
+	
+	/**
+	 * List of all the restaurant in a given city.
+	 * @param city
+	 * @return
+	 */
 
 	public List<Restaurant_> getRestaurantsByCity(String city)
 	{
@@ -222,6 +295,11 @@ public class KVDBManager implements AutoCloseable
 		return restaurants;
 	}
 
+	/**
+	 * List of all the restaurant of a given Owner in  LevelDB
+	 * @param ownerId
+	 * @return
+	 */
 	public Restaurant_ getRestaurantByOwner(int ownerId)
 	{
 		String entityName = Restaurant_.class.getAnnotation(Table.class).name();
@@ -249,16 +327,33 @@ public class KVDBManager implements AutoCloseable
 		return null;
 	}
 
+	/**
+	 * List all the active reservations of a User in levelDB
+	 * @param userId
+	 * @return
+	 */
 	public List<Reservation_> getActiveReservationsByUser(int userId)
 	{
 		return getActiveReservations(userId, "userId");
 	}
+	
+	/**
+	 * List all the reservation for a given restaurant in leveldb
+	 * @param restaurantId
+	 * @return
+	 */
 
 	public List<Reservation_> getActiveReservationsByRestaurant(int restaurantId)
 	{
 		return getActiveReservations(restaurantId, "restaurantId");
 	}
 
+	/**
+	 * List all the active reservations
+	 * @param id
+	 * @param idAttribute
+	 * @return
+	 */
 	private List<Reservation_> getActiveReservations(int id, String idAttribute)
 	{
 		String entityName = Reservation_.class.getAnnotation(Table.class).name();
@@ -308,6 +403,14 @@ public class KVDBManager implements AutoCloseable
 		return reservations;
 	}
 
+	
+	/**
+	 * List all the reservation for a given date
+	 * @param restaurantId
+	 * @param date
+	 * @param time
+	 * @return
+	 */
 	public List<Reservation_> getReservationsByDateTime(int restaurantId, LocalDate date, ReservationTime time)
 	{
 		String entityName = Reservation_.class.getAnnotation(Table.class).name();
@@ -364,6 +467,12 @@ public class KVDBManager implements AutoCloseable
 		return reservations;
 	}
 
+	
+	/**
+	 * Get a user by username
+	 * @param username
+	 * @return
+	 */
 	public User_ getUserByUsername(String username)
 	{
 		String entityName = User_.class.getAnnotation(Table.class).name();
@@ -391,11 +500,22 @@ public class KVDBManager implements AutoCloseable
 		return null;
 	}
 
+	/**
+	 * Get an entity in levelDB
+	 * @param entity
+	 * @return
+	 */
 	public Entity_ get(Entity_ entity)
 	{
 		return get(entity.getClass(), entity.getId());
 	}
 
+	/**
+	 * Get an entity of id entityId and class entityClass in LevelDB
+	 * @param entityClass
+	 * @param entityId
+	 * @return
+	 */
 	public Entity_ get(Class<? extends Entity_> entityClass, int entityId)
 	{
 		String entityName = entityClass.getAnnotation(Table.class).name();
@@ -447,11 +567,19 @@ public class KVDBManager implements AutoCloseable
 		return found ? entity : null;
 	}
 
+	/**
+	 * Used to know if the WriteBatch is active (not closed) or not
+	 * @return
+	 */
 	public boolean isActiveBatch()
 	{
 		return getWriteBatch() != null;
 	}
 
+	
+	/**
+	 * Get the WriteBatch to begin a write transaction in levelDB
+	 */
 	public void beginBatch()
 	{
 		if (isActiveBatch())
@@ -459,6 +587,9 @@ public class KVDBManager implements AutoCloseable
 		setWriteBatch(db.createWriteBatch());
 	}
 
+	/**
+	 * Commit all the pending operations in the batch
+	 */
 	public void commitBatch()
 	{
 		if (!isActiveBatch())
@@ -466,6 +597,9 @@ public class KVDBManager implements AutoCloseable
 		db.write(getWriteBatch());
 	}
 
+	/**
+	 * Close the WriteBatch
+	 */
 	public void closeBatch()
 	{
 		if (!isActiveBatch())
@@ -479,6 +613,9 @@ public class KVDBManager implements AutoCloseable
 		}
 	}
 
+	/**
+	 * Remove from LevelDB the entity fields with id entityId and class entityClass
+	 */
 	public void remove(Class<? extends Entity_> entityClass, int entityId)
 	{
 		String entityName = entityClass.getAnnotation(Table.class).name();
@@ -491,11 +628,20 @@ public class KVDBManager implements AutoCloseable
 		}
 	}
 
+	
+	/**
+	 * Remove an entity from LevelDB
+	 * @param entity
+	 */
 	public void remove(Entity_ entity)
 	{
 		remove(entity.getClass(), entity.getId());
 	}
 
+	/**
+	 * Put an entity in LevelDB
+	 * @param entity
+	 */
 	public void put(Entity_ entity)
 	{
 		Class<? extends Entity_> entityClass = entity.getClass();
@@ -537,6 +683,12 @@ public class KVDBManager implements AutoCloseable
 			getWriteBatch().put(bytes(key), bytes(attributeValue));
 		}
 	}
+	
+	/**
+	 * Delete an entity whith Class entityClass and id entityId
+	 * @param entityClass
+	 * @param entityId
+	 */
 
 	public void delete(Class<? extends Entity_> entityClass, int entityId)
 	{
@@ -545,16 +697,30 @@ public class KVDBManager implements AutoCloseable
 		commitBatch();
 	}
 
+	/**
+	 * Delete an entity from LevelDB
+	 * @param entity
+	 */
+	
 	public void delete(Entity_ entity)
 	{
 		delete(entity.getClass(), entity.getId());
 	}
+	/**
+	 * Update an entity in levelDB
+	 * @param entity
+	 */
 
 	public void update(Entity_ entity)
 	{
 		insert(entity);
 	}
 
+	/**
+	 * Insert an entity in levelDB
+	 * @param entity
+	 */
+	
 	public void insert(Entity_ entity)
 	{
 		beginBatch();
@@ -562,6 +728,9 @@ public class KVDBManager implements AutoCloseable
 		commitBatch();
 	}
 
+	/**
+	 * Close the DB Object and the WriteBatch
+	 */
 	public void close()
 	{
 		try {
