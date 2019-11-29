@@ -1,0 +1,35 @@
+\section{Configuration file}
+
+The client application can also be configured with a configuration file. The
+configuration file must be put in the same directory of the application with the
+name \code{config.xml}.
+
+\lstinputlisting[language=XML, style=xmlcode, label={lst:config},
+caption={\code{config.xml}}]{config.xml}
+
+\begin{itemize}
+	\item[serverIp] Specifies the IP of the server (default: 127.0.0.1).
+	\item[serverPort] Specifies the port of the server (default: 8888).
+	\item[interfaceMode] It can be set to: \code{FORCE\_CLI} to force the
+		application to load the CLI; \code{FORCE\_GUI} to force the
+		application to load the GUI; \code{AUTO}\footnote{This
+		functionality is based on the presence of a console attached to
+		the standard input/output. On Unixes systems, that always attach
+		a console to the application (even if launched by a
+		double-click), this functionality may not work. User the
+		\code{-{}-gui} option (or set the config option to
+		\code{FORCE\_GUI} to load the GUI.} to let the application
+		automatically choose between the GUI and the CLI (default: \code{AUTO}).
+	\item[fontName] Specifies the name of the font to use in the GUI
+		(default: Open Sans).
+	\item[fontSize] Specifies the name of the font to use in the GUI
+		(default: 14).
+	\item[bgColorName] Specifies the background color to use in the GUI
+		(default: FFFFFF).
+	\item[fgColorName] Specifies the foreground color to use in the GUI
+		(default: D9561D).
+	\item[numberRowsDisplayable] Specifies the number of rows to display in
+		tables in the GUI (default: 7).
+	\item[logLevel] Specifies the log level. Acceptable values are the same
+		of the \code{-{}-log-level} option (default: \code{WARNING}).
+\end{itemize}

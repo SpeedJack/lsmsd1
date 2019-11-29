@@ -1,0 +1,46 @@
+\section{Command Line Interface}
+
+The application can be launched also without the GUI, with options selected by
+command line.
+
+To reach this purpose, launch the applicatiion with the option \code{-c} (or
+\code{-{}-cli}). Then follow the instructions written into the console to use the
+application.
+
+\begin{verbatim}
+WELCOME TO RISTOGO!
+
+Select an action:
+1)      Log-In
+2)      Register
+0)      Exit
+
+Enter number:
+\end{verbatim}
+
+\subsection{Command line options}
+
+To see all the available options, launch the application with the option
+\code{-h} (\code{-{}-help}):
+
+\begin{verbatim}
+usage: ristogo [-h | --help] [-c | --cli] [-g | --gui] [-l
+               <LEVEL> | --log-level <LEVEL>]
+ -c,--cli                 force load the Command Line
+                          Interface.
+ -g,--gui                 force load the Graphical User
+                          Interface.
+ -h,--help                print this message.
+ -l,--log-level <LEVEL>   set log level.
+
+LOG LEVELS:
+ALL: print all logs.
+FINEST: print all tracing logs.
+FINER: print most tracing logs.
+FINE: print some tracing logs.
+CONFIG: print all config logs.
+INFO: print all informational logs.
+WARNING: print all warnings and errors. (default)
+SEVERE: print only errors.
+OFF: disable all logs.
+\end{verbatim}

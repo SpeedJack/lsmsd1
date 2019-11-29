@@ -1,0 +1,382 @@
+\section{Relational Data Model Analysis}
+
+The current data model is the one described in the Figure~\ref{fig:er}.
+
+\subsection{Volume Table}
+
+The first step towards a fair analysis is dimensioning the problem. To do so we
+have to create a volume table.
+
+\vspace{0.3cm}
+\resizebox{\textwidth}{!}{%
+	\begin{tabular}{|l|l|l|l|}
+		\hline
+		\thead{Name} & \thead{E/R} & \thead{Istances} & \thead{Justification} \\
+		\hline
+		User & E & \(50\,000\) & Initial Assumption \\
+		\hline
+		Owning & R & \(1\,000\) & We suppose that 2\% of users is a restaurant owner \\
+		\hline
+		Restaurant & E & \(1\,000\) & \makecell{Every restaurant owner has only 1
+			restaurant\\ (Cardinality (1,1))} \\
+		\hline
+		Reservation & R & \(500\,000\) & On average a user has 10 reservations \\
+		\hline
+	\end{tabular}
+}
+
+\subsection{Possible Operations}
+
+After dimensioning the problem we provide a set of CRUD operations that can be
+performed on the database. Each operations has a frequency defined as the number
+of times the operation is performed per day.
+
+\subsubsection{Login}
+
+\begin{itemize}
+	\item Description: Find a user in the system.
+	\item Frequency: \(5\,000\) per day.
+\end{itemize}
+
+\subsubsection{Register}
+
+\begin{itemize}
+	\item Description: Insert a new user.
+	\item Frequency: \(250\) per day.
+\end{itemize}
+
+\subsubsection{List of Restaurants}
+
+\begin{itemize}
+	\item Description: A customer request the list of all the available
+		restaurants.
+	\item Frequency: \(10\,000\) per day (2 times per login session on
+		average).
+\end{itemize}
+
+\subsubsection{List of Reservations per User}
+
+\begin{itemize}
+	\item Description: Find all the reservation of a given user.
+	\item Frequency: \(10\,000\) per day (2 times per login session on
+		average).
+\end{itemize}
+
+\subsubsection{List of Reservations per Restaurant}
+
+\begin{itemize}
+	\item Description: Find all the reservations for a given restaurant.
+	\item Frequency: \(5\,000\) per day (every owner will check multiple times
+		the list of reservation at his restaurant we assume on average 5
+		times per owner).
+\end{itemize}
+
+\subsubsection{Modify a Restaurant}
+
+\begin{itemize}
+	\item Description: Update the informations of a given restaurant.
+	\item Frequency: \(25\) per day (we assume that these informations are
+		not so likely to change frequently).
+\end{itemize}
+
+\subsubsection{Book a table in a Restaurant}
+
+\begin{itemize}
+	\item Description: Insert a reservation.
+	\item Frequency: \(2\,500\) per day.
+\end{itemize}
+
+
+\subsubsection{Check available seats in a Restaurant}
+
+\begin{itemize}
+	\item Description: Find the number of seats available in a restaurant.
+	\item Frequency: \(3\,500\) per day (may happen that some restaurant are
+		full or a customer just want to know if there are seats
+		available, so there will be slightly more check then
+		reservations).
+\end{itemize}
+
+\subsubsection{Find a given Restaurant}
+
+\begin{itemize}
+	\item Description: Find the information about a given restaurant.
+	\item Frequency: \(2\,000\) per day.
+\end{itemize}
+
+
+\subsubsection{Delete a Reservation}
+
+\begin{itemize}
+	\item Description: Remove a reservation from the database.
+	\item Frequency: \(50\) per day.
+\end{itemize}
+
+\subsubsection{Add a Restaurant}
+
+\begin{itemize}
+	\item Description: Add a restaurant in the system.
+	\item Frequency: \(50\) per day.
+\end{itemize}
+
+\subsection{Access Table}
+
+After dimensioning the number of instances we will have for each Entity and
+Relation, and hypothesized the frequency of each operation that can be performed
+on the database we can analyze the amount of operations needed to the
+accomplishment of these operations in order to recognize which are the most
+expensive. Elementary operations are write and read.
+
+We assume that a write operation is always preceeded from a read operation, this
+means that when the system is performing a write it's indeed doing two
+elementary operations.
+
+\subsubsection{Login}
+
+\begin{tabular}{|l|l|l|}
+	\hline
+	\thead{\# Elementary\\operations} & \thead{Operation\\Type} & \thead{Justification} \\
+	\hline
+	\(1\) & Read & Read once in User.\\
+	\hline
+\end{tabular}
+
+Number of elementary operations needed for a single operation: \(1\).
+
+Number of elementary operations per day: \(1 \times 5\,000 = 5\,000\).
+
+\subsubsection{Register}
+
+\begin{tabular}{|l|l|l|}
+	\hline
+	\thead{\# Elementary\\operations} & \thead{Operation\\Type} & \thead{Justification} \\
+	\hline
+	\(2 \times 1\) & Write & Write once in User.\\
+	\hline
+\end{tabular}
+
+Number of elementary operations needed for a single operation: \(2\).
+
+Number of elementary operations per day: \(2 \times 250 = 500\).
+
+\subsubsection{List of Restaurants}
+
+\begin{tabular}{|l|l|l|}
+	\hline
+	\thead{\# Elementary\\operations} & \thead{Operation\\Type} & \thead{Justification} \\
+	\hline
+	\(1000\) & Read & Read all the instances in Restaurant.\\
+	\hline
+\end{tabular}
+
+Number of elementary operations needed for a single operation: \(1\,000\).
+
+Number of elementary operations per day: \(1\,000 \times 10\,000 = 10\,000\,000\).
+
+\subsubsection{List of Reservation per User}
+
+\resizebox{\textwidth}{!}{%
+	\begin{tabular}{|l|l|l|}
+		\hline
+		\thead{\# Elementary\\operations} & \thead{Operation\\Type} & \thead{Justification} \\
+		\hline
+		\(1\) & Read & Read once in User.\\
+		\(1 \times 10\) & Read & \makecell{Read 10 times in Reservation (From\\volume table we know that a user has\\on average 10 reservations)}\\
+		\(1 \times 10\) & Read & \makecell{Read 10 times in restaurant to\\ retrieve restaurant name}\\
+		\hline
+	\end{tabular}
+}
+
+Number of elementary operations needed for a single operation: \(21\).
+
+Number of elementary operations per day: \(21 \times 10\,000 = 210\,000\).
+
+\subsubsection{List of Reservation per Restaurant}
+
+\resizebox{\textwidth}{!}{%
+	\begin{tabular}{|l|l|l|}
+		\hline
+		\thead{\# Elementary\\operations} & \thead{Operation\\Type} & \thead{Justification} \\
+		\hline
+		\(1\) & Read & Read once in Restaurant.\\
+		\(1 \times 500\) & Read & \makecell{Read 500 times in Reservation (From\\ volume table we know that a Restaurant\\ has on average 500 reservations)}\\
+		\(1 \times 500\) & Read & \makecell{Read 500 times in User to\\ retrieve username}\\
+		\hline
+	\end{tabular}
+}
+
+Number of elementary operations needed for a single operation: \(1\,001\).
+
+Number of elementary operations per day: \(1\,001 \times 5\,000 = 5\,005\,000\).
+
+\subsubsection{Modify a Restaurant}
+
+\begin{tabular}{|l|l|l|}
+	\hline
+	\thead{\# Elementary\\operations} & \thead{Operation\\Type} & \thead{Justification} \\
+	\hline
+	\(2 \times 1\) & Write & Write once in Restaurant.\\
+	\hline
+\end{tabular}
+
+Number of elementary operations needed for a single operation: \(2\).
+
+Number of elementary operations per day: \(2 \times 25 = 50\).
+
+\subsubsection{Book a table in a restaurant}
+
+\begin{tabular}{|l|l|l|}
+	\hline
+	\thead{\# Elementary\\operations} & \thead{Operation\\Type} & \thead{Justification} \\
+	\hline
+	\(1\) & Read & Read once in Restaurant.\\
+	\hline
+\end{tabular}
+
+Number of elementary operations needed for a single operation: \(1\).
+
+Number of elementary operations per day: \(1 \times 2\,500 = 2\,500\).
+
+\subsubsection{Check available seats in a Restaurant}
+
+\begin{tabular}{|l|l|l|}
+	\hline
+	\thead{\# Elementary\\operations} & \thead{Operation\\Type} & \thead{Justification} \\
+	\hline
+	\(1\) & Read & Read once in Restaurant.\\
+	\hline
+\end{tabular}
+
+Number of elementary operations needed for a single operation: \(1\,001\).
+
+Number of elementary operations per day: \(1 \times 3\,500 = 3\,500\).
+
+\subsubsection{Find a given Restaurant}
+
+\begin{tabular}{|l|l|l|}
+	\hline
+	\thead{\# Elementary\\operations} & \thead{Operation\\Type} & \thead{Justification} \\
+	\hline
+	\(1\) & Read & Read once in Restaurant.\\
+	\hline
+\end{tabular}
+
+Number of elementary operations needed for a single operation: \(1\).
+
+Number of elementary operations per day: \(1 \times 2\,000 = 2\,000\).
+
+\subsubsection{Delete a Reservation}
+
+\begin{tabular}{|l|l|l|}
+	\hline
+	\thead{\# Elementary\\operations} & \thead{Operation\\Type} & \thead{Justification} \\
+	\hline
+	\(2 \times 1\) & Write & Write once in Reservation.\\
+	\hline
+\end{tabular}
+
+Number of elementary operations needed for a single operation: \(2\).
+
+Number of elementary operations per day: \(2 \times 50 = 100\).
+
+\subsubsection{Add a Restaurant}
+
+\begin{tabular}{|l|l|l|}
+	\hline
+	\thead{\# Elementary\\operations} & \thead{Operation\\Type} & \thead{Justification} \\
+	\hline
+	\(2 \times 1\) & Write & Write once in Restaurant.\\
+	\hline
+\end{tabular}
+
+Number of elementary operations needed for a single operation: \(2\).
+
+Number of elementary operations per day: \(2 \times 50 = 100\).
+
+\subsection{Analysis Results}
+
+The most important thing that we can see from these analysis is that the
+database is used mostly for read operations. The prominent operations are in
+fact the List of Restaurants (\(10\,000\,000\) accesses per day) and the List of
+Reservation per Restaurant (\(5\,005\,000\) accesses per day).
+
+This situation lead us to evaluate the possibility to adopt an hybrid solution.
+The existent relational database is maintained and will be used only for the
+writes, granting the consistency of the data. For the read operations we will
+use instead a Key-Value database. These databases are way faster then the
+relational ones, and will grant a faster response of the system to the large
+amount of reads that will be issued daily.
+
+This type of solution need that the two database must be mutually consistent, so
+when a write operation will be performed on the relational database, this update
+must be propagated to the other one in an atomic way.
+
+\subsection{Data Model Translation}
+
+The first step towards the choosen solution is to translate the relational data
+model to a key-value one.
+
+Starting from the ER model in Figure~\ref{fig:er} we can translate our entities
+as follow:
+
+\subsubsection{User}
+
+The User table in the ER model is implemented in this way:
+
+\begin{tabular}{|l|l|l|}
+	\hline
+	\thead{UserID} & \thead{Username} & \thead{Password} \\
+	\hline
+\end{tabular}
+
+The corresponding key-value translation is in the form:
+
+\centerline{\textbf{users:<userid>:<attributeName> = <value>}}
+
+More precisely we have:
+
+\centerline{\textbf{users:<userid>:username = <value>}}
+
+\centerline{\textbf{users:<userid>:password = <value>}}
+
+\subsubsection{Restaurant}
+
+The Restaurant table similarly can be translated from:
+
+\resizebox{\textwidth}{!}{%
+	\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
+		\hline
+		\thead{RestaurantID} & \thead{UserID} & \thead{Name} & \thead{Genre} &
+		\thead{Cost} & \thead{City} & \thead{Address} & \thead{Description} &
+		\thead{Seats} & \thead{OpeningHours} \\
+		\hline
+	\end{tabular}
+}
+
+To the key-value representation:
+
+\centerline{\textbf{restaurants:<restaurantid>:attributeName = <value>}}
+
+\subsubsection{Reservation}
+
+The last table of the ER model come out from a many to many relationship, and is
+implemented as follow:
+
+\begin{tabular}{|l|l|l|l|l|l|}
+	\hline
+	\thead{ReservationID} & \thead{UserID} & \thead{RestaurantID} &
+	\thead{Date} & \thead{Hour} & \thead{Seats} \\
+	\hline
+\end{tabular}
+
+And it will be translated in the following key-value representation:
+
+\centerline{\textbf{reservations:<reservationid>:<attributeName> = <value>}}
+
+In this way we will threat as attribute both the \code{UserID} and the
+\code{Restau\-rantID}. In this way the key value data model will be more storage
+efficient, since we can use the same ``primary key'' (the prefix that uniquely
+identifies the attributes of a same reservation) both to retrieve the list of
+reservation filtering them by \code{RestaurantID} or by \code{UserID}. This by
+the way lead to a slightly higher complexity on performing queries to retrieve
+the desired values.
