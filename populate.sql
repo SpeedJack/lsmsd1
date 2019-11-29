@@ -19,8 +19,11 @@ INSERT INTO restaurants VALUES
 (5, 3, 'To Mexican', 'MEXICAN', 'MIDDLE', 'Pisa', 'Giacomo Leopardi, 3', 'Explosive cocktail of colors and pleasure for the eyes and the palate (the local majolica toilets are the jewel in the crown), the new headquarters in Via Giacomo Leopardi 3 awaits all Mexican cuisine lovers: 30 years of history and experience are just a great start to amaze again and start again', 12, 'DINNER'),
 (6, 9, 'Japanese Zen', 'JAPANESE', 'LUXURY', 'Cascina', 'Zizzo, 66', 'For over 15 years Zen at Cascina is the reference for all those who wish to enjoy authentic Japanese cuisine in a unique atmosphere. The long experience of the chefs, the freshest raw materials and selected by the best of local markets, for an assortment of culinary proposals that have made Zen successful.', 20, 'BOTH');
 
-INSERT INTO reservations VALUES (1, 1, 2, '2018-06-18', 'DINNER', 5);
-INSERT INTO reservations VALUES (2, 2, 2, '2018-06-26', 'DINNER', 6);
-INSERT INTO reservations VALUES (3, 3, 1, '2018-06-19', 'DINNER', 2);
-INSERT INTO reservations VALUES (4, 4, 2, '2018-06-26', 'DINNER', 3);
-INSERT INTO reservations VALUES (5, 5, 5, '2018-06-16', 'DINNER', 6);
+INSERT INTO reservations VALUES (1, 1, 2, DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY), 'DINNER', 5);
+INSERT INTO reservations VALUES (2, 2, 2, DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY), 'DINNER', 6);
+INSERT INTO reservations VALUES (3, 3, 1, DATE_ADD(CURRENT_DATE(), INTERVAL 3 DAY), 'DINNER', 2);
+INSERT INTO reservations VALUES (4, 4, 2, DATE_ADD(CURRENT_DATE(), INTERVAL 2 DAY), 'DINNER', 3);
+INSERT INTO reservations VALUES (5, 4, 3, DATE_ADD(CURRENT_DATE(), INTERVAL 3 DAY), 'LUNCH', 4);
+INSERT INTO reservations VALUES (6, 5, 5, DATE_ADD(CURRENT_DATE(), INTERVAL 5 DAY), 'DINNER', 6);
+INSERT INTO reservations VALUES (7, 7, 6, DATE_ADD(CURRENT_DATE(), INTERVAL 7 DAY), 'DINNER', 4);
+INSERT INTO reservations VALUES (8, 10, 6, DATE_ADD(CURRENT_DATE(), INTERVAL 7 DAY), 'LUNCH', 3);
