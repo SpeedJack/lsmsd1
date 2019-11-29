@@ -29,11 +29,18 @@ public abstract class EntityManager implements AutoCloseable
 		threadLocal = new ThreadLocal<javax.persistence.EntityManager>();
 	}
 
+	/**
+	 * Initializes the EntityManager.
+	 * @param properties The properties to pass to the createEntityManagerFactory method.
+	 */
 	public static void init(Properties properties)
 	{
 		factory = Persistence.createEntityManagerFactory("ristogo", properties);
 	}
 
+	/**
+	 * Enables LevelDB as read cache.
+	 */
 	public static void enableLevelDB()
 	{
 		boolean exists = new File("kvdb").exists();
@@ -44,6 +51,10 @@ public abstract class EntityManager implements AutoCloseable
 			levelDBManager.setInitialized();
 	}
 
+	/**
+	 * Checks whether LevelDB is enabled or not.
+	 * @return True if LevelDB is enabled; False otherwise.
+	 */
 	public static boolean isLevelDBEnabled()
 	{
 		return levelDBManager != null && levelDBManager.isInitialized();
@@ -68,6 +79,9 @@ public abstract class EntityManager implements AutoCloseable
 		return entityManager;
 	}
 
+	/**
+	 * Closes the EntityManager.
+	 */
 	public void close()
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "close");
@@ -75,6 +89,9 @@ public abstract class EntityManager implements AutoCloseable
 		threadLocal.set(null);
 	}
 
+	/**
+	 * Closes the EntityManager factory.
+	 */
 	public static void closeFactory()
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "closeFactory");
@@ -84,8 +101,16 @@ public abstract class EntityManager implements AutoCloseable
 			factory.close();
 	}
 
+	/**
+	 * Get all entities of this type.
+	 * @return All entites of this type.
+	 */
 	abstract public List<? extends Entity_> getAll();
 
+	/**
+	 * Inserts an entity.
+	 * @param entity The entity to insert.
+	 */
 	public void insert(Entity_ entity)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "insert", entity);
@@ -101,6 +126,12 @@ public abstract class EntityManager implements AutoCloseable
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "insert", entity);
 	}
 
+	/**
+	 * Get an entity of id entityId and class entityClass.
+	 * @param entityClass The type of the entity to find.
+	 * @param entityId The entity's id.
+	 * @return The entity.
+	 */
 	public Entity_ get(Class<? extends Entity_> entityClass, int entityId)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "get", new Object[]{entityClass, entityId});
@@ -112,6 +143,10 @@ public abstract class EntityManager implements AutoCloseable
 		return getEM().find(entityClass, entityId);
 	}
 
+	/**
+	 * Update an entity.
+	 * @param entity The entity.
+	 */
 	public void update(Entity_ entity)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "update", entity);
@@ -127,11 +162,20 @@ public abstract class EntityManager implements AutoCloseable
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "update", entity);
 	}
 
+	/**
+	 * Delete an entity.
+	 * @param entity The entity.
+	 */
 	public void delete(Entity_ entity)
 	{
 		delete(entity.getClass(), entity.getId());
 	}
 
+	/**
+	 * Delete an entity of type entityClass and with id entityId.
+	 * @param entityClass The type of entity to delete.
+	 * @param entityId The entity's id.
+	 */
 	public void delete(Class<? extends Entity_> entityClass, int entityId)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "delete", new Object[]{entityClass, entityId});
@@ -148,12 +192,20 @@ public abstract class EntityManager implements AutoCloseable
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "delete", new Object[]{entityClass, entityId});
 	}
 
+	/**
+	 * Refresh the cache of all the entities specified.
+	 * @param entities The entities to refresh.
+	 */
 	public void refresh(List<? extends Entity_> entities)
 	{
 		for (Entity_ entity: entities)
 			refresh(entity);
 	}
 
+	/**
+	 * Refresh the cache of the entity specified.
+	 * @param entity The entity to refresh.
+	 */
 	public void refresh(Entity_ entity)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "refresh", entity);
@@ -166,6 +218,9 @@ public abstract class EntityManager implements AutoCloseable
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "refresh", entity);
 	}
 
+	/**
+	 * Starts a transaction.
+	 */
 	public static void beginTransaction()
 	{
 		Logger.getLogger(EntityManager.class.getName()).finer("Transaction: begin.");
@@ -176,6 +231,9 @@ public abstract class EntityManager implements AutoCloseable
 			getLevelDBManager().beginBatch();
 	}
 
+	/**
+	 * Commits a transaction.
+	 */
 	public static void commitTransaction()
 	{
 		Logger.getLogger(EntityManager.class.getName()).finer("Transaction: commit.");
@@ -186,6 +244,9 @@ public abstract class EntityManager implements AutoCloseable
 			getLevelDBManager().commitBatch();
 	}
 
+	/**
+	 * Rollback a transaction.
+	 */
 	public static void rollbackTransaction()
 	{
 		Logger.getLogger(EntityManager.class.getName()).finer("Transaction: rollback");
@@ -196,6 +257,10 @@ public abstract class EntityManager implements AutoCloseable
 			getLevelDBManager().closeBatch();
 	}
 
+	/**
+	 * Detaches an entity, making it no more managed by JPA.
+	 * @param entity The entity to detach.
+	 */
 	public void detach(Entity_ entity)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "detach", entity);
@@ -203,6 +268,10 @@ public abstract class EntityManager implements AutoCloseable
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "detach", entity);
 	}
 
+	/**
+	 * Store an entity.
+	 * @param entity The entity to store.
+	 */
 	public void persist(Entity_ entity)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "persist", entity);
@@ -212,6 +281,10 @@ public abstract class EntityManager implements AutoCloseable
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "persist", entity);
 	}
 
+	/**
+	 * Merges an entity.
+	 * @param entity The entity to merge.
+	 */
 	public void merge(Entity_ entity)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "merge", entity);
@@ -221,6 +294,10 @@ public abstract class EntityManager implements AutoCloseable
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "merge", entity);
 	}
 
+	/**
+	 * Removes an entity.
+	 * @param entity The entity to remove.
+	 */
 	@SuppressWarnings("unchecked")
 	public void remove(Entity_ entity)
 	{

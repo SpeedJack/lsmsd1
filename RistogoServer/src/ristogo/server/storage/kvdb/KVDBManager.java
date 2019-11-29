@@ -664,11 +664,11 @@ public class KVDBManager implements AutoCloseable
 	{
 		delete(entity.getClass(), entity.getId());
 	}
+
 	/**
 	 * Update an entity.
 	 * @param entity The entity.
 	 */
-
 	public void update(Entity_ entity)
 	{
 		insert(entity);
