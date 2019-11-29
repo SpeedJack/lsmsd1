@@ -3,7 +3,6 @@ package ristogo.ui.graphics;
 import java.util.Optional;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -19,7 +18,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import ristogo.common.entities.Reservation;
 import ristogo.common.entities.Restaurant;
 import ristogo.common.entities.User;

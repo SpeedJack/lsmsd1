@@ -69,6 +69,10 @@ public class KVDBManager implements AutoCloseable
 		Logger.getLogger(KVDBManager.class.getName()).exiting(KVDBManager.class.getName(), "<init>");
 	}
 
+	/**
+	 * Get singleton instance of the KVDBManager.
+	 * @return An instance of this class.
+	 */
 	public static KVDBManager getInstance()
 	{
 		if (instance == null)
@@ -89,6 +93,10 @@ public class KVDBManager implements AutoCloseable
 		initialized = true;
 	}
 
+	/**
+	 * Populate the key-value database with the list of entities.
+	 * @param entities The entities to insert.
+	 */
 	public void populateDB(List<Entity_> entities)
 	{
 		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "populateDB");
@@ -103,13 +111,24 @@ public class KVDBManager implements AutoCloseable
 		return str.substring(0, 1).toUpperCase() + str.substring(1);
 	}
 
-	public String getAttributeName(Field field)
+	/**
+	 * Get the name of an attribute.
+	 * @param field The field to inspect.
+	 * @return The attribute name.
+	 */
+	private String getAttributeName(Field field)
 	{
 		if (field.getAnnotation(Attribute.class).name().isEmpty())
 			return field.getName();
 		return field.getAnnotation(Attribute.class).name();
 	}
 
+	/**
+	 * Get the setter for the field.
+	 * @param entityClass The class to inspect.
+	 * @param field The field to inspect.
+	 * @return The setter method.
+	 */
 	private Method getAttributeSetter(Class<? extends Entity_> entityClass, Field field)
 	{
 		String setterName;
@@ -127,6 +146,12 @@ public class KVDBManager implements AutoCloseable
 		return null;
 	}
 
+	/**
+	 * Get the getter for the field.
+	 * @param entityClass The class to inspect.
+	 * @param field The field to inspect.
+	 * @return The getter method.
+	 */
 	private Method getAttributeGetter(Class<? extends Entity_> entityClass, Field field)
 	{
 		String getterName;
@@ -144,6 +169,12 @@ public class KVDBManager implements AutoCloseable
 		return null;
 	}
 
+	/**
+	 * Get field identified by attributeName.
+	 * @param entityClass The class to inspect.
+	 * @param attributeName The attribute to search.
+	 * @return The field.
+	 */
 	private Field getAttributeField(Class<? extends Entity_> entityClass, String attributeName)
 	{
 		Field[] fields = entityClass.getDeclaredFields();
@@ -161,6 +192,11 @@ public class KVDBManager implements AutoCloseable
 		}
 	}
 
+	/**
+	 * Get all entities of a given type in the DB.
+	 * @param entityClass The class type to get.
+	 * @return All entites of the specified type.
+	 */
 	public List<Entity_> getAll(Class<? extends Entity_> entityClass)
 	{
 		String entityName = entityClass.getAnnotation(Table.class).name();
@@ -183,6 +219,11 @@ public class KVDBManager implements AutoCloseable
 		return entities;
 	}
 
+	/**
+	 * List all the restaurant in a given city.
+	 * @param city The city.
+	 * @return The restaurants in that city.
+	 */
 	public List<Restaurant_> getRestaurantsByCity(String city)
 	{
 		String entityName = Restaurant_.class.getAnnotation(Table.class).name();
@@ -222,6 +263,11 @@ public class KVDBManager implements AutoCloseable
 		return restaurants;
 	}
 
+	/**
+	 * Get the restaurant of a given Owner.
+	 * @param ownerId The id of the owner.
+	 * @return The restaurant.
+	 */
 	public Restaurant_ getRestaurantByOwner(int ownerId)
 	{
 		String entityName = Restaurant_.class.getAnnotation(Table.class).name();
@@ -249,11 +295,21 @@ public class KVDBManager implements AutoCloseable
 		return null;
 	}
 
+	/**
+	 * List all the active reservations of a User.
+	 * @param userId The user's id.
+	 * @return The active reservations of the user.
+	 */
 	public List<Reservation_> getActiveReservationsByUser(int userId)
 	{
 		return getActiveReservations(userId, "userId");
 	}
 
+	/**
+	 * List all the reservation for a given restaurant.
+	 * @param restaurantId The restaurant's id.
+	 * @return The active reservations of the restaurant.
+	 */
 	public List<Reservation_> getActiveReservationsByRestaurant(int restaurantId)
 	{
 		return getActiveReservations(restaurantId, "restaurantId");
@@ -308,6 +364,13 @@ public class KVDBManager implements AutoCloseable
 		return reservations;
 	}
 
+	/**
+	 * List all the reservations for a given restaurant and date.
+	 * @param restaurantId The restaurant's id.
+	 * @param date The date.
+	 * @param time The reservation time.
+	 * @return The reservations.
+	 */
 	public List<Reservation_> getReservationsByDateTime(int restaurantId, LocalDate date, ReservationTime time)
 	{
 		String entityName = Reservation_.class.getAnnotation(Table.class).name();
@@ -364,6 +427,11 @@ public class KVDBManager implements AutoCloseable
 		return reservations;
 	}
 
+	/**
+	 * Get a user by username.
+	 * @param username The username to search.
+	 * @return The user.
+	 */
 	public User_ getUserByUsername(String username)
 	{
 		String entityName = User_.class.getAnnotation(Table.class).name();
@@ -391,11 +459,22 @@ public class KVDBManager implements AutoCloseable
 		return null;
 	}
 
+	/**
+	 * Get an entity.
+	 * @param entity The entity to get, with the id field initialized.
+	 * @return The entity fully initialized.
+	 */
 	public Entity_ get(Entity_ entity)
 	{
 		return get(entity.getClass(), entity.getId());
 	}
 
+	/**
+	 * Get an entity of id entityId and class entityClass.
+	 * @param entityClass The type of the entity to find.
+	 * @param entityId The entity's id.
+	 * @return The entity.
+	 */
 	public Entity_ get(Class<? extends Entity_> entityClass, int entityId)
 	{
 		String entityName = entityClass.getAnnotation(Table.class).name();
@@ -447,11 +526,19 @@ public class KVDBManager implements AutoCloseable
 		return found ? entity : null;
 	}
 
+	/**
+	 * Used to know if the WriteBatch is active (not closed).
+	 * @return True if active; False otherwise.
+	 */
 	public boolean isActiveBatch()
 	{
 		return getWriteBatch() != null;
 	}
 
+	
+	/**
+	 * Creates the WriteBatch to begin a write transaction.
+	 */
 	public void beginBatch()
 	{
 		if (isActiveBatch())
@@ -459,6 +546,9 @@ public class KVDBManager implements AutoCloseable
 		setWriteBatch(db.createWriteBatch());
 	}
 
+	/**
+	 * Commit all the pending operations in the batch.
+	 */
 	public void commitBatch()
 	{
 		if (!isActiveBatch())
@@ -466,6 +556,9 @@ public class KVDBManager implements AutoCloseable
 		db.write(getWriteBatch());
 	}
 
+	/**
+	 * Close the WriteBatch.
+	 */
 	public void closeBatch()
 	{
 		if (!isActiveBatch())
@@ -479,6 +572,11 @@ public class KVDBManager implements AutoCloseable
 		}
 	}
 
+	/**
+	 * Remove the entity fields with id entityId and class entityClass.
+	 * @param entityClass The type of entity to remove.
+	 * @param entityId The id of the entity to remove.
+	 */
 	public void remove(Class<? extends Entity_> entityClass, int entityId)
 	{
 		String entityName = entityClass.getAnnotation(Table.class).name();
@@ -491,11 +589,19 @@ public class KVDBManager implements AutoCloseable
 		}
 	}
 
+	/**
+	 * Remove an entity.
+	 * @param entity The entity to remove.
+	 */
 	public void remove(Entity_ entity)
 	{
 		remove(entity.getClass(), entity.getId());
 	}
 
+	/**
+	 * Store an entity.
+	 * @param entity The entity to store.
+	 */
 	public void put(Entity_ entity)
 	{
 		Class<? extends Entity_> entityClass = entity.getClass();
@@ -538,6 +644,11 @@ public class KVDBManager implements AutoCloseable
 		}
 	}
 
+	/**
+	 * Delete an entity of type entityClass and with id entityId.
+	 * @param entityClass The type of entity to delete.
+	 * @param entityId The entity's id.
+	 */
 	public void delete(Class<? extends Entity_> entityClass, int entityId)
 	{
 		beginBatch();
@@ -545,16 +656,28 @@ public class KVDBManager implements AutoCloseable
 		commitBatch();
 	}
 
+	/**
+	 * Delete an entity.
+	 * @param entity The entity.
+	 */
 	public void delete(Entity_ entity)
 	{
 		delete(entity.getClass(), entity.getId());
 	}
 
+	/**
+	 * Update an entity.
+	 * @param entity The entity.
+	 */
 	public void update(Entity_ entity)
 	{
 		insert(entity);
 	}
 
+	/**
+	 * Insert an entity.
+	 * @param entity The entity.
+	 */
 	public void insert(Entity_ entity)
 	{
 		beginBatch();
@@ -562,6 +685,9 @@ public class KVDBManager implements AutoCloseable
 		commitBatch();
 	}
 
+	/**
+	 * Close the KVDBManager.
+	 */
 	public void close()
 	{
 		try {
