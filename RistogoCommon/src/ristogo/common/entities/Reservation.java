@@ -6,34 +6,31 @@ import ristogo.common.entities.enums.ReservationTime;
 
 public class Reservation extends Entity
 {
-	/**
-	 * The serialVersionUID is a field that should be present in Classes which implements Serializable Objects
-	 */
 	private static final long serialVersionUID = -1379979727099899831L;
 
 	/**
-	 * The username of the Customer who issued the reservation
+	 * The username of the Customer who issued the reservation.
 	 */
 	protected String userName;
 	/**
-	 * The name of the restaurant where the reservation has been done
+	 * The name of the restaurant where the reservation has been done.
 	 */
 	protected String restaurantName;
 	/**
-	 * Date of the reservation
+	 * Date of the reservation.
 	 */
 	protected LocalDate date;
 	/**
-	 * Time of the reservation, can be Lunch or Dinner
+	 * Time of the reservation.
 	 */
 	protected ReservationTime time;
 	/**
-	 * Number of seats reserved
+	 * Number of seats reserved.
 	 */
 	protected int seats;
 
 	/**
-	 * Default constructor
+	 * Creates a reservation.
 	 */
 	public Reservation()
 	{
@@ -41,7 +38,7 @@ public class Reservation extends Entity
 	}
 
 	/**
-	 * Constructor which set the id field
+	 * Creates a reservation with the specified id.
 	 * @param id
 	 */
 	public Reservation(int id)
@@ -50,13 +47,13 @@ public class Reservation extends Entity
 	}
 
 	/**
-	 * Construction which sets all the fields in a Reservation object
-	 * @param id
-	 * @param userName
-	 * @param restaurantName
-	 * @param date
-	 * @param time
-	 * @param seats
+	 * Creates a reservation with the specified fields.
+	 * @param id Reservation's id.
+	 * @param userName The username of the reservation's issuer.
+	 * @param restaurantName The name of the restaurant related to this reservation.
+	 * @param date Reservation's date.
+	 * @param time Reservation's time.
+	 * @param seats Reservation's requested seats.
 	 */
 	public Reservation(int id, String userName, String restaurantName, LocalDate date, ReservationTime time, int seats)
 	{
@@ -69,131 +66,119 @@ public class Reservation extends Entity
 	}
 	
 	/**
-	 * Constructor which sets all the field of the reservation apart the id
-	 * @param userName
-	 * @param restaurantName
-	 * @param date
-	 * @param time
-	 * @param seats
+	 * Creates a reservation with the specified fields.
+	 * @param userName The username of the reservation's issuer.
+	 * @param restaurantName The name of the restaurant related to this reservation.
+	 * @param date Reservation's date.
+	 * @param time Reservation's time.
+	 * @param seats Reservation's requested seats.
 	 */
-
 	public Reservation(String userName, String restaurantName, LocalDate date, ReservationTime time, int seats)
 	{
 		this(0, userName, restaurantName, date, time, seats);
 	}
 
 	/**
-	 * Setter for the username field of the Reservation object
-	 * @param userName
+	 * Sets the username of the reservation's issuer.
+	 * @param userName The username of the issuer.
 	 */
-
 	public void setUserName(String userName)
 	{
 		this.userName = userName;
 	}
-/**
- * 
-	 * Getter for the username field of the Reservation object
- * @return
- */
-	
+
+	/**
+	 * Gets the username of the reservation's issuer.
+	 * @return The username of the issuer.
+	 */
 	public String getUserName()
 	{
 		return userName;
 	}
 
 	/**
-	 * 
-	 * Setter for the restaurantName field of the Reservation object
-	 * @param restaurantName
+	 * Sets the restaurant's name.
+	 * @param restaurantName The restaurant's name.
 	 */
 	public void setRestaurantName(String restaurantName)
 	{
 		this.restaurantName = restaurantName;
 	}
-	/**
-	 * 
-	 * Getter for the restaurantName field of the Reservation object
-	 * @return
-	 */
 
+	/**
+	 * Gets the restaurant's name.
+	 * @return The restaurant's name.
+	 */
 	public String getRestaurantName()
 	{
 		return restaurantName;
 	}
 
 	/** 
-	 * Setter for the date field of the Reservation object
-	 * @param date
+	 * Sets the date.
+	 * @param date The date.
 	 */
 	public void setDate(LocalDate date)
 	{
 		this.date = date;
 	}
-	/**
-	 * 
-	 * Getter for the date field of the Reservation object
-	 * @return
-	 */
 
+	/**
+	 * Gets the date.
+	 * @return The date.
+	 */
 	public LocalDate getDate()
 	{
 		return date;
 	}
-	/**
-	 * 
-	 * Setter for the time field of the Reservation object
-	 * @param time
-	 */
 
+	/**
+	 * Sets the time.
+	 * @param time The time.
+	 */
 	public void setTime(ReservationTime time)
 	{
 		this.time = time;
 	}
-	/**
-	 * 
-	 * Getter for the time field of the Reservation object
-	 * @return
-	 */
 
+	/**
+	 * Gets the time.
+	 * @return The time.
+	 */
 	public ReservationTime getTime()
 	{
 		return time;
 	}
-	/**
-	 * 
-	 * Setter for the seats field of the Reservation object
-	 * @param seats
-	 */
 
+	/**
+	 * Sets the number of seats.
+	 * @param seats The number of seats.
+	 */
 	public void setSeats(int seats)
 	{
 		this.seats = seats;
 	}
-	/**
-	 * 
-	 * Getter for the seats field of the Reservation object
-	 * @return
-	 */
 
+	/**
+	 * Gets the number of seats.
+	 * @return The number of seats.
+	 */
 	public int getSeats()
 	{
 		return seats;
 	}
 
-/**
- * Method that returns if the reservation is active or not.
- * A reservation is active if it's date is not before then the current date
- * @return
- */
+	/**
+	 * Checks whether the reservation is active.
+	 * @return True if active; False otherwise.
+	 */
 	public boolean isActive()
 	{
 		return date != null && !date.isBefore(LocalDate.now());
 	}
 
 	/**
-	 * Method that returns a string containing all the field-value couples stored in the
-	 * Reservation object
+	 * {@inheritDoc}
 	 */
 	@Override
 	public String toString()

@@ -8,68 +8,57 @@ import java.util.logging.Logger;
 /**
  * This class represents a generic user in the system. From this class Owner and Customer will inherit common
  * fields and methods.
- * @author Lorenzo Cima
- * @author Nicola Ferrante
- * @author Niccolò Scatena
- * @author Simone Pampaloni
- * 
  */
 public abstract class User extends Entity
 {
-	
-	/**
-	 * The serialVersionUID is a field that should be present in Classes which implements Serializable Objects
-	 */
 	private static final long serialVersionUID = -1609868778409848632L;
 
-	/**
-	 * The username of the User
-	 */
 	protected String username;
-	/**
-	 * The password of the User
-	 */
+
 	protected String password;
-/**
- * Default constructor, which builds an empty User
- */
+
+	/**
+	 * Creates an User.
+	 */
 	public User()
 	{
 		this(null);
 	}
-/**
- * This constructor initialize the username of the User
- * @param username the username of the User
- */
+
+	/**
+	 * Creates an User, with the specified username.
+	 * @param username The username of the User.
+	 */
 	public User(String username)
 	{
 		this(username, null);
 	}
-	/**
-	 * This constructor initialize both id and username of the User
-	 * @param id id of the user
-	 * @param username username of the user
-	 */
 
+	/**
+	 * Creates an User, with the specified id and username.
+	 * @param id Id of the user.
+	 * @param username Username of the user.
+	 */
 	public User(int id, String username)
 	{
 		this(id, username, null);
 	}
-/**
- * This constructor initialize both username and password of the User
- * @param username username of the User
- * @param password password of the User
- */
+
+	/**
+	 * Creates an User, with the specified username and password.
+	 * @param username Username of the User.
+	 * @param password Plain password of the User.
+	 */
 	public User(String username, String password)
 	{
 		this(0, username, password);
 	}
 
 	/**
-	 * This constructor initialize id, username and password of a User
-	 * @param id id of the user
-	 * @param username username of the user
-	 * @param password pasword of the user (The password is inside the object stored as a SHA-256 hash)
+	 * Creates an User, with the specified id, username and password.
+	 * @param id Id of the user.
+	 * @param username Username of the user.
+	 * @param password Plain pasword of the user.
 	 */
 	public User(int id, String username, String password)
 	{
@@ -80,9 +69,9 @@ public abstract class User extends Entity
 	}
 
 	/**
-	 * This method sets the username of the User, fail when a too short username is used
-	 * @param username username of the User
-	 * @return if the Username is a good one (at least 3 alphanumeric characters) it return true, else it returns false
+	 * Sets the username of the User.
+	 * @param username Username of the User.
+	 * @return True if the set succeeded; False if the username is invalid.
 	 */
 	public boolean setUsername(String username)
 	{
@@ -93,10 +82,9 @@ public abstract class User extends Entity
 	}
 
 	/**
-	 * This method sets the password of the User, it stores the Hash of the password.
-	 * If the password is too short (fewer then 8 alphanumeric characters) it fails.
-	 * @param password password of the User in the clear
-	 * @return true if passwords at least 8 alphanumeric chars false otherwise
+	 * Sets the password of the User, it stores the hash of the password.
+	 * @param password Plain password of the User.
+	 * @return True if the set succeeded; False otherwise.
 	 */
 	public boolean setPassword(String password)
 	{
@@ -107,8 +95,8 @@ public abstract class User extends Entity
 	}
 
 	/**
-	 * This passwordHash method stores the parameter (hash) inside the password field
-	 * @param passwordHash
+	 * Sets the password hash of the user.
+	 * @param passwordHash The password hash.
 	 */
 	public void setPasswordHash(String passwordHash)
 	{
@@ -116,26 +104,23 @@ public abstract class User extends Entity
 	}
 
 	/**
-	 * This method returns the username of the User
-	 * @return String containing username
+	 * Returns the username of the User.
+	 * @return String The username.
 	 */
 	public String getUsername()
 	{
 		return this.username;
 	}
-/**
- * This metod returns the passwordHash of the User
- * @return String containing the hash
- */
+
+	/**
+	 * Returns the password hash of the User.
+	 * @return String The password hash.
+	 */
 	public String getPasswordHash()
 	{
 		return this.password;
 	}
-/**
- * This method given a password computes the SHA-256 hash of the password
- * @param password plaitext of the password
- * @return hash of the password
- */
+
 	protected final static String hashPassword(String password)
 	{
 		String passwordHash;
@@ -152,11 +137,11 @@ public abstract class User extends Entity
 		}
 		return passwordHash;
 	}
-	
+
 	/**
-	 * Validate the format of the password (Not null and more then 7 characters)
-	 * @param password
-	 * @return true if meets the criteria, false otherwise
+	 * Validates the password.
+	 * @param password The password to validate.
+	 * @return True if meets the criteria; False otherwise.
 	 */
 	public static boolean validatePassword(String password)
 	{
@@ -164,32 +149,29 @@ public abstract class User extends Entity
 	}
 
 	/**
-	 * Validate username format (Not null and alphanumeric only characters String with length between 3 and 32c characters)
-	 * @param username
-	 * @return
+	 * Validates the username.
+	 * @param username The username to validate.
+	 * @return True if username is valid; False otherwise.
 	 */
-	
 	public static boolean validateUsername(String username)
 	{
 		return username != null && username.matches("^[A-Za-z0-9]{3,32}$");
 	}
-	
-	/**
-	 * This method is used to know if the User object's username field has been correctly initialized
-	 * @return false if the username is not valid, true otherwise
-	 */
 
+	/**
+	 * Checks if the user has a valid username.
+	 * @return True if the username is valid; False otherwise.
+	 */
 	public boolean hasValidUsername()
 	{
 		return validateUsername(username);
 	}
-	
-	/**
-	 * This method is used to compare a password and the one stored inside the User object
-	 * @param password password to be checked
-	 * @return true if password is correct, false otherwise
-	 */
 
+	/**
+	 * Check if the given password is the same of this user's password.
+	 * @param password The password to check.
+	 * @return True if the password is correct; False otherwise.
+	 */
 	public boolean checkPassword(String password)
 	{
 		return this.password != null && this.password.equals(hashPassword(password));
@@ -206,8 +188,8 @@ public abstract class User extends Entity
 	}
 
 	/**
-	 * This method is used to know whether the User object has a correctly set password field
-	 * @return
+	 * Checks if the user has a valid password.
+	 * @return True if the password is valid; False otherwise.
 	 */
 	public boolean hasValidPassword()
 	{
@@ -215,9 +197,9 @@ public abstract class User extends Entity
 	}
 
 	/**
-	 * This method is used to know whether the passwordHash stored in User is correctly set
-	 * @param passwordHash
-	 * @return
+	 * Checks if the given password hash is valid.
+	 * @param passwordHash The password hash to check.
+	 * @return True if the password hash is valid; False otherwise.
 	 */
 	public static boolean validatePasswordHash(String passwordHash)
 	{
@@ -225,8 +207,8 @@ public abstract class User extends Entity
 	}
 
 	/**
-	 * This method is used to discover if the User object is an instance of the Customer or Owner subclass
-	 * @return true if Owner, false if Customer
+	 * Checks whether the user is an Owner.
+	 * @return True if Owner; False if Customer.
 	 */
 	public boolean isOwner()
 	{

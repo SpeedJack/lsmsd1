@@ -9,60 +9,56 @@ import ristogo.common.entities.enums.Price;
 
 public class Restaurant extends Entity
 {
-	/**
-	 * The serialVersionUID is a field that should be present in Classes which implements Serializable Objects
-	 */
-
 	private static final long serialVersionUID = -2839130753004235292L;
-/**
- * The name of the Owner
- */
+	/**
+	 * The name of the Owner.
+	 */
 	protected String ownerName;
 	/**
-	 * The name of the Restaurant
+	 * The name of the Restaurant.
 	 */
 	protected String name;
 	/**
-	 * The Genre of the restaurant 
+	 * The Genre of the restaurant.
 	 */
 	protected Genre genre;
 	/**
-	 * The Price target in a scale from ECONOMIC to LUXURY
+	 * The Price target in a scale from ECONOMIC to LUXURY.
 	 */
 	protected Price price;
 	/**
-	 * The city where the restaurant is
+	 * The city where the restaurant is.
 	 */
 	protected String city;
 	/**
-	 * The address where the restaurant is located
+	 * The address where the restaurant is located.
 	 */
 	protected String address;
 	/**
-	 * A description of the restaurant
+	 * A description of the restaurant.
 	 */
 	protected String description;
 	/**
-	 * The number of seats available in the restaurant
+	 * The number of seats available in the restaurant.
 	 */
 	protected int seats;
 	/**
-	 * The opening hours of the restaurant can be LUNCH, DINNER, or BOTH
+	 * The opening hours of the restaurant.
 	 */
 	protected OpeningHours openingHours;
 	protected List<Reservation> activeReservations = new ArrayList<>();
 
 	/**
-	 * Default Constructor
+	 * Creates a restaurant.
 	 */
 	public Restaurant()
 	{
 		super();
 	}
-	
+
 	/**
-	 * Constructor which sets the id field of the restaurant
-	 * @param id
+	 * Creates a restaurant, with the specified id.
+	 * @param id Restaurant's id.
 	 */
 
 	public Restaurant(int id)
@@ -71,29 +67,27 @@ public class Restaurant extends Entity
 	}
 
 	/**
-	 * Constructor which is used to build an empty Restaurant object with only name and ownerName field set
-	 * The name is automatically set to "ownerName"'s Restaurant. 
-	 * @param ownerName
+	 * Creates the default restaurant associated with a new Owner.
+	 * @param ownerName The username of the owner.
 	 */
 	public Restaurant(String ownerName)
 	{
 		this(0, ownerName + "'s Restaurant", ownerName, null, null, null, null, null, 0, OpeningHours.BOTH);
 	}
-	
-	/**
-	 * Constructor which sets all the parameters of the restaurant object
-	 * @param id
-	 * @param name
-	 * @param ownerName
-	 * @param genre
-	 * @param price
-	 * @param city
-	 * @param address
-	 * @param description
-	 * @param seats
-	 * @param openingHours
-	 */
 
+	/**
+	 * Creates a restaurant with the specified fields.
+	 * @param id Restaurant's id.
+	 * @param name Restaurant's name.
+	 * @param ownerName username of the owner of the restaurant.
+	 * @param genre Restaurant's genre.
+	 * @param price Restaurant's price.
+	 * @param city Restaurant's city.
+	 * @param address Restaurant's address.
+	 * @param description Restaurant's description.
+	 * @param seats Restaurant's total number of seats.
+	 * @param openingHours Restaurant's opening hours.
+	 */
 	public Restaurant(int id, String name, String ownerName, Genre genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
 	{
 		
@@ -110,45 +104,44 @@ public class Restaurant extends Entity
 	}
 
 	/**
-	 * Setter method for the ownerName field of the Restaurant object
-	 * @param ownerName
+	 * Sets the username of the owner of this restaurant.
+	 * @param ownerName The username of the owner.
 	 */
 	public void setOwnerName(String ownerName)
 	{
 		this.ownerName = ownerName;
 	}
-	
-	/**
-	 * getter method for the ownerName field of the Restaurant object
-	 * @return
-	 */
 
+	/**
+	 * Gets the username of the owner of this restaurant.
+	 * @return The username of the owner.
+	 */
 	public String getOwnerName()
 	{
 		return ownerName;
 	}
-/**
- * Setter for the name field of the Restaurant object
- * @param name
- */
+
+	/**
+	 * Sets the name of the restaurant.
+	 * @param name Restaurant's name.
+	 */
 	public void setName(String name)
 	{
 		this.name = name;
 	}
-	
-	/**
-	 * getter for the name field of the Restaurant object
-	 * @return
-	 */
 
+	/**
+	 * Gets the name of the restaurant.
+	 * @return Restaurant's name.
+	 */
 	public String getName()
 	{
 		return name;
 	}
 
 	/**
-	 * getter for the genre field of the Restaurant object
-	 * @return
+	 * FGets the genre.
+	 * @return The genre.
 	 */
 	public Genre getGenre()
 	{
@@ -156,79 +149,80 @@ public class Restaurant extends Entity
 	}
 
 	/**
-	 * Setter for the genre field of the Restaurant object
-	 * @param genre
+	 * Sets the genre.
+	 * @param genre The genre.
 	 */
 	public void setGenre(Genre genre)
 	{
 		this.genre = genre;
 	}
-	
-	/**
-	 * Getter for the price field of the Restaurant object
-	 * @return
-	 */
 
+	/**
+	 * Gets the price.
+	 * @return The price.
+	 */
 	public Price getPrice()
 	{
 		return price;
 	}
 
-/**
- * Setter for the price field of the Restaurant object
- * @param price
- */
+	/**
+	 * Sets the price.
+	 * @param price The price.
+	 */
 	public void setPrice(Price price)
 	{
 		this.price = price;
 	}
-	
-	/**
-	 * Getter for the city field of the restaurant object
-	 * @return
-	 */
 
+	/**
+	 * Gets the city.
+	 * @return The city.
+	 */
 	public String getCity()
 	{
 		return city;
 	}
-/**
- * Setter for the city field of the Restaurant object
- * @param city
- */
+
+	/**
+	 * Sets the city.
+	 * @param city The city.
+	 */
 	public void setCity(String city)
 	{
 		this.city = city;
 	}
 
 	/**
-	 * Getter for the address field of the Restaurant object
-	 * @return
+	 * Gets the address.
+	 * @return The address.
 	 */
 	public String getAddress()
 	{
 		return address;
 	}
-/**
- * Setter for the address field of the Restaurant object
- * @param address
- */
+
+	/**
+	 * Sets the address.
+	 * @param address The address.
+	 */
 	public void setAddress(String address)
 	{
 		this.address = address;
 	}
-/**
- * getter for the description field of the Restaurant object
- * @return
- */
+
+	/**
+	 * Gets the description.
+	 * @return The description.
+	 */
 	public String getDescription()
 	{
 		return description;
 	}
 
 	/**
-	 * Setter for the description field of the Restaurant object
-	 * @param description
+	 * Sets the description.
+	 * @param description The description.
 	 */
 	public void setDescription(String description)
 	{
@@ -236,8 +230,8 @@ public class Restaurant extends Entity
 	}
 
 	/**
-	 * Getter for the seats field of the Restaurant object
-	 * @return
+	 * Gets the total number of seats.
+	 * @return The total number of seats.
 	 */
 	public int getSeats()
 	{
@@ -245,8 +239,8 @@ public class Restaurant extends Entity
 	}
 
 	/**
-	 * Setter for the seats field of the Restaurant objects
-	 * @param seats
+	 * Sets the total number of seats.
+	 * @param seats The total number of seats.
 	 */
 	public void setSeats(int seats)
 	{
@@ -254,8 +248,8 @@ public class Restaurant extends Entity
 	}
 
 	/**
-	 * Getter for the openingHours field of the Restaurant object
-	 * @return
+	 * Gets the opening hours.
+	 * @return The opening hours.
 	 */
 	public OpeningHours getOpeningHours()
 	{
@@ -263,8 +257,8 @@ public class Restaurant extends Entity
 	}
 
 	/**
-	 * Setter for the openingHours field of the Restaurant object
-	 * @param openingHours
+	 * Sets the opening hours.
+	 * @param openingHours The opening hours.
 	 */
 	public void setOpeningHours(OpeningHours openingHours)
 	{
@@ -272,8 +266,7 @@ public class Restaurant extends Entity
 	}
 
 	/**
-	 * Method that convert a Restaurant in a String containing all the informations
-	 * stored in the Restaurant object
+	 * {@inheritDoc}
 	 */
 	@Override
 	public String toString()
@@ -288,12 +281,6 @@ public class Restaurant extends Entity
 			"Seats: " + getSeats() + "\n" +
 			"Opening hours: " + getOpeningHours().toString() + "\n";
 	}
-	
-	/**
-	 * Method used to convert a field of the Restaurant object in a String
-	 * @param field
-	 * @return
-	 */
 
 	private String fieldToString(Object field)
 	{
