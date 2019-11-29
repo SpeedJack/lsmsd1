@@ -1,0 +1,32 @@
+\section{Build standalone JARs}
+
+To build standalone JAR archives for both the client and the server, you can use
+Maven:
+
+\begin{verbatim}
+cd RistogoCommon/
+mvn package
+mvn install:install-file \
+  -Dfile=target/RistogoCommon-1.0.0.jar \
+  -DgroupId=RistogoCommon \
+  -DartifactId=RistogoCommon \
+  -Dversion=1.0.0 \
+  -Dpackaging=jar \
+  -DgeneratePom=true
+cd ../
+
+cd RistogoServer/
+mvn package
+cd ../
+
+cd Ristogo/
+mvn package
+cd ../
+\end{verbatim}
+
+Then, the two standalone JARs will be available in the following directories:
+
+\begin{itemize}
+	\item[Server] \code{RistogoServer/target/RistogoServer-1.0.0.jar}.
+	\item[Client] \code{Ristogo/target/Ristogo-1.0.0.jar}.
+\end{itemize}
