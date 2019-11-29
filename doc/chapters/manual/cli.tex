@@ -20,6 +20,8 @@ Enter number:
 
 \subsection{Command line options}
 
+\subsubsection{Client}
+
 To see all the available options, launch the application with the option
 \code{-h} (\code{-{}-help}):
 
@@ -32,6 +34,41 @@ usage: ristogo [-h | --help] [-c | --cli] [-g | --gui] [-l
                           Interface.
  -h,--help                print this message.
  -l,--log-level <LEVEL>   set log level.
+
+LOG LEVELS:
+ALL: print all logs.
+FINEST: print all tracing logs.
+FINER: print most tracing logs.
+FINE: print some tracing logs.
+CONFIG: print all config logs.
+INFO: print all informational logs.
+WARNING: print all warnings and errors. (default)
+SEVERE: print only errors.
+OFF: disable all logs.
+\end{verbatim}
+
+\subsubsection{Server}
+
+\begin{verbatim}
+usage: ristogoserver [-h | --help] [-H <HOST> | --host
+                     <HOST>] [--dbport <PORT>] [-u <USER>
+                     | --user <USER>] [-p <PASS> | --pass
+                     <PASS>] [-L | --leveldb] [-P <PORT>
+                     | --port <PORT>] [-l <LEVEL> |
+                     --log-level <LEVEL>]
+ -dbport <arg>            Specify MySQL database port
+                          (default: 3306).
+ -h,--help                print this message.
+ -H,--host <PORT>         Specify MySQL database
+                          hostname (default: localhost).
+ -L,--leveldb             Enable LevelDB database.
+ -l,--log-level <LEVEL>   set log level.
+ -p,--pass <PASS>         Specify MySQL database
+                          password (default: <empty>).
+ -P,--port <PORT>         set listening port
+                          (default: 8888).
+ -u,--user <USER>         Specify MySQL database
+                          username (default: root).
 
 LOG LEVELS:
 ALL: print all logs.
