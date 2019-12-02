@@ -257,6 +257,7 @@ public class Client extends Thread
 
 	private ResponseMessage handleListOwnReservations(RequestMessage reqMsg)
 	{
+		EntityManager.recreateEM();
 		ResponseMessage resMsg = new ResponseMessage();
 		List<Reservation_> reservations = reservationManager.getActiveReservations(loggedUser);
 		for (Reservation_ reservation: reservations)
@@ -364,9 +365,6 @@ public class Client extends Thread
 		} catch (PersistenceException ex) {
 			return new ResponseMessage("You already have a reservation for " + reservation.getDate() + " at " + rt + ".");
 		}
-		userManager.refresh(reservation_.getUser());
-		restaurantManager.refresh(reservation_.getRestaurant());
-		reservationManager.refresh(reservation_);
 		return new ResponseMessage(reservation_.toCommonEntity());
 	}
 
@@ -383,8 +381,6 @@ public class Client extends Thread
 		} catch (PersistenceException ex) {
 			return new ResponseMessage("Error while deleting the reservation from the database.");
 		}
-		userManager.refresh(reservation_.getUser());
-		restaurantManager.refresh(reservation_.getRestaurant());
 		return new ResponseMessage();
 	}
 
@@ -407,6 +403,7 @@ public class Client extends Thread
 
 	private ResponseMessage handleListReservations(RequestMessage reqMsg)
 	{
+		EntityManager.recreateEM();
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
 		if (!hasRestaurant(loggedUser, restaurant.getId()))
 			return new ResponseMessage("You can only view reservations for restaurants that you own.");
@@ -423,6 +420,7 @@ public class Client extends Thread
 
 	private ResponseMessage handleCheckSeats(RequestMessage reqMsg)
 	{
+		EntityManager.recreateEM();
 		Reservation reservation = null;
 		Restaurant restaurant = null;
 		for (Entity entity: reqMsg.getEntities())

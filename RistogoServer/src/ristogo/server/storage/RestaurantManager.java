@@ -31,6 +31,7 @@ public class RestaurantManager extends EntityManager
 	{
 		if (isLevelDBEnabled())
 			return getLevelDBManager().getRestaurantByOwner(owner.getId());
+		owner = (User_)load(owner);
 		return owner.getRestaurant();
 	}
 

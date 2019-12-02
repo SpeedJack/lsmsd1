@@ -34,6 +34,7 @@ public class ReservationManager extends EntityManager
 	{
 		if (isLevelDBEnabled())
 			return getLevelDBManager().getActiveReservationsByUser(user.getId());
+		user = (User_)load(user);
 		return user.getActiveReservations();
 	}
 
@@ -41,6 +42,7 @@ public class ReservationManager extends EntityManager
 	{
 		if (isLevelDBEnabled())
 			return getLevelDBManager().getActiveReservationsByRestaurant(restaurant.getId());
+		restaurant = (Restaurant_)load(restaurant);
 		return restaurant.getActiveReservations();
 	}
 

@@ -13,6 +13,7 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 
 import org.hibernate.Hibernate;
+import org.hibernate.Session;
 
 import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.entities.Reservation_;
@@ -70,13 +71,25 @@ public abstract class EntityManager implements AutoCloseable
 	protected static javax.persistence.EntityManager getEM()
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "getEM");
-		javax.persistence.EntityManager entityManager = threadLocal.get();
-		if (entityManager == null) {
-			entityManager = factory.createEntityManager();
-			entityManager.setFlushMode(FlushModeType.COMMIT);
-			threadLocal.set(entityManager);
+		javax.persistence.EntityManager em = threadLocal.get();
+		if (em == null) {
+			em = factory.createEntityManager();
+			em.setFlushMode(FlushModeType.COMMIT);
+			threadLocal.set(em);
 		}
-		return entityManager;
+		return em;
+	}
+	
+	public static void recreateEM()
+	{
+		javax.persistence.EntityManager em = threadLocal.get();
+		if (em != null) {
+			em.close();
+			threadLocal.set(null);
+		}
+		em = factory.createEntityManager();
+		em.setFlushMode(FlushModeType.COMMIT);
+		threadLocal.set(em);
 	}
 
 	/**
@@ -141,6 +154,27 @@ public abstract class EntityManager implements AutoCloseable
 			return entity;
 		}
 		return getEM().find(entityClass, entityId);
+	}
+	
+	/**
+	 * Returns an entity that exists in the actual session.
+	 * @param entityClass The class of the entity to retrieve.
+	 * @param entityId The entity's id.
+	 * @return The entity.
+	 */
+	public Entity_ load(Class<? extends Entity_> entityClass, int entityId)
+	{
+		return getEM().unwrap(Session.class).load(entityClass, entityId);
+	}
+	
+	/**
+	 * Returns an entity that exists in the actual session.
+	 * @param entity The entity to retrieve.
+	 * @return The entity.
+	 */
+	public Entity_ load(Entity_ entity)
+	{
+		return load(entity.getClass(), entity.getId());
 	}
 
 	/**
