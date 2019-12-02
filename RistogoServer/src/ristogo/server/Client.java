@@ -209,7 +209,7 @@ public class Client extends Thread
 			return new ResponseMessage("Username already in use.");
 		}
 		userManager.refresh(savedUser);
-		return new ResponseMessage(savedUser.toCommonEntity((restaurant == null) ? UserType.CUSTOMER : UserType.CUSTOMER));
+		return new ResponseMessage(savedUser.toCommonEntity((restaurant == null) ? UserType.CUSTOMER : UserType.OWNER));
 	}
 
 	private ResponseMessage handleGetOwnRestaurant(RequestMessage reqMsg)
