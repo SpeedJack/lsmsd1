@@ -79,7 +79,7 @@ final class TableViewRestaurant extends TableView<RestaurantBean>
 	{
 		restaurantList.clear();
 		ResponseMessage resMsg;
-		if(findCity == null) {
+		if(findCity == null || findCity.isBlank()) {
 			resMsg = Protocol.getInstance().getRestaurants();
 		} else {
 			Restaurant restaurant = new Restaurant();
