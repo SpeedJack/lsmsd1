@@ -62,9 +62,6 @@ public class Client extends Thread
 		while (!Thread.currentThread().isInterrupted())
 			process();
 		Logger.getLogger(Client.class.getName()).warning(getName() + ": interrupted. Exiting...");
-		userManager.close();
-		restaurantManager.close();
-		reservationManager.close();
 		try {
 			inputStream.close();
 			outputStream.close();
@@ -153,6 +150,7 @@ public class Client extends Thread
 			default:
 				resMsg = new ResponseMessage("Invalid request.");
 			}
+
 		Logger.getLogger(Client.class.getName()).info(getName() +
 			": sending response." +
 			(loggedUser != null ? " (User: " + loggedUser.getUsername() + ")" : "") + ".");
@@ -257,7 +255,6 @@ public class Client extends Thread
 
 	private ResponseMessage handleListOwnReservations(RequestMessage reqMsg)
 	{
-		EntityManager.recreateEM();
 		ResponseMessage resMsg = new ResponseMessage();
 		List<Reservation_> reservations = reservationManager.getActiveReservations(loggedUser);
 		for (Reservation_ reservation: reservations)
@@ -403,7 +400,6 @@ public class Client extends Thread
 
 	private ResponseMessage handleListReservations(RequestMessage reqMsg)
 	{
-		EntityManager.recreateEM();
 		Restaurant restaurant = (Restaurant)reqMsg.getEntity();
 		if (!hasRestaurant(loggedUser, restaurant.getId()))
 			return new ResponseMessage("You can only view reservations for restaurants that you own.");
@@ -420,7 +416,6 @@ public class Client extends Thread
 
 	private ResponseMessage handleCheckSeats(RequestMessage reqMsg)
 	{
-		EntityManager.recreateEM();
 		Reservation reservation = null;
 		Restaurant restaurant = null;
 		for (Entity entity: reqMsg.getEntities())

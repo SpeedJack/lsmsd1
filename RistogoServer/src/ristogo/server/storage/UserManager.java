@@ -21,6 +21,7 @@ public class UserManager extends EntityManager
 		Logger.getLogger(UserManager.class.getName()).entering(UserManager.class.getName(), "getUserByUsername", username);
 		if (isLevelDBEnabled())
 			return getLevelDBManager().getUserByUsername(username);
+		createEM();
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User_> cq = cb.createQuery(User_.class);
@@ -30,13 +31,17 @@ public class UserManager extends EntityManager
 		select.where(cb.equal(from.get("username"), usernamePar));
 		TypedQuery<User_> query = em.createQuery(cq);
 		query.setParameter(usernamePar, username);
+		User_ user;
 		Logger.getLogger(UserManager.class.getName()).exiting(UserManager.class.getName(), "getUserByUsername", username);
 		try {
-			return query.getSingleResult();
+			user = query.getSingleResult();
 		} catch (NoResultException ex) {
 			Logger.getLogger(UserManager.class.getName()).info("getSingleResult() returned no result.");
-			return null;
+			user = null;
+		} finally {
+			closeEM();
 		}
+		return user;
 	}
 
 	@Override
@@ -49,18 +54,23 @@ public class UserManager extends EntityManager
 				users.add((User_)entity);
 			return users;
 		}
+		createEM();
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User_> cq = cb.createQuery(User_.class);
 		Root<User_> from = cq.from(User_.class);
 		cq.select(from);
 		TypedQuery<User_> query = em.createQuery(cq);
+		List<User_> users;
 		try {
-			return query.getResultList();
+			users = query.getResultList();
 		} catch (NoResultException ex) {
 			Logger.getLogger(UserManager.class.getName()).info("getResultList() returned no result.");
-			return new ArrayList<User_>();
+			users = new ArrayList<User_>();
+		} finally {
+			closeEM();
 		}
+		return users;
 	}
 
 	public User_ get(int userId)

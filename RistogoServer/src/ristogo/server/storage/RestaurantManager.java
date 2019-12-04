@@ -32,7 +32,11 @@ public class RestaurantManager extends EntityManager
 		if (isLevelDBEnabled())
 			return getLevelDBManager().getRestaurantByOwner(owner.getId());
 		owner = (User_)load(owner);
-		return owner.getRestaurant();
+		Restaurant_ restaurant = owner.getRestaurant();
+		if (restaurant != null)
+			detach(restaurant);
+		closeEM();
+		return restaurant;
 	}
 
 	public List<Restaurant_> getRestaurantsByCity(String city)
@@ -41,6 +45,7 @@ public class RestaurantManager extends EntityManager
 		if (isLevelDBEnabled())
 			return getLevelDBManager().getRestaurantsByCity(city);
 		city = "%" + city + "%";
+		createEM();
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Restaurant_> cq = cb.createQuery(Restaurant_.class);
@@ -50,13 +55,17 @@ public class RestaurantManager extends EntityManager
 		select.where(cb.like(from.get("city"), cityPar));
 		TypedQuery<Restaurant_> query = em.createQuery(cq);
 		query.setParameter(cityPar, city);
+		List<Restaurant_> restaurants;
 		Logger.getLogger(RestaurantManager.class.getName()).exiting(RestaurantManager.class.getName(), "getAll");
 		try {
-			return query.getResultList();
+			restaurants = query.getResultList();
 		} catch (NoResultException ex) {
 			Logger.getLogger(RestaurantManager.class.getName()).info("getResultList() returned no result.");
-			return new ArrayList<Restaurant_>();
+			restaurants = new ArrayList<Restaurant_>();
+		} finally {
+			closeEM();
 		}
+		return restaurants;
 	}
 
 	@Override
@@ -70,18 +79,23 @@ public class RestaurantManager extends EntityManager
 				restaurants.add((Restaurant_)entity);
 			return restaurants;
 		}
+		createEM();
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Restaurant_> cq = cb.createQuery(Restaurant_.class);
 		Root<Restaurant_> from = cq.from(Restaurant_.class);
 		cq.select(from);
 		TypedQuery<Restaurant_> query = em.createQuery(cq);
+		List<Restaurant_> restaurants;
 		Logger.getLogger(RestaurantManager.class.getName()).exiting(RestaurantManager.class.getName(), "getAll");
 		try {
-			return query.getResultList();
+			restaurants = query.getResultList();
 		} catch (NoResultException ex) {
 			Logger.getLogger(RestaurantManager.class.getName()).info("getResultList() returned no result.");
-			return new ArrayList<Restaurant_>();
+			restaurants = new ArrayList<Restaurant_>();
+		} finally {
+			closeEM();
 		}
+		return restaurants;
 	}
 }

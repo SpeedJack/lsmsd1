@@ -13,7 +13,6 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 
 import org.hibernate.Hibernate;
-import org.hibernate.Session;
 
 import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.entities.Reservation_;
@@ -67,39 +66,30 @@ public abstract class EntityManager implements AutoCloseable
 			return null;
 		return levelDBManager;
 	}
-
-	protected static javax.persistence.EntityManager getEM()
-	{
-		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "getEM");
-		javax.persistence.EntityManager em = threadLocal.get();
-		if (em == null) {
-			em = factory.createEntityManager();
-			em.setFlushMode(FlushModeType.COMMIT);
-			threadLocal.set(em);
-		}
-		return em;
-	}
 	
-	public static void recreateEM()
+	public static void createEM()
 	{
-		javax.persistence.EntityManager em = threadLocal.get();
-		if (em != null) {
-			em.close();
-			threadLocal.set(null);
-		}
-		em = factory.createEntityManager();
+		javax.persistence.EntityManager em = factory.createEntityManager();
 		em.setFlushMode(FlushModeType.COMMIT);
 		threadLocal.set(em);
 	}
 
-	/**
-	 * Closes the EntityManager.
-	 */
+	protected static javax.persistence.EntityManager getEM()
+	{
+		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "getEM");
+		return threadLocal.get();
+	}
+	
+	public static void closeEM()
+	{
+		if (threadLocal.get() != null)
+			threadLocal.get().close();
+		threadLocal.set(null);
+	}
+	
 	public void close()
 	{
-		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "close");
-		getEM().close();
-		threadLocal.set(null);
+		closeEM();
 	}
 
 	/**
@@ -153,7 +143,11 @@ public abstract class EntityManager implements AutoCloseable
 			detach(entity);
 			return entity;
 		}
-		return getEM().find(entityClass, entityId);
+		createEM();
+		Entity_ entity = getEM().find(entityClass, entityId);
+		detach(entity);
+		closeEM();
+		return entity;
 	}
 	
 	/**
@@ -164,7 +158,9 @@ public abstract class EntityManager implements AutoCloseable
 	 */
 	public Entity_ load(Class<? extends Entity_> entityClass, int entityId)
 	{
-		return getEM().unwrap(Session.class).load(entityClass, entityId);
+		createEM();
+		Entity_ entity = getEM().find(entityClass, entityId);
+		return entity;
 	}
 	
 	/**
@@ -243,12 +239,16 @@ public abstract class EntityManager implements AutoCloseable
 	public void refresh(Entity_ entity)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "refresh", entity);
-		if (!isLevelDBEnabled())
+		if (!isLevelDBEnabled()) {
+			createEM();
 			try {
 				getEM().refresh(entity);
 			} catch (IllegalArgumentException ex) {
 				Logger.getLogger(EntityManager.class.getName()).warning(ex.getMessage());
+			} finally {
+				closeEM();
 			}
+		}
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "refresh", entity);
 	}
 
@@ -258,6 +258,7 @@ public abstract class EntityManager implements AutoCloseable
 	public static void beginTransaction()
 	{
 		Logger.getLogger(EntityManager.class.getName()).finer("Transaction: begin.");
+		createEM();
 		EntityTransaction tx = getEM().getTransaction();
 		if (tx != null && !tx.isActive())
 			getEM().getTransaction().begin();
@@ -276,6 +277,7 @@ public abstract class EntityManager implements AutoCloseable
 			getEM().getTransaction().commit();
 		if (isLevelDBEnabled())
 			getLevelDBManager().commitBatch();
+		closeEM();
 	}
 
 	/**
@@ -289,6 +291,7 @@ public abstract class EntityManager implements AutoCloseable
 			tx.rollback();
 		if (isLevelDBEnabled())
 			getLevelDBManager().closeBatch();
+		closeEM();
 	}
 
 	/**

@@ -35,7 +35,13 @@ public class ReservationManager extends EntityManager
 		if (isLevelDBEnabled())
 			return getLevelDBManager().getActiveReservationsByUser(user.getId());
 		user = (User_)load(user);
-		return user.getActiveReservations();
+		List<Reservation_> reservationsBag = user.getActiveReservations();
+		List<Reservation_> reservations = new ArrayList<>();
+		for (Reservation_ reservation: reservationsBag)
+			reservations.add(reservation);
+		detach(user);
+		closeEM();
+		return reservations;
 	}
 
 	public List<Reservation_> getActiveReservations(Restaurant_ restaurant)
@@ -43,7 +49,13 @@ public class ReservationManager extends EntityManager
 		if (isLevelDBEnabled())
 			return getLevelDBManager().getActiveReservationsByRestaurant(restaurant.getId());
 		restaurant = (Restaurant_)load(restaurant);
-		return restaurant.getActiveReservations();
+		List<Reservation_> reservationsBag = restaurant.getActiveReservations();
+		List<Reservation_> reservations = new ArrayList<>();
+		for (Reservation_ reservation: reservationsBag)
+			reservations.add(reservation);
+		detach(restaurant);
+		closeEM();
+		return reservations;
 	}
 
 	public List<Reservation_> getReservationsByDateTime(int restaurantId, LocalDate date, ReservationTime time)
@@ -51,6 +63,7 @@ public class ReservationManager extends EntityManager
 		Logger.getLogger(ReservationManager.class.getName()).entering(ReservationManager.class.getName(), "getReservationsByDateTime", new Object[]{restaurantId, date, time});
 		if (isLevelDBEnabled())
 			return getLevelDBManager().getReservationsByDateTime(restaurantId, date, time);
+		createEM();
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Reservation_> cq = cb.createQuery(Reservation_.class);
@@ -68,13 +81,17 @@ public class ReservationManager extends EntityManager
 		query.setParameter(idPar, restaurantId);
 		query.setParameter(datePar, date);
 		query.setParameter(timePar, time);
+		List<Reservation_> reservations;
 		Logger.getLogger(ReservationManager.class.getName()).exiting(ReservationManager.class.getName(), "getReservationsByDateTime", new Object[]{restaurantId, date, time});
 		try {
-			return query.getResultList();
+			reservations = query.getResultList();
 		} catch (NoResultException ex) {
 			Logger.getLogger(ReservationManager.class.getName()).info("getResultList() returned no result.");
-			return null;
+			reservations = null;
+		} finally {
+			closeEM();
 		}
+		return reservations;
 	}
 
 	@Override
@@ -87,17 +104,22 @@ public class ReservationManager extends EntityManager
 				reservations.add((Reservation_)entity);
 			return reservations;
 		}
+		createEM();
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Reservation_> cq = cb.createQuery(Reservation_.class);
 		Root<Reservation_> from = cq.from(Reservation_.class);
 		cq.select(from);
 		TypedQuery<Reservation_> query = em.createQuery(cq);
+		List<Reservation_> reservations;
 		try {
-			return query.getResultList();
+			reservations = query.getResultList();
 		} catch (NoResultException ex) {
 			Logger.getLogger(ReservationManager.class.getName()).info("getResultList() returned no result.");
-			return new ArrayList<Reservation_>();
+			reservations = new ArrayList<Reservation_>();
+		} finally {
+			closeEM();
 		}
+		return reservations;
 	}
 }
