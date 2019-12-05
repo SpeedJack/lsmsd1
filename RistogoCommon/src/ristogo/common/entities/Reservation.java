@@ -64,7 +64,7 @@ public class Reservation extends Entity
 		this.time = time;
 		this.seats = seats;
 	}
-	
+
 	/**
 	 * Creates a reservation with the specified fields.
 	 * @param userName The username of the reservation's issuer.
@@ -114,7 +114,7 @@ public class Reservation extends Entity
 		return restaurantName;
 	}
 
-	/** 
+	/**
 	 * Sets the date.
 	 * @param date The date.
 	 */

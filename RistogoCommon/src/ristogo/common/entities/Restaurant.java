@@ -90,7 +90,7 @@ public class Restaurant extends Entity
 	 */
 	public Restaurant(int id, String name, String ownerName, Genre genre, Price price, String city, String address, String description, int seats, OpeningHours openingHours)
 	{
-		
+
 		super(id);
 		this.name = name;
 		this.ownerName = ownerName;

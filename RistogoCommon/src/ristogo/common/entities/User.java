@@ -178,7 +178,7 @@ public abstract class User extends Entity
 	}
 
 	/**
-	 * This method is used to compare an Hash with the one stored inside the User object	
+	 * This method is used to compare an Hash with the one stored inside the User object
 	 * @param passwordHash to be checked
 	 * @return true if passwordHash is equal to the stored hash
 	 */

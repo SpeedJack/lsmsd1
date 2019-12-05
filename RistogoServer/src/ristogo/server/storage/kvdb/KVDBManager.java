@@ -535,7 +535,7 @@ public class KVDBManager implements AutoCloseable
 		return getWriteBatch() != null;
 	}
 
-	
+
 	/**
 	 * Creates the WriteBatch to begin a write transaction.
 	 */

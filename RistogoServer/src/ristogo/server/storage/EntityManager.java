@@ -66,7 +66,7 @@ public abstract class EntityManager implements AutoCloseable
 			return null;
 		return levelDBManager;
 	}
-	
+
 	public static void createEM()
 	{
 		javax.persistence.EntityManager em = factory.createEntityManager();
@@ -79,14 +79,14 @@ public abstract class EntityManager implements AutoCloseable
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "getEM");
 		return threadLocal.get();
 	}
-	
+
 	public static void closeEM()
 	{
 		if (threadLocal.get() != null)
 			threadLocal.get().close();
 		threadLocal.set(null);
 	}
-	
+
 	public void close()
 	{
 		closeEM();
@@ -149,7 +149,7 @@ public abstract class EntityManager implements AutoCloseable
 		closeEM();
 		return entity;
 	}
-	
+
 	/**
 	 * Returns an entity that exists in the actual session.
 	 * @param entityClass The class of the entity to retrieve.
@@ -162,7 +162,7 @@ public abstract class EntityManager implements AutoCloseable
 		Entity_ entity = getEM().find(entityClass, entityId);
 		return entity;
 	}
-	
+
 	/**
 	 * Returns an entity that exists in the actual session.
 	 * @param entity The entity to retrieve.
