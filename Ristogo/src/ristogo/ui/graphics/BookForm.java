@@ -150,7 +150,7 @@ final class BookForm extends VBox
 		seatsField.getItems().clear();
 		seatsSelected = false;
 		if (maxSeats > 0) {
-			for (int i = 1; i < maxSeats; i++)
+			for (int i = 1; i <= maxSeats; i++)
 				seatsField.getItems().add(i);
 			seatsField.setDisable(false);
 		} else {
