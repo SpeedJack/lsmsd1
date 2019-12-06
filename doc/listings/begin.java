@@ -1,5 +1,6 @@
 public static void beginTransaction()
 {
+	createEM();
 	EntityTransaction tx = getEM().getTransaction(); //(1)
 	if (tx != null && !tx.isActive())
 		getEM().getTransaction().begin(); //(2)
