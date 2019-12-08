@@ -2,6 +2,7 @@ public class UserManager extends EntityManager
 {
 	public User_ getUserByUsername(String username)
 	{
+		createEM();
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder(); //(1)
 		CriteriaQuery<User_> cq = cb.createQuery(User_.class); //(2)
@@ -11,11 +12,15 @@ public class UserManager extends EntityManager
 		select.where(cb.equal(from.get("username"), usernamePar)); //(5)
 		TypedQuery<User_> query = em.createQuery(cq); //(6)
 		query.setParameter(usernamePar, username); //(7)
+		User_ user;
 		try {
-			return query.getSingleResult(); //(8)
+			user = query.getSingleResult(); //(8)
 		} catch (NoResultException ex) {
-			return null;
+			user = null;
+		} finally {
+			closeEM();
 		}
+		return user;
 	}
 
 	//... other methods ...

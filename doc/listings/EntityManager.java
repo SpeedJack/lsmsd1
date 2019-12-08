@@ -14,25 +14,29 @@ public abstract class EntityManager implements AutoCloseable
 		factory = Persistence.createEntityManagerFactory("ristogo", properties); //(3)
 	}
 
-	protected static javax.persistence.EntityManager getEM() //(4)
+	public static void createEM() //(4)
 	{
-		javax.persistence.EntityManager entityManager = threadLocal.get();
-		if (entityManager == null) {
-			entityManager = factory.createEntityManager();
-			entityManager.setFlushMode(FlushModeType.COMMIT);
-			threadLocal.set(entityManager);
-		}
-		return entityManager;
+		javax.persistence.EntityManager em = factory.createEntityManager();
+		em.setFlushMode(FlushModeType.COMMIT);
+		threadLocal.set(em);
 	}
 
-	public void close() //(5)
+	protected static javax.persistence.EntityManager getEM() //(5)
 	{
-		getEM().close();
-		threadLocal.set(null);
+		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "getEM");
+		return threadLocal.get();
 	}
 
-	public static void closeFactory() //(6)
+	public void close() //(6)
 	{
+		closeEM();
+	}
+
+	public static void closeFactory() //(7)
+	{
+		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "closeFactory");
+		if (getLevelDBManager() != null)
+			getLevelDBManager().close();
 		if (factory != null)
 			factory.close();
 	}
@@ -45,8 +49,9 @@ public abstract class EntityManager implements AutoCloseable
  * (2) There is an EntityManager instance for each server
  * 	thread.
  * (3) Creates the EntityManagerFactory.
- * (4) Returns the EntityManager for the current running
+ * (4) Creates the EntityManager
+ * (5) Returns the EntityManager for the current running
  * 	thread (if needed, the method creates the instance of
  * 	EntityManager via the createEntityManager method.
- * (5) Closes the EntityManager instance.
- * (6) Closes the EntityManagerFactory.
+ * (6) Closes the EntityManager instance.
+ * (7) Closes the EntityManagerFactory.
