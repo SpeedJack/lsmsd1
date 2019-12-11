@@ -6,17 +6,11 @@ import static org.iq80.leveldb.impl.Iq80DBFactory.factory;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
-import javax.persistence.Table;
 
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
@@ -25,7 +19,6 @@ import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
 
 import ristogo.common.entities.enums.ReservationTime;
-import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.entities.Reservation_;
 import ristogo.server.storage.entities.Restaurant_;
 import ristogo.server.storage.entities.User_;
@@ -97,202 +90,44 @@ public class KVDBManager implements AutoCloseable
 	 * Populate the key-value database with the list of entities.
 	 * @param entities The entities to insert.
 	 */
-	public void populateDB(List<Entity_> entities)
+	public void populateDB(List<Reservation_> reservations)
 	{
 		Logger.getLogger(KVDBManager.class.getName()).entering(KVDBManager.class.getName(), "populateDB");
-		for (Entity_ entity: entities)
-			insert(entity);
+		for (Reservation_ reservation: reservations)
+			insertReservation(reservation);
 		setInitialized();
 		Logger.getLogger(KVDBManager.class.getName()).exiting(KVDBManager.class.getName(), "populateDB");
 	}
 
-	private static String capitalizeFirst(String str)
+	public List<Reservation_> getAllReservations()
 	{
-		return str.substring(0, 1).toUpperCase() + str.substring(1);
-	}
-
-	/**
-	 * Get the name of an attribute.
-	 * @param field The field to inspect.
-	 * @return The attribute name.
-	 */
-	private String getAttributeName(Field field)
-	{
-		if (field.getAnnotation(Attribute.class).name().isEmpty())
-			return field.getName();
-		return field.getAnnotation(Attribute.class).name();
-	}
-
-	/**
-	 * Get the setter for the field.
-	 * @param entityClass The class to inspect.
-	 * @param field The field to inspect.
-	 * @return The setter method.
-	 */
-	private Method getAttributeSetter(Class<? extends Entity_> entityClass, Field field)
-	{
-		String setterName;
-		if (field.getAnnotation(Attribute.class).setter().isEmpty())
-			setterName = "set" + capitalizeFirst(field.getName());
-		else
-			setterName = field.getAnnotation(Attribute.class).setter();
-		Method[] methods = entityClass.getMethods();
-		for (Method method: methods) {
-			if (!method.getName().equals(setterName) || method.getParameterCount() != 1)
-				continue;
-			return method;
-		}
-		Logger.getLogger(KVDBManager.class.getName()).warning("Field " + field.getName() + " in entity " + entityClass.getName() + " has no setter.");
-		return null;
-	}
-
-	/**
-	 * Get the getter for the field.
-	 * @param entityClass The class to inspect.
-	 * @param field The field to inspect.
-	 * @return The getter method.
-	 */
-	private Method getAttributeGetter(Class<? extends Entity_> entityClass, Field field)
-	{
-		String getterName;
-		if (field.getAnnotation(Attribute.class).getter().isEmpty())
-			getterName = "get" + capitalizeFirst(field.getName());
-		else
-			getterName = field.getAnnotation(Attribute.class).getter();
-		Method[] methods = entityClass.getMethods();
-		for (Method method: methods) {
-			if (!method.getName().equals(getterName) || method.getParameterCount() != 0)
-				continue;
-			return method;
-		}
-		Logger.getLogger(KVDBManager.class.getName()).warning("Field " + field.getName() + " in entity " + entityClass.getName() + " has no getter.");
-		return null;
-	}
-
-	/**
-	 * Get field identified by attributeName.
-	 * @param entityClass The class to inspect.
-	 * @param attributeName The attribute to search.
-	 * @return The field.
-	 */
-	private Field getAttributeField(Class<? extends Entity_> entityClass, String attributeName)
-	{
-		Field[] fields = entityClass.getDeclaredFields();
-		for (Field field: fields) {
-			if (!field.isAnnotationPresent(Attribute.class))
-				continue;
-			if (field.getAnnotation(Attribute.class).name().equals(attributeName))
-				return field;
-		}
-		try {
-			return entityClass.getDeclaredField(attributeName);
-		} catch (NoSuchFieldException | SecurityException ex) {
-			Logger.getLogger(KVDBManager.class.getName()).warning("Field " + attributeName + " in entity " + entityClass.getName() + " does not exists.");
-			return null;
-		}
-	}
-
-	/**
-	 * Get all entities of a given type in the DB.
-	 * @param entityClass The class type to get.
-	 * @return All entites of the specified type.
-	 */
-	public List<Entity_> getAll(Class<? extends Entity_> entityClass)
-	{
-		String entityName = entityClass.getAnnotation(Table.class).name();
-		List<Entity_> entities = new ArrayList<Entity_>();
-		int entityId = -1;
+		List<Reservation_> reservations = new ArrayList<Reservation_>();
 		try (DBIterator iterator = db.iterator()) {
-			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext(); iterator.next()) {
-				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
-				if (!key[0].equals(entityName))
+			for (iterator.seek(bytes("reservations:0")); iterator.hasNext();) {
+				String[] key = asString(iterator.peekNext().getKey()).split(":", 6);
+				if (!key[0].equals("reservations"))
 					break;
-				if (Integer.parseInt(key[1]) == entityId)
-					continue;
-				entityId = Integer.parseInt(key[1]);
-				entities.add(get(entityClass, entityId));
+				reservations.add(getReservation(Integer.parseInt(key[1]), Integer.parseInt(key[2]), LocalDate.parse(key[3]), ReservationTime.valueOf(key[4])));
+				iterator.seek(bytes("reservations:" + (Integer.parseInt(key[1]) + 1)));
 			}
+		}  catch (NoSuchElementException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: no reservation found.");
+			return new ArrayList<Reservation_>();
 		} catch (IOException ex) {
 			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
-			return new ArrayList<Entity_>();
+			return new ArrayList<Reservation_>();
 		}
-		return entities;
+		return reservations;
 	}
-
-	/**
-	 * List all the restaurant in a given city.
-	 * @param city The city.
-	 * @return The restaurants in that city.
-	 */
-	public List<Restaurant_> getRestaurantsByCity(String city)
+	
+	public List<Reservation_> getActiveReservations(Restaurant_ restaurant)
 	{
-		String entityName = Restaurant_.class.getAnnotation(Table.class).name();
-		List<Restaurant_> restaurants = new ArrayList<Restaurant_>();
-		int entityId = 0;
-		String foundCity = null;
-		try (DBIterator iterator = db.iterator()) {
-			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext();) {
-				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
-				if (!key[0].equals(entityName))
-					break;
-				if (Integer.parseInt(key[1]) != entityId) {
-					foundCity = null;
-				}
-				entityId = Integer.parseInt(key[1]);
-				if (key[2].equals("city")) {
-					foundCity = asString(iterator.peekNext().getValue());
-					if (!Pattern.compile(Pattern.quote(city), Pattern.CASE_INSENSITIVE).matcher(foundCity).find()) {
-						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
-						continue;
-					}
-				}
-				if (foundCity == null) {
-					iterator.next();
-					continue;
-				}
-				restaurants.add((Restaurant_)get(Restaurant_.class, entityId));
-				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
-			}
-		} catch (NoSuchElementException ex) {
-			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: no restaurant.");
-			return new ArrayList<Restaurant_>();
-		} catch (IOException ex) {
-			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
-			return new ArrayList<Restaurant_>();
-		}
-		return restaurants;
+		return getActiveReservationsByRestaurant(restaurant.getId());
 	}
-
-	/**
-	 * Get the restaurant of a given Owner.
-	 * @param ownerId The id of the owner.
-	 * @return The restaurant.
-	 */
-	public Restaurant_ getRestaurantByOwner(int ownerId)
+	
+	public List<Reservation_> getActiveReservations(User_ user)
 	{
-		String entityName = Restaurant_.class.getAnnotation(Table.class).name();
-		int entityId;
-		try (DBIterator iterator = db.iterator()) {
-			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext();) {
-				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
-				if (!key[0].equals(entityName))
-					break;
-				entityId = Integer.parseInt(key[1]);
-				if (!key[2].equals("ownerId")) {
-					iterator.next();
-					continue;
-				}
-				if (Integer.parseInt(asString(iterator.peekNext().getValue())) == ownerId)
-					return (Restaurant_)get(Restaurant_.class, entityId);
-				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
-			}
-		} catch (NoSuchElementException ex) {
-			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: user " + ownerId + " has not restaurant.");
-			return null;
-		} catch (IOException ex) {
-			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
-		}
-		return null;
+		return getActiveReservationsByUser(user.getId());
 	}
 
 	/**
@@ -302,7 +137,7 @@ public class KVDBManager implements AutoCloseable
 	 */
 	public List<Reservation_> getActiveReservationsByUser(int userId)
 	{
-		return getActiveReservations(userId, "userId");
+		return getActiveReservations(userId, 1);
 	}
 
 	/**
@@ -312,47 +147,26 @@ public class KVDBManager implements AutoCloseable
 	 */
 	public List<Reservation_> getActiveReservationsByRestaurant(int restaurantId)
 	{
-		return getActiveReservations(restaurantId, "restaurantId");
+		return getActiveReservations(restaurantId, 2);
 	}
 
-	private List<Reservation_> getActiveReservations(int id, String idAttribute)
+	private List<Reservation_> getActiveReservations(int id, int keyIndex)
 	{
-		String entityName = Reservation_.class.getAnnotation(Table.class).name();
 		List<Reservation_> reservations = new ArrayList<Reservation_>();
-		int entityId = 0;
-		int foundId = -1;
-		LocalDate foundDate = null;
 		LocalDate now = LocalDate.now();
 		try (DBIterator iterator = db.iterator()) {
-			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext();) {
-				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
-				if (!key[0].equals(entityName))
+			for (iterator.seek(bytes("reservations")); iterator.hasNext();) {
+				String[] key = asString(iterator.peekNext().getKey()).split(":", 6);
+				if (!key[0].equals("reservations"))
 					break;
-				if (Integer.parseInt(key[1]) != entityId) {
-					foundId = -1;
-					foundDate = null;
+				int userId = Integer.parseInt(key[1]);
+				int restaurantId = Integer.parseInt(key[2]);
+				LocalDate date = LocalDate.parse(key[3]);
+				ReservationTime time = ReservationTime.valueOf(key[4]);
+				if (Integer.parseInt(key[keyIndex]) == id && !date.isBefore(now)) {
+					reservations.add(getReservation(userId, restaurantId, date, time));
 				}
-				entityId = Integer.parseInt(key[1]);
-				if (key[2].equals("date")) {
-					foundDate = LocalDate.parse(asString(iterator.peekNext().getValue()));
-					if (foundDate.isBefore(now)) {
-						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
-						continue;
-					}
-				} else if (key[2].equals(idAttribute)) {
-					foundId = Integer.parseInt(asString(iterator.peekNext().getValue()));
-					if (foundId != id) {
-						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
-						continue;
-					}
-				}
-				if (foundId == -1 || foundDate == null) {
-					iterator.next();
-					continue;
-				}
-				if (foundId == id && !foundDate.isBefore(now))
-					reservations.add((Reservation_)get(Reservation_.class, entityId));
-				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+				iterator.seek(bytes("reservations:" + userId + ":" + restaurantId + ":" + date + ":" + time.name() + ":zzzzzzzz"));
 			}
 		} catch (NoSuchElementException ex) {
 			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: no reservation found.");
@@ -373,49 +187,15 @@ public class KVDBManager implements AutoCloseable
 	 */
 	public List<Reservation_> getReservationsByDateTime(int restaurantId, LocalDate date, ReservationTime time)
 	{
-		String entityName = Reservation_.class.getAnnotation(Table.class).name();
 		List<Reservation_> reservations = new ArrayList<Reservation_>();
-		int entityId = 0;
-		int foundId = -1;
-		LocalDate foundDate = null;
-		ReservationTime foundTime = null;
 		try (DBIterator iterator = db.iterator()) {
-			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext();) {
-				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
-				if (!key[0].equals(entityName))
+			for (iterator.seek(bytes("reservations:0")); iterator.hasNext();) {
+				String[] key = asString(iterator.peekNext().getKey()).split(":", 6);
+				if (!key[0].equals("reservations") || Integer.parseInt(key[2]) != restaurantId || !LocalDate.parse(key[3]).isEqual(date) || ReservationTime.valueOf(key[4]) != time)
 					break;
-				if (Integer.parseInt(key[1]) != entityId) {
-					foundId = -1;
-					foundDate = null;
-					foundTime = null;
-				}
-				entityId = Integer.parseInt(key[1]);
-				if (key[2].equals("date")) {
-					foundDate = LocalDate.parse(asString(iterator.peekNext().getValue()));
-					if (!foundDate.isEqual(date)) {
-						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
-						continue;
-					}
-				} else if (key[2].equals("time")) {
-					foundTime = ReservationTime.valueOf(asString(iterator.peekNext().getValue()));
-					if (foundTime != time) {
-						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
-						continue;
-					}
-				} else if (key[2].equals("restaurantId")) {
-					foundId = Integer.parseInt(asString(iterator.peekNext().getValue()));
-					if (foundId != restaurantId) {
-						iterator.seek(bytes(entityName + ":" + (entityId + 1)));
-						continue;
-					}
-				}
-				if (foundId == -1 || foundDate == null || foundTime == null) {
-					iterator.next();
-					continue;
-				}
-				if (foundId == restaurantId && foundDate.isEqual(date) && foundTime == time)
-					reservations.add((Reservation_)get(Reservation_.class, entityId));
-				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
+				int userId = Integer.parseInt(key[1]);
+				reservations.add(getReservation(userId, restaurantId, date, time));
+				iterator.seek(bytes("reservations:" + (userId + 1)));
 			}
 		} catch (NoSuchElementException ex) {
 			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: no reservation found.");
@@ -426,104 +206,49 @@ public class KVDBManager implements AutoCloseable
 		}
 		return reservations;
 	}
-
-	/**
-	 * Get a user by username.
-	 * @param username The username to search.
-	 * @return The user.
-	 */
-	public User_ getUserByUsername(String username)
+	
+	public Reservation_ getReservation(Reservation_ reservation)
 	{
-		String entityName = User_.class.getAnnotation(Table.class).name();
-		try (DBIterator iterator = db.iterator()) {
-			for (iterator.seek(bytes(entityName + ":0")); iterator.hasNext();) {
-				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
-				if (!key[0].equals(entityName))
-					break;
-				int entityId = Integer.parseInt(key[1]);
-				if (!key[2].equals("username")) {
-					iterator.next();
-					continue;
-				}
-				String foundUsername = asString(iterator.peekNext().getValue());
-				if (foundUsername.equals(username))
-					return (User_)get(User_.class, entityId);
-				iterator.seek(bytes(entityName + ":" + (entityId + 1)));
-			}
-		} catch (NoSuchElementException ex) {
-			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: no such user with username " + username + ".");
-			return null;
-		} catch (IOException ex) {
-			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
-		}
-		return null;
+		return getReservation(reservation.getUser().getId(), reservation.getRestaurant().getId(), reservation.getDate(), reservation.getTime());
 	}
-
-	/**
-	 * Get an entity.
-	 * @param entity The entity to get, with the id field initialized.
-	 * @return The entity fully initialized.
-	 */
-	public Entity_ get(Entity_ entity)
+	
+	public Reservation_ getReservation(int userId, int restaurantId, LocalDate date, ReservationTime time)
 	{
-		return get(entity.getClass(), entity.getId());
-	}
-
-	/**
-	 * Get an entity of id entityId and class entityClass.
-	 * @param entityClass The type of the entity to find.
-	 * @param entityId The entity's id.
-	 * @return The entity.
-	 */
-	public Entity_ get(Class<? extends Entity_> entityClass, int entityId)
-	{
-		String entityName = entityClass.getAnnotation(Table.class).name();
-		Entity_ entity;
-		try {
-			entity = entityClass.getConstructor().newInstance();
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-			| InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-			Logger.getLogger(KVDBManager.class.getName()).severe("Error during initialization of entity: " + ex.getMessage());
-			return null;
-		}
-		entity.setId(entityId);
+		Reservation_ reservation = new Reservation_();
+		User_ user = new User_();
+		Restaurant_ restaurant = new Restaurant_();
+		user.setId(userId);
+		restaurant.setId(restaurantId);
+		reservation.setUser(user);
+		reservation.setRestaurant(restaurant);
+		reservation.setDate(date);
+		reservation.setTime(time);
 		boolean found = false;
 		try (DBIterator iterator = db.iterator()) {
-			for (iterator.seek(bytes(entityName + ":" + entityId)); iterator.hasNext(); iterator.next()) {
-				String[] key = asString(iterator.peekNext().getKey()).split(":", 3);
-				if (!key[0].equals(entityName) || Integer.parseInt(key[1]) != entityId)
+			for (iterator.seek(bytes("reservations:" + userId + ":" + restaurantId + ":" + date + ":" + time.name())); iterator.hasNext(); iterator.next()) {
+				String[] key = asString(iterator.peekNext().getKey()).split(":", 6);
+				if (!key[0].equals("reservations") || Integer.parseInt(key[1]) != userId ||
+					Integer.parseInt(key[2]) != restaurantId || !LocalDate.parse(key[3]).isEqual(date) ||
+					ReservationTime.valueOf(key[4]) != time) {
 					break;
-				found = true;
-				String attributeName = key[2];
-				Field field = getAttributeField(entityClass, attributeName);
-				Attribute annotation = field.getAnnotation(Attribute.class);
-				Method attributeSetter = getAttributeSetter(entityClass, field);
-				Class<?> attributeClass = attributeSetter.getParameterTypes()[0];
-				String attributeValueStr = asString(iterator.peekNext().getValue());
-				Object attributeValue;
-				try {
-					if (annotation.isEntity()) {
-						attributeValue = get(attributeClass.asSubclass(Entity_.class), Integer.parseInt(attributeValueStr));
-					} else if (attributeClass.isEnum()) {
-						attributeValue = attributeClass.getMethod("valueOf", String.class).invoke(null, attributeValueStr);
-					} else if (attributeClass.equals(int.class)) {
-						attributeValue = Integer.parseInt(attributeValueStr);
-					} else if (attributeClass.equals(LocalDate.class)) {
-						attributeValue = LocalDate.parse(attributeValueStr);
-					} else {
-						attributeValue = attributeClass.cast(attributeValueStr);
-					}
-					attributeSetter.invoke(entity, attributeValue);
-				} catch (IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-					Logger.getLogger(KVDBManager.class.getName()).severe("Error while setting entity's fields: " + ex.getMessage());
 				}
+				found = true;
+				String attributeName = key[5];
+				String attributeValue = asString(iterator.peekNext().getValue());
+				if (attributeName.equals("id"))
+					reservation.setId(Integer.parseInt(attributeValue));
+				else if (attributeName.equals("seats"))
+					reservation.setSeats(Integer.parseInt(attributeValue));
+				else if (attributeName.equals("restaurant_name"))
+					restaurant.setName(attributeValue);
+				else if (attributeName.equals("user_username"))
+					user.setUsername(attributeValue);
 			}
 		} catch (IOException ex) {
 			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 			return null;
 		}
-		return found ? entity : null;
+		return found ? reservation : null;
 	}
 
 	/**
@@ -572,116 +297,62 @@ public class KVDBManager implements AutoCloseable
 		}
 	}
 
-	/**
-	 * Remove the entity fields with id entityId and class entityClass.
-	 * @param entityClass The type of entity to remove.
-	 * @param entityId The id of the entity to remove.
-	 */
-	public void remove(Class<? extends Entity_> entityClass, int entityId)
+	public void removeReservation(int userId, int restaurantId, LocalDate date, ReservationTime time)
 	{
-		String entityName = entityClass.getAnnotation(Table.class).name();
-		for (Field field: entityClass.getDeclaredFields()) {
-			if (!field.isAnnotationPresent(Attribute.class))
-				continue;
-			String attributeName = getAttributeName(field);
-			String key = entityName + ":" + entityId + ":" + attributeName;
-			getWriteBatch().delete(bytes(key));
-		}
-	}
-
-	/**
-	 * Remove an entity.
-	 * @param entity The entity to remove.
-	 */
-	public void remove(Entity_ entity)
-	{
-		remove(entity.getClass(), entity.getId());
-	}
-
-	/**
-	 * Store an entity.
-	 * @param entity The entity to store.
-	 */
-	public void put(Entity_ entity)
-	{
-		Class<? extends Entity_> entityClass = entity.getClass();
-		String entityName = entityClass.getAnnotation(Table.class).name();
-		int entityId = entity.getId();
-		for (Field field: entityClass.getDeclaredFields()) {
-			if (!field.isAnnotationPresent(Attribute.class))
-				continue;
-			Attribute annotation = field.getAnnotation(Attribute.class);
-			String attributeName = getAttributeName(field);
-			Method attributeGetter = getAttributeGetter(entityClass, field);
-			Class<?> attributeClass = field.getType();
-			String attributeValue;
-			try {
-				if (annotation.isEntity()) {
-					Entity_ innerEntity = (Entity_)attributeGetter.invoke(entity);
-					if (innerEntity == null)
-						continue;
-					attributeValue = Integer.toString(innerEntity.getId());
-				} else if (attributeClass.isEnum()) {
-					Enum<?> enumValue = (Enum<?>)attributeGetter.invoke(entity);
-					if (enumValue == null)
-						continue;
-					attributeValue = enumValue.name();
-				} else if (attributeClass.equals(int.class)) {
-					attributeValue = Integer.toString((int)attributeGetter.invoke(entity));
-				} else {
-					Object objValue = attributeGetter.invoke(entity);
-					if (objValue == null)
-						continue;
-					attributeValue = attributeClass.cast(objValue).toString();
+		String reservationKey = "reservations:" + userId + ":" + restaurantId + ":" + date + ":" + time.name();
+		try (DBIterator iterator = db.iterator()) {
+			for (iterator.seek(bytes(reservationKey)); iterator.hasNext(); iterator.next()) {
+				String[] key = asString(iterator.peekNext().getKey()).split(":", 6);
+				if (!key[0].equals("reservations") || Integer.parseInt(key[1]) != userId ||
+					Integer.parseInt(key[2]) != restaurantId || !LocalDate.parse(key[3]).isEqual(date) ||
+					ReservationTime.valueOf(key[4]) != time) {
+					break;
 				}
-			} catch (IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException ex) {
-				Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading entity's fields: " + ex.getMessage());
-				continue;
+				getWriteBatch().delete(bytes(reservationKey + ":" + key[5]));
 			}
-			String key = entityName + ":" + entityId + ":" + attributeName;
-			getWriteBatch().put(bytes(key), bytes(attributeValue));
+		} catch (IOException ex) {
+			Logger.getLogger(KVDBManager.class.getName()).severe("Error while reading from KVDB: " + ex.getMessage());
 		}
 	}
 
-	/**
-	 * Delete an entity of type entityClass and with id entityId.
-	 * @param entityClass The type of entity to delete.
-	 * @param entityId The entity's id.
-	 */
-	public void delete(Class<? extends Entity_> entityClass, int entityId)
+	public void removeReservation(Reservation_ reservation)
+	{
+		removeReservation(reservation.getUser().getId(), reservation.getRestaurant().getId(), reservation.getDate(), reservation.getTime());
+	}
+
+	public void putReservation(Reservation_ reservation)
+	{
+		String baseKey = "reservations:" + reservation.getUser().getId() + ":" + reservation.getRestaurant().getId() + ":" + reservation.getDate() + ":" + reservation.getTime().name() + ":";
+		getWriteBatch().put(bytes(baseKey + "id"), bytes(Integer.toString(reservation.getId())));
+		getWriteBatch().put(bytes(baseKey + "seats"), bytes(Integer.toString(reservation.getSeats())));
+		getWriteBatch().put(bytes(baseKey + "restaurant_name"), bytes(reservation.getRestaurant().getName()));
+		getWriteBatch().put(bytes(baseKey + "user_username"), bytes(reservation.getUser().getUsername()));
+	}
+
+	public void deleteReservation(int userId, int restaurantId, LocalDate date, ReservationTime time)
 	{
 		beginBatch();
-		remove(entityClass, entityId);
+		removeReservation(userId, restaurantId, date, time);
 		commitBatch();
 	}
 
-	/**
-	 * Delete an entity.
-	 * @param entity The entity.
-	 */
-	public void delete(Entity_ entity)
+	public void deleteReservation(Reservation_ reservation)
 	{
-		delete(entity.getClass(), entity.getId());
+		deleteReservation(reservation.getUser().getId(), reservation.getRestaurant().getId(), reservation.getDate(), reservation.getTime());
 	}
 
-	/**
-	 * Update an entity.
-	 * @param entity The entity.
-	 */
-	public void update(Entity_ entity)
-	{
-		insert(entity);
-	}
-
-	/**
-	 * Insert an entity.
-	 * @param entity The entity.
-	 */
-	public void insert(Entity_ entity)
+	public void updateReservation(Reservation_ oldReservation, Reservation_ newReservation)
 	{
 		beginBatch();
-		put(entity);
+		removeReservation(oldReservation);
+		putReservation(newReservation);
+		commitBatch();
+	}
+
+	public void insertReservation(Reservation_ reservation)
+	{
+		beginBatch();
+		putReservation(reservation);
 		commitBatch();
 	}
 

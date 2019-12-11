@@ -13,7 +13,6 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 
 import ristogo.common.entities.enums.ReservationTime;
-import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.entities.Reservation_;
 import ristogo.server.storage.entities.Restaurant_;
 import ristogo.server.storage.entities.User_;
@@ -24,16 +23,34 @@ public class ReservationManager extends EntityManager
 	{
 		return (Reservation_)super.get(Reservation_.class, reservationId);
 	}
-
-	public void delete(int reservationId)
+	
+	public void delete(Reservation_ reservation)
 	{
-		super.delete(Reservation_.class, reservationId);
+		if (isLevelDBEnabled())
+			getLevelDBManager().deleteReservation(reservation);
+		super.delete(reservation);
+	}
+	
+	public void insert(Reservation_ reservation)
+	{
+		super.insert(reservation);
+		reservation = (Reservation_)load(reservation);
+		if (isLevelDBEnabled())
+			getLevelDBManager().insertReservation(reservation);
+	}
+	
+	public void update(Reservation_ reservation)
+	{
+		Reservation_ oldReservation = get(reservation.getId());
+		if (isLevelDBEnabled())
+			getLevelDBManager().updateReservation(oldReservation, reservation);
+		super.update(reservation);
 	}
 
 	public List<Reservation_> getActiveReservations(User_ user)
 	{
 		if (isLevelDBEnabled())
-			return getLevelDBManager().getActiveReservationsByUser(user.getId());
+			return getLevelDBManager().getActiveReservations(user);
 		user = (User_)load(user);
 		List<Reservation_> reservationsBag = user.getActiveReservations();
 		List<Reservation_> reservations = new ArrayList<>();
@@ -47,7 +64,7 @@ public class ReservationManager extends EntityManager
 	public List<Reservation_> getActiveReservations(Restaurant_ restaurant)
 	{
 		if (isLevelDBEnabled())
-			return getLevelDBManager().getActiveReservationsByRestaurant(restaurant.getId());
+			return getLevelDBManager().getActiveReservations(restaurant);
 		restaurant = (Restaurant_)load(restaurant);
 		List<Reservation_> reservationsBag = restaurant.getActiveReservations();
 		List<Reservation_> reservations = new ArrayList<>();
@@ -97,13 +114,8 @@ public class ReservationManager extends EntityManager
 	@Override
 	public List<Reservation_> getAll()
 	{
-		if (isLevelDBEnabled()) {
-			List<Entity_> entities = getLevelDBManager().getAll(Reservation_.class);
-			List<Reservation_> reservations = new ArrayList<Reservation_>();
-			for (Entity_ entity: entities)
-				reservations.add((Reservation_)entity);
-			return reservations;
-		}
+		if (isLevelDBEnabled())
+			return getLevelDBManager().getAllReservations();
 		createEM();
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();

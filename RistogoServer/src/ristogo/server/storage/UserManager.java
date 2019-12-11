@@ -11,7 +11,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 
-import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.entities.User_;
 
 public class UserManager extends EntityManager
@@ -19,8 +18,6 @@ public class UserManager extends EntityManager
 	public User_ getUserByUsername(String username)
 	{
 		Logger.getLogger(UserManager.class.getName()).entering(UserManager.class.getName(), "getUserByUsername", username);
-		if (isLevelDBEnabled())
-			return getLevelDBManager().getUserByUsername(username);
 		createEM();
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -47,13 +44,6 @@ public class UserManager extends EntityManager
 	@Override
 	public List<User_> getAll()
 	{
-		if (isLevelDBEnabled()) {
-			List<Entity_> entities = getLevelDBManager().getAll(User_.class);
-			List<User_> users = new ArrayList<User_>();
-			for (Entity_ entity: entities)
-				users.add((User_)entity);
-			return users;
-		}
 		createEM();
 		javax.persistence.EntityManager em = getEM();
 		CriteriaBuilder cb = em.getCriteriaBuilder();

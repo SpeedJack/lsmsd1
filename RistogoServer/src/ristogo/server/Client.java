@@ -374,7 +374,7 @@ public class Client extends Thread
 		if (reservation_ == null)
 			return new ResponseMessage("Can not find the specified reservation.");
 		try {
-			reservationManager.delete(reservation.getId());
+			reservationManager.delete(reservation_);
 		} catch (PersistenceException ex) {
 			return new ResponseMessage("Error while deleting the reservation from the database.");
 		}

@@ -1,7 +1,6 @@
 package ristogo.server.storage;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -12,11 +11,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 
-import org.hibernate.Hibernate;
-
 import ristogo.server.storage.entities.Entity_;
-import ristogo.server.storage.entities.Reservation_;
-import ristogo.server.storage.entities.Restaurant_;
 import ristogo.server.storage.kvdb.KVDBManager;
 
 public abstract class EntityManager implements AutoCloseable
@@ -138,11 +133,6 @@ public abstract class EntityManager implements AutoCloseable
 	public Entity_ get(Class<? extends Entity_> entityClass, int entityId)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "get", new Object[]{entityClass, entityId});
-		if (isLevelDBEnabled()) {
-			Entity_ entity = getLevelDBManager().get(entityClass, entityId);
-			detach(entity);
-			return entity;
-		}
 		createEM();
 		Entity_ entity = getEM().find(entityClass, entityId);
 		detach(entity);
@@ -313,8 +303,6 @@ public abstract class EntityManager implements AutoCloseable
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "persist", entity);
 		getEM().persist(entity);
-		if (isLevelDBEnabled())
-			getLevelDBManager().put(entity);
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "persist", entity);
 	}
 
@@ -326,8 +314,6 @@ public abstract class EntityManager implements AutoCloseable
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "merge", entity);
 		getEM().merge(entity);
-		if (isLevelDBEnabled())
-			getLevelDBManager().put(entity);
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "merge", entity);
 	}
 
@@ -335,34 +321,18 @@ public abstract class EntityManager implements AutoCloseable
 	 * Removes an entity.
 	 * @param entity The entity to remove.
 	 */
-	@SuppressWarnings("unchecked")
 	public void remove(Entity_ entity)
 	{
 		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "remove", entity);
 		getEM().remove(entity);
-		if (isLevelDBEnabled()) {
-			Class<? extends Entity_> entityClass = Hibernate.getClass(entity);
-			getLevelDBManager().remove(entityClass, entity.getId());
-			if (entityClass.equals(Restaurant_.class)) {
-				List<Reservation_> reservations = getLevelDBManager().getActiveReservationsByRestaurant(entity.getId());
-				for (Reservation_ reservation: reservations)
-					getLevelDBManager().remove(reservation);
-			}
-		}
 		Logger.getLogger(EntityManager.class.getName()).exiting(EntityManager.class.getName(), "remove", entity);
 	}
 
 	private static void populateLevelDB()
 	{
 		Logger.getLogger(EntityManager.class.getName()).info("Populating LevelDB database...");
-		List<Entity_> entities = new ArrayList<Entity_>();
-		try (UserManager userManager = new UserManager();
-			RestaurantManager restaurantManager = new RestaurantManager();
-			ReservationManager reservationManager = new ReservationManager();) {
-			entities.addAll(userManager.getAll());
-			entities.addAll(restaurantManager.getAll());
-			entities.addAll(reservationManager.getAll());
-			levelDBManager.populateDB(entities);
+		try (ReservationManager reservationManager = new ReservationManager()) {
+			levelDBManager.populateDB(reservationManager.getAll());
 		}
 	}
 }
