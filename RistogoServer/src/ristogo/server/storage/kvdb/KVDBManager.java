@@ -188,12 +188,20 @@ public class KVDBManager implements AutoCloseable
 	public List<Reservation_> getReservationsByDateTime(int restaurantId, LocalDate date, ReservationTime time)
 	{
 		List<Reservation_> reservations = new ArrayList<Reservation_>();
+		boolean found = false;
 		try (DBIterator iterator = db.iterator()) {
 			for (iterator.seek(bytes("reservations:0")); iterator.hasNext();) {
 				String[] key = asString(iterator.peekNext().getKey()).split(":", 6);
-				if (!key[0].equals("reservations") || Integer.parseInt(key[2]) != restaurantId || !LocalDate.parse(key[3]).isEqual(date) || ReservationTime.valueOf(key[4]) != time)
-					break;
 				int userId = Integer.parseInt(key[1]);
+				if (key[0].equals("reservations") && Integer.parseInt(key[2]) == restaurantId)
+					found = true;
+				if (!key[0].equals("reservations") || Integer.parseInt(key[2]) != restaurantId || !LocalDate.parse(key[3]).isEqual(date) || ReservationTime.valueOf(key[4]) != time) {
+					if (found)
+						iterator.seek(bytes("reservations:" + (userId + 1) + ":" + restaurantId + ":" + date + ":" + time.name()));
+					else
+						iterator.seek(bytes("reservations:" + userId + ":" + restaurantId + ":" + date + ":" + time.name() + ":zzzzzzzz"));
+					continue;
+				}
 				reservations.add(getReservation(userId, restaurantId, date, time));
 				iterator.seek(bytes("reservations:" + (userId + 1) + ":" + restaurantId + ":" + date + ":" + time.name()));
 			}
