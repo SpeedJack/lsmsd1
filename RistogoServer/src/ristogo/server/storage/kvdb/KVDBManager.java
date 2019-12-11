@@ -195,7 +195,7 @@ public class KVDBManager implements AutoCloseable
 					break;
 				int userId = Integer.parseInt(key[1]);
 				reservations.add(getReservation(userId, restaurantId, date, time));
-				iterator.seek(bytes("reservations:" + (userId + 1)));
+				iterator.seek(bytes("reservations:" + (userId + 1) + ":" + restaurantId + ":" + date + ":" + time.name()));
 			}
 		} catch (NoSuchElementException ex) {
 			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: no reservation found.");
