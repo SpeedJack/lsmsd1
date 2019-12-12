@@ -11,6 +11,8 @@ import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 
+import org.hibernate.Session;
+
 import ristogo.server.storage.entities.Entity_;
 import ristogo.server.storage.kvdb.KVDBManager;
 
@@ -100,6 +102,18 @@ public abstract class EntityManager implements AutoCloseable
 	}
 
 	/**
+	 * Test function. Used to see the content of KVDB.
+	 */
+	public static void printKVDBContent()
+	{
+		if (!isLevelDBEnabled()) {
+			Logger.getLogger(EntityManager.class.getName()).severe("KVDB must be enabled to see its content.");
+			return;
+		}
+		getLevelDBManager().printAll();
+	}
+
+	/**
 	 * Get all entities of this type.
 	 * @return All entites of this type.
 	 */
@@ -141,7 +155,10 @@ public abstract class EntityManager implements AutoCloseable
 	}
 
 	/**
-	 * Returns an entity that exists in the actual session.
+	 * Returns an entity that exists in the actual session. This method DOES
+	 * NOT close the EM (this task is left to the caller: this behavior is
+	 * to allow the caller to access lazy collections inside the retrieved
+	 * entity that requires the session to be open).
 	 * @param entityClass The class of the entity to retrieve.
 	 * @param entityId The entity's id.
 	 * @return The entity.
@@ -149,8 +166,7 @@ public abstract class EntityManager implements AutoCloseable
 	public Entity_ load(Class<? extends Entity_> entityClass, int entityId)
 	{
 		createEM();
-		Entity_ entity = getEM().find(entityClass, entityId);
-		return entity;
+		return getEM().unwrap(Session.class).load(entityClass, entityId);
 	}
 
 	/**
@@ -296,7 +312,7 @@ public abstract class EntityManager implements AutoCloseable
 	}
 
 	/**
-	 * Store an entity.
+	 * Store an entity (low-level method: does not start a transaction).
 	 * @param entity The entity to store.
 	 */
 	public void persist(Entity_ entity)
@@ -307,7 +323,7 @@ public abstract class EntityManager implements AutoCloseable
 	}
 
 	/**
-	 * Merges an entity.
+	 * Merges an entity (low-level method: does not start a transaction).
 	 * @param entity The entity to merge.
 	 */
 	public void merge(Entity_ entity)
@@ -318,7 +334,7 @@ public abstract class EntityManager implements AutoCloseable
 	}
 
 	/**
-	 * Removes an entity.
+	 * Removes an entity (low-level method: does not start a transaction).
 	 * @param entity The entity to remove.
 	 */
 	public void remove(Entity_ entity)

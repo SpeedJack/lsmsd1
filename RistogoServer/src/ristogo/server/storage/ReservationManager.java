@@ -23,14 +23,14 @@ public class ReservationManager extends EntityManager
 	{
 		return (Reservation_)super.get(Reservation_.class, reservationId);
 	}
-	
+
 	public void delete(Reservation_ reservation)
 	{
 		if (isLevelDBEnabled())
 			getLevelDBManager().deleteReservation(reservation);
 		super.delete(reservation);
 	}
-	
+
 	public void insert(Reservation_ reservation)
 	{
 		super.insert(reservation);

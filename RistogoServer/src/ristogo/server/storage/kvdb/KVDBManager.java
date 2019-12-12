@@ -99,16 +99,48 @@ public class KVDBManager implements AutoCloseable
 		Logger.getLogger(KVDBManager.class.getName()).exiting(KVDBManager.class.getName(), "populateDB");
 	}
 
+	/**
+	 * Test function. Used to see the content of KVDB.
+	 */
+	public void printAll()
+	{
+		String oldkey = "";
+		try (DBIterator iterator = db.iterator()) {
+			for (iterator.seek(bytes("reservations")); iterator.hasNext(); iterator.next()) {
+				String rawkey = asString(iterator.peekNext().getKey());
+				String[] key = rawkey.split(":", 6);
+				String basekey = key[0] + ":" + key[1] + ":" + key[2] + ":" + key[3] + ":" + key[4] + ":"; 
+				if (!basekey.equals(oldkey))
+					System.out.println("---");
+				oldkey = basekey;
+				String value = asString(iterator.peekNext().getValue());
+				System.out.println(rawkey + " = " + value);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Get the list of all reservations.
+	 * @return All reservations saved in the KVDB.
+	 */
 	public List<Reservation_> getAllReservations()
 	{
 		List<Reservation_> reservations = new ArrayList<Reservation_>();
 		try (DBIterator iterator = db.iterator()) {
-			for (iterator.seek(bytes("reservations:0")); iterator.hasNext();) {
+			// Start at first reservation
+			for (iterator.seek(bytes("reservations")); iterator.hasNext();) {
 				String[] key = asString(iterator.peekNext().getKey()).split(":", 6);
 				if (!key[0].equals("reservations"))
 					break;
-				reservations.add(getReservation(Integer.parseInt(key[1]), Integer.parseInt(key[2]), LocalDate.parse(key[3]), ReservationTime.valueOf(key[4])));
-				iterator.seek(bytes("reservations:" + (Integer.parseInt(key[1]) + 1)));
+				int userId = Integer.parseInt(key[1]);
+				int restaurantId = Integer.parseInt(key[2]);
+				LocalDate date = LocalDate.parse(key[3]);
+				ReservationTime time = ReservationTime.valueOf(key[4]);
+				reservations.add(getReservation(userId, restaurantId, date, time));
+				// Skip to next reservation
+				iterator.seek(bytes("reservations:" + key[1] + ":" + key[2]+ ":" + key[3] + ":" + key[4] + ":zzzzzzzz"));
 			}
 		}  catch (NoSuchElementException ex) {
 			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: no reservation found.");
@@ -119,12 +151,22 @@ public class KVDBManager implements AutoCloseable
 		}
 		return reservations;
 	}
-	
+
+	/**
+	 * Get all active reservations of the given restaurant.
+	 * @param restaurant The restaurant.
+	 * @return Active reservations of the restaurant.
+	 */
 	public List<Reservation_> getActiveReservations(Restaurant_ restaurant)
 	{
 		return getActiveReservationsByRestaurant(restaurant.getId());
 	}
-	
+
+	/**
+	 * Get all active reservations of the given user.
+	 * @param user The restaurant.
+	 * @return Active reservations of the user.
+	 */
 	public List<Reservation_> getActiveReservations(User_ user)
 	{
 		return getActiveReservationsByUser(user.getId());
@@ -155,6 +197,7 @@ public class KVDBManager implements AutoCloseable
 		List<Reservation_> reservations = new ArrayList<Reservation_>();
 		LocalDate now = LocalDate.now();
 		try (DBIterator iterator = db.iterator()) {
+			// Start at first reservation
 			for (iterator.seek(bytes("reservations")); iterator.hasNext();) {
 				String[] key = asString(iterator.peekNext().getKey()).split(":", 6);
 				if (!key[0].equals("reservations"))
@@ -164,9 +207,11 @@ public class KVDBManager implements AutoCloseable
 				LocalDate date = LocalDate.parse(key[3]);
 				ReservationTime time = ReservationTime.valueOf(key[4]);
 				if (Integer.parseInt(key[keyIndex]) == id && !date.isBefore(now)) {
+					// Found an active reservation of specified user/restaurant
 					reservations.add(getReservation(userId, restaurantId, date, time));
 				}
-				iterator.seek(bytes("reservations:" + userId + ":" + restaurantId + ":" + date + ":" + time.name() + ":zzzzzzzz"));
+				// Skip to next reservation
+				iterator.seek(bytes("reservations:" + key[1] + ":" + key[2] + ":" + key[3] + ":" + key[4] + ":zzzzzzzz"));
 			}
 		} catch (NoSuchElementException ex) {
 			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: no reservation found.");
@@ -190,20 +235,23 @@ public class KVDBManager implements AutoCloseable
 		List<Reservation_> reservations = new ArrayList<Reservation_>();
 		boolean found = false;
 		try (DBIterator iterator = db.iterator()) {
-			for (iterator.seek(bytes("reservations:0")); iterator.hasNext();) {
+			// Start of reservations
+			for (iterator.seek(bytes("reservations")); iterator.hasNext();) {
 				String[] key = asString(iterator.peekNext().getKey()).split(":", 6);
 				int userId = Integer.parseInt(key[1]);
-				if (key[0].equals("reservations") && Integer.parseInt(key[2]) == restaurantId)
-					found = true;
-				if (!key[0].equals("reservations") || Integer.parseInt(key[2]) != restaurantId || !LocalDate.parse(key[3]).isEqual(date) || ReservationTime.valueOf(key[4]) != time) {
-					if (found)
-						iterator.seek(bytes("reservations:" + (userId + 1) + ":" + restaurantId + ":" + date + ":" + time.name()));
-					else
-						iterator.seek(bytes("reservations:" + userId + ":" + restaurantId + ":" + date + ":" + time.name() + ":zzzzzzzz"));
-					continue;
+				if (key[0].equals("reservations") && Integer.parseInt(key[2]) == restaurantId) {
+					found = true; // Found the first entry with the requested restaurant; next time we can skip directly to next user
+					if (LocalDate.parse(key[3]).isEqual(date) && ReservationTime.valueOf(key[4]) == time)
+						// Found reservation for restaurant,date,time
+						reservations.add(getReservation(userId, restaurantId, date, time));
 				}
-				reservations.add(getReservation(userId, restaurantId, date, time));
-				iterator.seek(bytes("reservations:" + (userId + 1) + ":" + restaurantId + ":" + date + ":" + time.name()));
+				if (found)
+					// We can skip directly to the next user (this user can not have other reservations at the same restaurant,date,time)
+					iterator.seek(bytes("reservations:" + (userId + 1) + ":" + restaurantId + ":" + date + ":" + time.name()));
+				else
+					// Skip to next reservation
+					iterator.seek(bytes("reservations:" + userId + ":" + key[2] + ":" + key[3] + ":" + key[4] + ":zzzzzzzz"));
+				continue;
 			}
 		} catch (NoSuchElementException ex) {
 			Logger.getLogger(KVDBManager.class.getName()).info("Reached end of KVDB: no reservation found.");
@@ -214,12 +262,26 @@ public class KVDBManager implements AutoCloseable
 		}
 		return reservations;
 	}
-	
+
+	/**
+	 * Get a reservation.
+	 * @param reservation The reservation object (userId, restaurantId,
+	 * 	date, time needs to be specified).
+	 * @return The full reservation object.
+	 */
 	public Reservation_ getReservation(Reservation_ reservation)
 	{
 		return getReservation(reservation.getUser().getId(), reservation.getRestaurant().getId(), reservation.getDate(), reservation.getTime());
 	}
-	
+
+	/**
+	 * Get a reservation.
+	 * @param userId Id of the user that owns the reservation.
+	 * @param restaurantId Id of the restaurant which the reservation is for.
+	 * @param date Date of the reservation.
+	 * @param time Time of the reservation.
+	 * @return The reservation object.
+	 */
 	public Reservation_ getReservation(int userId, int restaurantId, LocalDate date, ReservationTime time)
 	{
 		Reservation_ reservation = new Reservation_();
@@ -233,12 +295,13 @@ public class KVDBManager implements AutoCloseable
 		reservation.setTime(time);
 		boolean found = false;
 		try (DBIterator iterator = db.iterator()) {
+			// Go directly to the reservation needed
 			for (iterator.seek(bytes("reservations:" + userId + ":" + restaurantId + ":" + date + ":" + time.name())); iterator.hasNext(); iterator.next()) {
 				String[] key = asString(iterator.peekNext().getKey()).split(":", 6);
 				if (!key[0].equals("reservations") || Integer.parseInt(key[1]) != userId ||
 					Integer.parseInt(key[2]) != restaurantId || !LocalDate.parse(key[3]).isEqual(date) ||
 					ReservationTime.valueOf(key[4]) != time) {
-					break;
+					break; // reservation not found
 				}
 				found = true;
 				String attributeName = key[5];
@@ -305,16 +368,24 @@ public class KVDBManager implements AutoCloseable
 		}
 	}
 
+	/**
+	 * Remove a reservation (low-level method: does not open a transaction).
+	 * @param userId Id of the user that owns the reservation.
+	 * @param restaurantId Id of the restaurant which the reservation is for.
+	 * @param date Date of the reservation.
+	 * @param time Time of the reservation.
+	 */
 	public void removeReservation(int userId, int restaurantId, LocalDate date, ReservationTime time)
 	{
 		String reservationKey = "reservations:" + userId + ":" + restaurantId + ":" + date + ":" + time.name();
 		try (DBIterator iterator = db.iterator()) {
+			// Go directly to the reservation needed
 			for (iterator.seek(bytes(reservationKey)); iterator.hasNext(); iterator.next()) {
 				String[] key = asString(iterator.peekNext().getKey()).split(":", 6);
 				if (!key[0].equals("reservations") || Integer.parseInt(key[1]) != userId ||
 					Integer.parseInt(key[2]) != restaurantId || !LocalDate.parse(key[3]).isEqual(date) ||
 					ReservationTime.valueOf(key[4]) != time) {
-					break;
+					break; // reservation not found
 				}
 				getWriteBatch().delete(bytes(reservationKey + ":" + key[5]));
 			}
@@ -323,11 +394,19 @@ public class KVDBManager implements AutoCloseable
 		}
 	}
 
+	/**
+	 * Remove a reservation.
+	 * @param reservation The reservation to remove.
+	 */
 	public void removeReservation(Reservation_ reservation)
 	{
 		removeReservation(reservation.getUser().getId(), reservation.getRestaurant().getId(), reservation.getDate(), reservation.getTime());
 	}
 
+	/**
+	 * Save a reservation (low-level method: does not open a transaction).
+	 * @param reservation The reservation to save.
+	 */
 	public void putReservation(Reservation_ reservation)
 	{
 		String baseKey = "reservations:" + reservation.getUser().getId() + ":" + reservation.getRestaurant().getId() + ":" + reservation.getDate() + ":" + reservation.getTime().name() + ":";
@@ -337,6 +416,13 @@ public class KVDBManager implements AutoCloseable
 		getWriteBatch().put(bytes(baseKey + "user_username"), bytes(reservation.getUser().getUsername()));
 	}
 
+	/**
+	 * Delete a reservation.
+	 * @param userId Id of the user that owns the reservation.
+	 * @param restaurantId Id of the restaurant which the reservation is for.
+	 * @param date Date of the reservation.
+	 * @param time Time of the reservation.
+	 */
 	public void deleteReservation(int userId, int restaurantId, LocalDate date, ReservationTime time)
 	{
 		beginBatch();
@@ -344,11 +430,20 @@ public class KVDBManager implements AutoCloseable
 		commitBatch();
 	}
 
+	/**
+	 * Delete a reservation.
+	 * @param reservation The reservation to delete.
+	 */
 	public void deleteReservation(Reservation_ reservation)
 	{
 		deleteReservation(reservation.getUser().getId(), reservation.getRestaurant().getId(), reservation.getDate(), reservation.getTime());
 	}
 
+	/**
+	 * Update a reservation.
+	 * @param oldReservation The old reservation object (to remove).
+	 * @param newReservation The new reservation object (to add).
+	 */
 	public void updateReservation(Reservation_ oldReservation, Reservation_ newReservation)
 	{
 		beginBatch();
@@ -357,6 +452,10 @@ public class KVDBManager implements AutoCloseable
 		commitBatch();
 	}
 
+	/**
+	 * Insert a reservation.
+	 * @param reservation The reservation to insert.
+	 */
 	public void insertReservation(Reservation_ reservation)
 	{
 		beginBatch();
