@@ -1,0 +1,14 @@
+\chapter{Build Custom Queries}
+
+JPA provides \standout{Criteria API}, an alternative way for defining JPA
+queries, which is mainly useful for building dynamic queries with user-provided
+parameters. In particular, we will see \code{CriteriaBuilder}.
+
+\code{CriteriaBuilder} is used to construct criteria queries, compound
+selections, expressions, predicates, orderings. An example of use is shown
+below considering the \code{User} entity of this tutorial. In particular, we
+want to find a user by searching for him through his \code{username} (and not
+through his \code{Id} as the \code{find} method allows).
+
+\lstinputlisting[language=Java, label={lst:criteria},
+caption={\code{CriteriaBuilder} example.}]{criteria.java}

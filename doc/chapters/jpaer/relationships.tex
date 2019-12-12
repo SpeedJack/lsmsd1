@@ -1,0 +1,59 @@
+\section{Relationships}
+
+\subsection{One-to-one Relationships}
+
+In our case a one-to-one relationship is between a user and a restaurant. In
+fact, a restaurant is owned by a user. So the one-to-one relationship is defined
+in the \code{User} and \code{Restaurant} classes as follows:
+
+\lstinputlisting[language=Java, label={lst:restauranto2o},
+caption={One-to-one relationship in \code{Restaurant\_.java}}]{Restaurant_o2o.java}
+
+\lstinputlisting[language=Java, label={lst:usero2o},
+caption={One-to-one relationship in \code{User\_.java}}]{User_o2o.java}
+
+%TODO: clarify
+Unlike \code{Restaurant}, in the annotation \code{@OneToOne} in the \code{User}
+class we specified the attribute \code{mappedBy}, in fact a bidirectional
+relationship brings with it the concept of ``owner side'' and ``reverse side''.
+Owner is the \code{Entity} whose report annotation (\code{@OneToOne}) does not
+specify the \code{mappedBy}.  In essence, for a bidirectional relationship it is
+always the entity linked to the table that holds the relational constraint of
+foreign keys.
+
+The reverse side indicates exactly this information (``I am not the Owner, look
+at the other the indicated entity'') by inserting in the attribute mappedBy the
+name of the relation field in the opposite entity (owner of the Entity
+Restaurant).
+
+\subsection{One-to-many / Many-to-one Relationships}
+
+This type of relationship is usually modeled with a foreign key from one table
+to another so that different records in one table can reference the same record
+in the other. In our case we have a user or a restaurant that can make multiple
+reservations.
+
+\lstinputlisting[language=Java, label={lst:usero2m},
+caption={One-to-many relationship in \code{User\_.java}}]{User_o2m.java}
+\lstinputlisting[language=Java, label={lst:restauranto2m},
+caption={One-to-many relationship in \code{Restaurant\_.java}}]{Restaurant_o2m.java}
+\lstinputlisting[language=Java, label={lst:reservationm2o},
+caption={Many-to-one relationship in \code{Reservation\_.java}}]{Reservation_m2o.java}
+
+Also in this case we use \code{@JoinColumn} (with \code{@ManytoOne}) to specify
+the \code{Reservation}'s columns that hold the foreign keys of User and
+Restaurant respectively.
+
+In the \code{User} and \code{Restaurant} classes we use \code{@OneToMany} with
+the \code{mappedBy} attribute to define in which field the relationship with
+Reservation occurs.
+
+\subsection{Many-to-many Relationships}
+
+There is also a \code{@ManyToMany} annotation that can be used to represent
+many-to-many relationships. This annotation is used in conjunction with the
+\code{@JoinTable} annotation that specifies the name of the table used for the
+relationship along with the join columns:
+
+\lstinputlisting[language=Java, label={lst:m2m}, caption={Many-to-many
+annotations}]{m2m.java}

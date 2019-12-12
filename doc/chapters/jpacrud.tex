@@ -1,0 +1,36 @@
+\chapter{CRUD Operations}
+
+Whenever you want to manipulate data with JPA within an \code{EntityManager} you
+must perform the following operations (except read operation, that does not
+require to open a transaction):
+
+\begin{enumerate}
+	\item Begin a transaction.
+	\item Manage entity instances (create, update, remove etc).
+	\item Commit the transaction.
+\end{enumerate}
+
+How to begin and commit a transition is shown below:
+
+\lstinputlisting[language=Java, label={lst:begin},
+caption={Begin a transaction.}]{begin.java}
+
+\lstinputlisting[language=Java, label={lst:commit},
+caption={Commit a transaction.}]{commit.java}
+
+In the following listings are shown the four CRUD operations applied to the
+entities defined above:
+
+\lstinputlisting[language=Java, label={lst:create},
+caption={Create}]{create.java}
+
+\lstinputlisting[language=Java, label={lst:read},
+caption={Read}]{read.java}
+
+\vfill
+
+\lstinputlisting[language=Java, label={lst:update},
+caption={Update}]{update.java}
+
+\lstinputlisting[language=Java, label={lst:delete},
+caption={Delete}]{delete.java}

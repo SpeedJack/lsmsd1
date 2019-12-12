@@ -7,8 +7,8 @@ Ristogo/config.xml
 # MySQL docker container
 docker/
 
-# main doc file
-doc/main.pdf
+# doc output
+doc/*.pdf
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

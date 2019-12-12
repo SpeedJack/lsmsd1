@@ -1,0 +1,21 @@
+\section{Configuration of JPA with Hibernate}
+
+If using Maven as dependency manager, in order to use JPA with Hibernate you
+must add the dependency in the POM file, in particular:
+
+\lstinputlisting[language=XML, label={lst:pomhibernate},
+style=xmlcode,caption={Hibernate dependency for Maven POM
+file.}]{pomhibernate.xml}
+
+Furthermore the file \code{persistence.xml} must be created.
+
+The \code{persistence.xml} file must be placed in the folder
+\code{src/main/re\-sources/META-INF}. This file (shown in
+Listing~\ref{lst:persistence}) is a standard configuration file. Its purpose is
+to provide the \code{EntityManager} with the information necessary to
+save/update/query the database and configure the mapping layer. The file defines
+the persistence-units, groups of persistent classes with their settings,
+providing them with a unique identifier that can be used by the application.
+
+\lstinputlisting[language=XML, label={lst:persistence}, style=xmlcode,
+caption={\code{persistence.xml}}]{persistence.xml}

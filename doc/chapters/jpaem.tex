@@ -1,0 +1,24 @@
+\chapter{EntityManager}
+
+JPA also defines an \code{EntityManager}, whose purpose is the runtime
+management of queries and transactions on persistent objects.
+
+An \code{EntityManager} instance is associated with a persistence context, and
+it is used to interact with the database. A persistence context is a set of
+entity instances, which are actually the objects or instances of the model
+classes.
+
+The \code{EntityManager} is used to manage entity instances and their life
+cycle, such as create entities, entities, remove entities, find and query
+entities.
+
+An \code{EntityManager} instance can be created as described below, using
+\code{EntityManagerFactory}.
+
+\lstinputlisting[language=Java, label={lst:em},
+caption={\code{EntityManager.java}}]{EntityManager.java}
+
+The class shown in Listing~\ref{lst:em} is a wrapper class for the Hibernate's
+\code{EntityManager}. In our example we have created three
+\code{EntityManager}'s child classes for each entity of our system:
+\code{UserManager}, \code{RestaurantManager} and \code{ReservationManager}.

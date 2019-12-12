@@ -23,7 +23,6 @@ public abstract class EntityManager implements AutoCloseable
 
 	protected static javax.persistence.EntityManager getEM() //(5)
 	{
-		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "getEM");
 		return threadLocal.get();
 	}
 
@@ -34,7 +33,6 @@ public abstract class EntityManager implements AutoCloseable
 
 	public static void closeFactory() //(7)
 	{
-		Logger.getLogger(EntityManager.class.getName()).entering(EntityManager.class.getName(), "closeFactory");
 		if (getLevelDBManager() != null)
 			getLevelDBManager().close();
 		if (factory != null)
