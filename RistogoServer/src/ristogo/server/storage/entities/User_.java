@@ -18,7 +18,6 @@ import ristogo.common.entities.Customer;
 import ristogo.common.entities.Owner;
 import ristogo.common.entities.User;
 import ristogo.common.entities.enums.UserType;
-import ristogo.server.storage.kvdb.Attribute;
 
 /**
  * Represents a JPA user entity (Customer or Owner).
@@ -28,14 +27,12 @@ import ristogo.server.storage.kvdb.Attribute;
 public class User_ extends Entity_
 {
 	@Column(name="username", length=32, nullable=false, unique=true)
-	@Attribute
 	protected String username;
 
 	/**
 	 * User's password hash.
 	 */
 	@Column(name="password", length=32, nullable=false)
-	@Attribute
 	protected String password;
 
 	/**

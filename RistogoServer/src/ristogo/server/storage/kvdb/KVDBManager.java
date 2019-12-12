@@ -116,8 +116,8 @@ public class KVDBManager implements AutoCloseable
 				String value = asString(iterator.peekNext().getValue());
 				System.out.println(rawkey + " = " + value);
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 	}
 
