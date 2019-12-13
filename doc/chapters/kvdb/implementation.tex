@@ -44,7 +44,7 @@ the system, then the application will manage the synchronization among the two
 databases, keeping the consistency.
 
 When a request arrives at the server, if this request implies a read operation
-the \code{EntityManager} involved read will from the kvdb.
+the \code{EntityManager} involved will read from the kvdb.
 
 If instead the request implies a write operation it is handled in a
 write-through fashion. The \code{EntityManager} involved will write into the
