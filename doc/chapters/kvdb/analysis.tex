@@ -95,7 +95,7 @@ of times the operation is performed per day.
 
 \begin{itemize}
 	\item Description: Remove a reservation from the database.
-	\item Frequency: \(525\) per week (\% of weekly reservations).
+	\item Frequency: \(525\) per week (0,5\% of weekly reservations).
 \end{itemize}
 
 \subsubsection{Add a Restaurant}
@@ -156,8 +156,8 @@ In this step we have to create a key value data model that fits our needs.  In
 other words we need a key-value data model that can be derived from the join of
 three tables involved in the previously mentioned operations.
 
-Starting from the ER model in Figure~\ref{fig:er} we can translate our entity as
-follow:
+Starting from the ER model in Figure~\ref{fig:er} we can translate our join
+table as follow:
 
 \vspace{0.75cm}
 
@@ -172,4 +172,11 @@ Attribute name can be:
 	\item user\_username
 	\item restaurant\_name
 \end{itemize}
+
+\vspace{0.75cm}
+The introduction of the fields <date> and <time> in the key give us an advantage 
+when we need to check for available seats. In fact when we need this operation
+we just have to iterate on the reservations with given date and time without the
+need to check for that. 
+
 \vfill
