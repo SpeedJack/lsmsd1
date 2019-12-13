@@ -142,9 +142,9 @@ restaurantID.
 In this operation we need a join between Restaurant and Reservation table. We
 need the number of remaining seats in a given restaurant for the given date and
 hour.
-
+\vspace{0.75cm}
 The first operation, even if it's a frequently used read operation, it doesn't
-require any join.  Instead, the last three operations are \textbf{frequently}
+require any join.  Instead, the last three operations are frequently
 used read operations that need a join. They are the ones that most will achieve
 advantages in terms of performances using a Key-Value Database among the above
 listed ones. In particular, the key-value database will be used as a cache of
